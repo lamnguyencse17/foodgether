@@ -1,0 +1,29 @@
+name: Migrate production database
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - run: yarn
+      - name: Masking PRIVATE_URL value
+        run: echo "::add-mask::$PRIVATE_URL"
+        env:
+          DATABASE_URL: ${{ secrets.PRIVATE_URL }}
+      - name: Masking DB_NAME value
+        run: echo "::add-mask::$DB_NAME"
+        env:
+          DATABASE_URL: ${{ secrets.DB_NAME }}
+      - run: yarn prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
