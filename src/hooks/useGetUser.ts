@@ -1,17 +1,27 @@
+import shallow from "zustand/shallow";
 import { useSession } from "next-auth/react";
 import { isEmpty } from "radash";
 import { useEffect } from "react";
 import useStore from "./store";
 
-const useGetUser = () => {
-  const { data: sessionData } = useSession();
-  const setUser = useStore((state) => state.setUser);
+const useHandleAuthenticateUser = () => {
+  const { data: sessionData, status } = useSession();
+  const {
+    data: user,
+    setUser,
+    resetUser,
+  } = useStore((state) => ({ ...state.user }), shallow);
 
-  const user = sessionData?.user;
+  const sessionUser = sessionData?.user;
+
   useEffect(() => {
-    if (isEmpty(user)) return;
-    setUser(user);
-  }, [user]);
+    if (status !== "authenticated" || !isEmpty(user)) return;
+    setUser(sessionUser);
+  }, [sessionUser, status, user]);
+
+  useEffect(() => {
+    if (status !== "authenticated" && !isEmpty(user)) resetUser();
+  }, [user, sessionUser, status]);
 };
 
-export default useGetUser;
+export default useHandleAuthenticateUser;

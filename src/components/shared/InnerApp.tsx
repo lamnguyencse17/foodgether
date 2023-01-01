@@ -2,7 +2,7 @@ import { Box, Container } from "@chakra-ui/react";
 import { NextComponentType, NextPageContext } from "next";
 import Head from "next/head";
 import { FunctionComponent } from "react";
-import useGetUser from "../../hooks/useGetUser";
+import useHandleAuthenticateUser from "../../hooks/useGetUser";
 import Favicon from "./Favicon";
 import Navbar from "./Navbar";
 
@@ -15,7 +15,7 @@ const InnerApp: FunctionComponent<InnerAppProps> = ({
   Component,
   pageProps,
 }) => {
-  useGetUser();
+  useHandleAuthenticateUser();
   return (
     <>
       <Head>
