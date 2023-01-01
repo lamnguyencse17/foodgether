@@ -60,7 +60,7 @@ model Restaurant {
   deliveryId        Int     @unique
   name              String
   address           String  @db.Text
-  url               String
+  url               String  @unique
   isQualityMerchant Boolean @default(false)
   position          Json
   priceRange        Json
