@@ -17,11 +17,11 @@ const useHandleAuthenticateUser = () => {
   useEffect(() => {
     if (status !== "authenticated" || !isEmpty(user)) return;
     setUser(sessionUser);
-  }, [sessionUser, status, user]);
+  }, [sessionUser, status, user, setUser]);
 
   useEffect(() => {
     if (status !== "authenticated" && !isEmpty(user)) resetUser();
-  }, [user, sessionUser, status]);
+  }, [user, sessionUser, status, resetUser]);
 };
 
 export default useHandleAuthenticateUser;
