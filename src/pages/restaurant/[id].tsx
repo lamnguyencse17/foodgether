@@ -2,10 +2,13 @@ import { useRouter } from "next/router";
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { prisma } from "../../server/db/client";
-import { SharedPropsFromServer } from "../../types/shared";
+import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
-import { useEffect } from "react";
+import { Box } from "@chakra-ui/react";
+import Image from "next/image";
+import { get } from "radash";
+import { useTranslation } from "react-i18next";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -41,6 +44,7 @@ export const getStaticProps = async ({
       },
     },
   });
+  console.log(restaurant);
   return {
     props: {
       restaurant: convertObjectWithDates(
@@ -56,12 +60,43 @@ type RestaurantPageProps = {
 };
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
-  const router = useRouter();
-  const { id } = router.query;
+  const { t } = useTranslation();
 
-  useEffect(() => {}, []);
+  const confirmedRestaurant =
+    restaurant as NonNullable<AggregatedRestaurantWithStringDate>;
 
-  return <>{id}</>;
+  const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
+  const restaurantHeaderImage = restaurantPhotos[
+    restaurantPhotos.length - 1
+  ] as Photo;
+
+  return (
+    <main>
+      <Box
+        maxH="xs"
+        display="flex"
+        flexDirection={["column", "row", "row"]}
+        gap={5}
+        padding={4}
+      >
+        <Box maxH={["100%", "2xs", "3xs"]} maxW={["100%", "sm", "md"]}>
+          <Image
+            src={restaurantHeaderImage.value}
+            height={restaurantHeaderImage.height}
+            width={restaurantHeaderImage.width}
+            alt={t("restaurant_page.cover_photo", {
+              name: confirmedRestaurant.name,
+            })}
+            style={{
+              objectFit: "scale-down",
+            }}
+          />
+        </Box>
+
+        <Box flex={1}>{restaurant?.name}</Box>
+      </Box>
+    </main>
+  );
 };
 
 export default RestaurantPage;

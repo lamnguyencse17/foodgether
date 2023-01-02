@@ -10,3 +10,9 @@ export type SharedPropsFromServer = {
   locales: string[];
   defaultLocale: string;
 };
+
+export type Photo = {
+  value: string;
+  width: number;
+  height: number;
+};

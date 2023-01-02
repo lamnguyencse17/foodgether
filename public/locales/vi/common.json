@@ -4,6 +4,9 @@
     "url_input_placeholder": "Đường dẫn Shopee Food ở đây...",
     "start_button": "Bắt đầu"
   },
+  "restaurant_page": {
+    "cover_photo": "Ảnh bìa {{name}}"
+  },
   "navbar": {
     "login": "Đăng nhập",
     "logout": "Đăng xuất"

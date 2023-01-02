@@ -12,5 +12,8 @@ const config = {
   reactStrictMode: true,
   swcMinify: true,
   i18n: i18nConfig.i18n,
+  images: {
+    domains: ["images.foody.vn"],
+  },
 };
 export default config;

@@ -67,7 +67,7 @@ model Restaurant {
 
   dishTypes DishTypes[]
 
-  photos Json? @default("[]")
+  photos Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -102,7 +102,7 @@ model Dish {
 
   discountPrice Json
 
-  photos Json? @default("[]")
+  photos Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

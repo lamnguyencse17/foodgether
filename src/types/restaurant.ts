@@ -1,16 +1,20 @@
 import type { DishTypes, Restaurant } from "@prisma/client";
 import { DishWithStringDate } from "./dish";
 import { DishTypesWithStringDate } from "./dishTypes";
-import { MetaStringDate } from "./shared";
+import { MetaStringDate, Photo } from "./shared";
 
 export type RestaurantWithStringDate = Omit<
   Restaurant,
-  "createdAt" | "updatedAt"
+  "createdAt" | "updatedAt" | "photos"
 > &
-  MetaStringDate;
+  MetaStringDate & {
+    photos: Photo[];
+  };
 
 export type AggregatedRestaurant =
   | (Restaurant & {
+      photos: Photo[];
+    } & {
       dishTypes: (DishTypes & {
         dishes: DishTypes[];
       })[];

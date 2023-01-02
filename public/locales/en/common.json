@@ -4,6 +4,9 @@
     "url_input_placeholder": "Your Shopee Food URL goes here...",
     "start_button": "Go"
   },
+  "restaurant_page": {
+    "cover_photo": "{{name}} cover photo"
+  },
   "navbar": {
     "login": "Login",
     "logout": "Logout"
