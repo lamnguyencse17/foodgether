@@ -55,11 +55,21 @@ export const fetchShopeeRestaurantId = async (
   return restaurantIdResponse.json();
 };
 
-export const fetchShopeeRestaurant = async (
+export const fetchShopeeRestaurantFromDeliveryId = async (
   id: number
 ): Promise<ShopeeRestaurantResponse> => {
   const restaurantResponse = await fetch(
     `https://gappapi.deliverynow.vn/api/delivery/get_detail?id_type=2&request_id=${id}`,
+    shopeeFetchOptions
+  );
+  return restaurantResponse.json();
+};
+
+export const fetchShopeeRestaurantFromId = async (
+  id: number
+): Promise<ShopeeRestaurantResponse> => {
+  const restaurantResponse = await fetch(
+    `https://gappapi.deliverynow.vn/api/delivery/get_detail?id_type=1&request_id=${id}`,
     shopeeFetchOptions
   );
   return restaurantResponse.json();

@@ -5,7 +5,9 @@
     "start_button": "Bắt đầu"
   },
   "restaurant_page": {
-    "cover_photo": "Ảnh bìa {{name}}"
+    "cover_photo": "Ảnh bìa {{name}}",
+    "is_closed": "Đóng cửa",
+    "is_open": "Mở cửa"
   },
   "navbar": {
     "login": "Đăng nhập",

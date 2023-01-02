@@ -5,7 +5,9 @@
     "start_button": "Go"
   },
   "restaurant_page": {
-    "cover_photo": "{{name}} cover photo"
+    "cover_photo": "{{name}} cover photo",
+    "is_closed": "Closed",
+    "is_open": "Open"
   },
   "navbar": {
     "login": "Login",

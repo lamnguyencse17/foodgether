@@ -5,11 +5,13 @@ import { upsertMenu } from "../db/menu";
 import { upsertRestaurant } from "../db/restaurant";
 import {
   doesRestaurantExistFromUrlSchema,
+  fetchRestaurantFromIdSchema,
   fetchRestaurantFromUrlSchema,
 } from "../schemas/restaurant";
 import {
   fetchShopeeMenu,
-  fetchShopeeRestaurant,
+  fetchShopeeRestaurantFromDeliveryId,
+  fetchShopeeRestaurantFromId,
   fetchShopeeRestaurantId,
 } from "../service/shopee";
 import { publicProcedure } from "../trpc/trpc";
@@ -41,8 +43,11 @@ export const fetchRestaurantFromUrl = publicProcedure
     const {
       reply: { deliveryId, restaurantId },
     } = camelcaseKeys(restaurantIdResponse, { deep: true });
-    const restaurantResponse = await fetchShopeeRestaurant(deliveryId);
+    const restaurantResponse = await fetchShopeeRestaurantFromDeliveryId(
+      deliveryId
+    );
     if (restaurantResponse.result !== "success") {
+      console.log(restaurantResponse);
       throw new TRPCError({
         message: errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -60,6 +65,7 @@ export const fetchRestaurantFromUrl = publicProcedure
 
     const menu = await fetchShopeeMenu(deliveryId);
     if (menu.result !== "success") {
+      console.log(menu);
       throw new TRPCError({
         message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -69,6 +75,52 @@ export const fetchRestaurantFromUrl = publicProcedure
       const completedRestaurant = await upsertMenu(
         menu.reply.menu_infos,
         restaurantId
+      );
+      return { ...completedRestaurant };
+    } catch (err) {
+      console.error(err);
+      throw new TRPCError({
+        message: errors.menu.UPSERT_MENU,
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  });
+
+export const fetchRestaurantFromId = publicProcedure
+  .input(fetchRestaurantFromIdSchema)
+  .query(async ({ input }) => {
+    const restaurantResponse = await fetchShopeeRestaurantFromId(input.id);
+    if (restaurantResponse.result !== "success") {
+      console.log(restaurantResponse);
+      throw new TRPCError({
+        message: errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+    try {
+      await upsertRestaurant(restaurantResponse.reply.delivery_detail);
+    } catch (err) {
+      console.error(err);
+      throw new TRPCError({
+        message: errors.restaurant.UPSERT_RESTAURANT,
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+
+    const menu = await fetchShopeeMenu(
+      restaurantResponse.reply.delivery_detail.delivery_id
+    );
+    if (menu.result !== "success") {
+      console.log(menu);
+      throw new TRPCError({
+        message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+    try {
+      const completedRestaurant = await upsertMenu(
+        menu.reply.menu_infos,
+        input.id
       );
       return { ...completedRestaurant };
     } catch (err) {

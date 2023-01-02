@@ -6,9 +6,10 @@ import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
 import { Box } from "@chakra-ui/react";
-import Image from "next/image";
 import { get } from "radash";
-import { useTranslation } from "react-i18next";
+import Head from "next/head";
+import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
+import { trpc } from "../../utils/trpc";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -44,7 +45,7 @@ export const getStaticProps = async ({
       },
     },
   });
-  console.log(restaurant);
+
   return {
     props: {
       restaurant: convertObjectWithDates(
@@ -60,42 +61,49 @@ type RestaurantPageProps = {
 };
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
-  const { t } = useTranslation();
-
-  const confirmedRestaurant =
-    restaurant as NonNullable<AggregatedRestaurantWithStringDate>;
+  const router = useRouter();
+  const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
+    {
+      id: parseInt(router.query.id as unknown as string),
+    },
+    {
+      enabled: !restaurant,
+      refetchOnWindowFocus: false,
+      retryOnMount: false,
+    }
+  );
+  const confirmedRestaurant = (restaurant ||
+    getRestaurantQuery.data ||
+    {}) as NonNullable<AggregatedRestaurantWithStringDate>;
+  const { name, address, priceRange, isAvailable } = confirmedRestaurant;
 
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
   const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
 
   return (
-    <main>
-      <Box
-        maxH="xs"
-        display="flex"
-        flexDirection={["column", "row", "row"]}
-        gap={5}
-        padding={4}
-      >
-        <Box maxH={["100%", "2xs", "3xs"]} maxW={["100%", "sm", "md"]}>
-          {restaurantHeaderImage && (
-            <Image
-              src={restaurantHeaderImage.value}
-              height={restaurantHeaderImage.height}
-              width={restaurantHeaderImage.width}
-              alt={t("restaurant_page.cover_photo", {
-                name: confirmedRestaurant.name,
-              })}
-              style={{
-                objectFit: "scale-down",
-              }}
-            />
-          )}
+    <>
+      <Head>
+        <title>{name}</title>
+        <meta name="description" content={name} />
+      </Head>
+      <main>
+        <Box
+          maxH="xs"
+          display="flex"
+          flexDirection={["column", "row", "row"]}
+          gap={10}
+          padding={4}
+        >
+          <RestaurantHeader
+            photo={restaurantHeaderImage}
+            name={name}
+            address={address}
+            priceRange={priceRange}
+            isAvailable={isAvailable}
+          />
         </Box>
-
-        <Box flex={1}>{restaurant?.name}</Box>
-      </Box>
-    </main>
+      </main>
+    </>
   );
 };
 

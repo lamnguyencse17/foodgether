@@ -62,6 +62,7 @@ model Restaurant {
   address           String  @db.Text
   url               String  @unique
   isQualityMerchant Boolean @default(false)
+  isAvailable       Boolean @default(false)
   position          Json
   priceRange        Json
 

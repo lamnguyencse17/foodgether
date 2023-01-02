@@ -9,11 +9,19 @@ export type RestaurantWithStringDate = Omit<
 > &
   MetaStringDate & {
     photos: Photo[];
+    priceRange: {
+      minPrice: number;
+      maxPrice: number;
+    };
   };
 
 export type AggregatedRestaurant =
   | (Restaurant & {
       photos: Photo[];
+      priceRange: {
+        minPrice: number;
+        maxPrice: number;
+      };
     } & {
       dishTypes: (DishTypes & {
         dishes: DishTypes[];

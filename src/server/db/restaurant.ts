@@ -18,6 +18,7 @@ export const upsertRestaurant = async (restaurant: ShopeeRestaurant) => {
     },
     isQualityMerchant: restaurant.is_quality_merchant,
     photos: restaurant.photos as unknown as Prisma.JsonArray,
+    isAvailable: restaurant.asap_is_available,
   };
   return prisma.restaurant.upsert({
     where: {
