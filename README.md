@@ -1,28 +1,35 @@
-# Create T3 App
+# Foodgether
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+[Deployment URL](https://lamprojects.me/foodgether)
 
-## What's next? How do I make an app with this?
+**Best lunch ordering web app for Kobiers**
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Vision
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+A simple way to order lunch together:
+- Host just only input the link of shop and app will generate link for members
+- Members choose and submit
+- Summary the final number of orders
 
+## Getting started
+
+- Fill in required environment at: [/src/env/schema.mjs](https://github.com/lamnguyencse17/foodgether/blob/main/src/env/schema.mjs)
+- Run `yarn dev` and you are good to go 🚀
+
+## Techstack
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
 - [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
+- [Postgres](https://www.postgresql.org/)
 
-## Learn More
+## Author
+**Nguyen Quang Lam** - [lamnguyencse17](https://github.com/lamnguyencse17)
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+See also the list of [contributors](https://github.com/Foodgether/foodgether/graphs/contributors) who participated in this project.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## Contacts
+- For urgent contact, please message me on [Facebook](https://www.facebook.com/zodiac3011/)
+- For collaboration, please send an email to [nguyenquanglam3008@gmail.com](mailto:nguyenquanglam3008@gmail.com)
