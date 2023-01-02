@@ -5,13 +5,12 @@
  */
 !process.env.SKIP_ENV_VALIDATION && (await import("./src/env/server.mjs"));
 
+import i18nConfig from "./next-i18next.config.js";
+
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
   swcMinify: true,
-  i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
-  },
+  i18n: i18nConfig.i18n,
 };
 export default config;

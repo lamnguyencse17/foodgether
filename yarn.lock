@@ -55,7 +55,7 @@
     core-js-pure "^3.25.1"
     regenerator-runtime "^0.13.11"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.20.6":
   version "7.20.7"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.20.7.tgz#fcb41a5a70550e04a7b708037c7c32f7f356d8fd"
   integrity sha512-UF0tvkUtxwAgZ5W/KrkHf0Rn0fdnLDU9ScxBrEVNUprE/MzirjK4MJUX1/BVDv00Sv8cljtukVK1aky++X1SjQ==
@@ -1259,6 +1259,14 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/hoist-non-react-statics@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.npmjs.org/@types/hoist-non-react-statics/-/hoist-non-react-statics-3.3.1.tgz#1124aafe5118cb591977aeb1ceaaed1070eb039f"
+  integrity sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==
+  dependencies:
+    "@types/react" "*"
+    hoist-non-react-statics "^3.3.0"
+
 "@types/json-schema@^7.0.9":
   version "7.0.11"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
@@ -1851,6 +1859,11 @@ core-js-pure@^3.25.1:
   version "3.27.1"
   resolved "https://registry.npmjs.org/core-js-pure/-/core-js-pure-3.27.1.tgz#ede4a6b8440585c7190062757069c01d37a19dca"
   integrity sha512-BS2NHgwwUppfeoqOXqi08mUqS5FiZpuRuJJpKsaME7kJz0xxuk0xkhDdfMIlP/zLa80krBqss1LtD7f889heAw==
+
+core-js@^3:
+  version "3.27.1"
+  resolved "https://registry.npmjs.org/core-js/-/core-js-3.27.1.tgz#23cc909b315a6bb4e418bf40a52758af2103ba46"
+  integrity sha512-GutwJLBChfGCpwwhbYoqfv03LAfmiz7e7D/BNxzeMxwQf10GRSzqiOjx7AmtEk+heiD/JWmBuyBPgFtx0Sg1ww==
 
 cors@^2.8.5:
   version "2.8.5"
@@ -2742,12 +2755,19 @@ hey-listen@^1.0.8:
   resolved "https://registry.npmjs.org/hey-listen/-/hey-listen-1.0.8.tgz#8e59561ff724908de1aa924ed6ecc84a56a9aa68"
   integrity sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==
 
-hoist-non-react-statics@^3.3.1:
+hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
   integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
   dependencies:
     react-is "^16.7.0"
+
+html-parse-stringify@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/html-parse-stringify/-/html-parse-stringify-3.0.1.tgz#dfc1017347ce9f77c8141a507f233040c59c55d2"
+  integrity sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==
+  dependencies:
+    void-elements "3.1.0"
 
 http-errors@2.0.0:
   version "2.0.0"
@@ -2767,6 +2787,18 @@ https-proxy-agent@5.0.1:
   dependencies:
     agent-base "6"
     debug "4"
+
+i18next-fs-backend@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/i18next-fs-backend/-/i18next-fs-backend-2.1.1.tgz#07c6393be856c5a398e3dfc1257bf8439841cd89"
+  integrity sha512-FTnj+UmNgT3YRml5ruRv0jMZDG7odOL/OP5PF5mOqvXud2vHrPOOs68Zdk6iqzL47cnnM0ZVkK2BAvpFeDJToA==
+
+i18next@^22.4.6:
+  version "22.4.6"
+  resolved "https://registry.npmjs.org/i18next/-/i18next-22.4.6.tgz#876352c3ba81bdfedc38eeda124e2bbd05f46988"
+  integrity sha512-9Tm1ezxWyzV+306CIDMBbYBitC1jedQyYuuLtIv7oxjp2ohh8eyxP9xytIf+2bbQfhH784IQKPSYp+Zq9+YSbw==
+  dependencies:
+    "@babel/runtime" "^7.20.6"
 
 iconv-lite@0.4.24:
   version "0.4.24"
@@ -3215,6 +3247,17 @@ next-auth@^4.18.3:
     preact-render-to-string "^5.1.19"
     uuid "^8.3.2"
 
+next-i18next@^13.0.2:
+  version "13.0.2"
+  resolved "https://registry.npmjs.org/next-i18next/-/next-i18next-13.0.2.tgz#0b865425e549fe58c81466ea84d4b73f07b3d5e5"
+  integrity sha512-aUHyKT2kztMgEP44zDB5KoW8XZUQawIdOYWXcrMH6lxAcS0kBsKX0uKMzGS5XlgLW88gvOVc3D7NdfCznLgyyg==
+  dependencies:
+    "@babel/runtime" "^7.20.6"
+    "@types/hoist-non-react-statics" "^3.3.1"
+    core-js "^3"
+    hoist-non-react-statics "^3.3.2"
+    i18next-fs-backend "^2.1.0"
+
 next@13.1.1:
   version "13.1.1"
   resolved "https://registry.npmjs.org/next/-/next-13.1.1.tgz#42b825f650410649aff1017d203a088d77c80b5b"
@@ -3654,6 +3697,14 @@ react-hook-form@^7.41.3:
   version "7.41.3"
   resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.41.3.tgz#1b85e95e70cb743d41cd9230ea2df71359d00151"
   integrity sha512-5QNTmqJtDb88WV5n41b6+AmcDMVyaJ3tccPgHAgS215w3jZ3bmJhDO27kNTr8u4YHNYXmS7p1/4/KachBAlUtw==
+
+react-i18next@^12.1.1:
+  version "12.1.1"
+  resolved "https://registry.npmjs.org/react-i18next/-/react-i18next-12.1.1.tgz#2626cdbfe6bcb76ef833861c0184a5c4e5e3c089"
+  integrity sha512-mFdieOI0LDy84q3JuZU6Aou1DoWW2fhapcTGeBS8+vWSJuViuoCLQAMYSb0QoHhXS8B0WKUOPpx4cffAP7r/aA==
+  dependencies:
+    "@babel/runtime" "^7.14.5"
+    html-parse-stringify "^3.0.1"
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
@@ -4295,6 +4346,11 @@ vary@^1, vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
+
+void-elements@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/void-elements/-/void-elements-3.1.0.tgz#614f7fbf8d801f0bb5f0661f5b2f5785750e4f09"
+  integrity sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

@@ -16,12 +16,23 @@ import {
 } from "../server/schemas/restaurant";
 import { trpc } from "../utils/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isEmpty } from "radash";
 import { useRouter } from "next/router";
 import { env } from "../env/client.mjs";
 import { AggregatedRestaurant } from "../types/restaurant";
+import { useTranslation } from "next-i18next";
+
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+}
 
 const Home: NextPage = () => {
+  const { t } = useTranslation("common");
   const router = useRouter();
   const [findRestaurant, setFindRestaurant] = useState(false);
   const {
@@ -84,7 +95,7 @@ const Home: NextPage = () => {
             <Box display="flex" flexDirection="row">
               <Input
                 id="url"
-                placeholder="Your Shopee Food URL"
+                placeholder={t("index_page.url_input_placeholder") || ""}
                 {...register("url")}
                 isInvalid={!!errors["url"]?.message}
                 disabled={doesRestaurantExistQuery.isFetching}
@@ -93,16 +104,13 @@ const Home: NextPage = () => {
                 {errors.url && errors.url.message}
               </FormErrorMessage>
               <Button isLoading={isSubmitting} type="submit">
-                Go
+                {t("index_page.start_button")}
               </Button>
             </Box>
           </FormControl>
         </form>
         {doesRestaurantAvailable && (
-          <Text>
-            Oof. We don&apos;t have this menu at table yet. A servant is
-            bringing it to you soon.
-          </Text>
+          <Text>{t("index_page.waiting_for_scraper")}</Text>
         )}
       </main>
     </>

@@ -1,0 +1,11 @@
+{
+  "index_page": {
+    "waiting_for_scraper": "Menu hiện tại không có sẵn. Chúng tôi sẽ mang menu đến nhanh nhất có thể!",
+    "url_input_placeholder": "Đường dẫn Shopee Food ở đây...",
+    "start_button": "Bắt đầu"
+  },
+  "navbar": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất"
+  }
+}

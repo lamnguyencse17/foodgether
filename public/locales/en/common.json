@@ -1,0 +1,11 @@
+{
+  "index_page": {
+    "waiting_for_scraper": "Oof. We don't have this menu at table yet. A servant is bringing it to you soon.",
+    "url_input_placeholder": "Your Shopee Food URL goes here...",
+    "start_button": "Go"
+  },
+  "navbar": {
+    "login": "Login",
+    "logout": "Logout"
+  }
+}

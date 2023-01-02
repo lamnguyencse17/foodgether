@@ -1,5 +1,6 @@
 import { Box, Container } from "@chakra-ui/react";
 import { NextComponentType, NextPageContext } from "next";
+import { appWithTranslation } from "next-i18next";
 import Head from "next/head";
 import { FunctionComponent } from "react";
 import useHandleAuthenticateUser from "../../hooks/useGetUser";

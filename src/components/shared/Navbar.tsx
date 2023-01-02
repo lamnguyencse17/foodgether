@@ -1,8 +1,10 @@
 import { Box, Button, Text } from "@chakra-ui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import { useTranslation } from "next-i18next";
 
 const Navbar = () => {
+  const { t } = useTranslation("common");
   const { data: sessionData } = useSession();
   return (
     <Box
@@ -19,7 +21,7 @@ const Navbar = () => {
       </Box>
       <Box>
         <Button onClick={sessionData ? () => signOut() : () => signIn()}>
-          {sessionData ? "logout" : "login"}
+          {sessionData ? t("navbar.logout") : t("navbar.login")}
         </Button>
       </Box>
     </Box>
