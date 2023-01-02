@@ -7,12 +7,13 @@ import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
 
 export async function getStaticPaths() {
-  const ids =
+  const idObjectList =
     (await prisma.restaurant.findMany({
       select: { id: true },
     })) || [];
+
   return {
-    paths: ids?.map((id) => ({ params: { id: id.toString() } })),
+    paths: idObjectList.map(({ id }) => ({ params: { id: id.toString() } })),
     fallback: true,
   };
 }
