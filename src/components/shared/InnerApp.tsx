@@ -24,7 +24,7 @@ const InnerApp: FunctionComponent<InnerAppProps> = ({
       </Head>
       <Box width="100%" height="100%">
         <Navbar />
-        <Container maxW="container.lg">
+        <Container maxW="container.xl">
           <Component {...pageProps} />
         </Container>
       </Box>

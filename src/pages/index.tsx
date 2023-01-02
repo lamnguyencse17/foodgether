@@ -17,8 +17,6 @@ import {
 import { trpc } from "../utils/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { env } from "../env/client.mjs";
-import { AggregatedRestaurant } from "../types/restaurant";
 import { useTranslation } from "next-i18next";
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -44,30 +42,21 @@ const Home: NextPage = () => {
     resolver: zodResolver(doesRestaurantExistFromUrlSchema),
   });
 
+  const restaurant = trpc.restaurant.fetchRestaurantFromUrl.useQuery(
+    getValues(),
+    {
+      enabled: findRestaurant,
+      onSuccess: (payload) => {
+        router.push(`/restaurant/${payload.id}`);
+      },
+    }
+  );
+
   const doesRestaurantExistQuery =
     trpc.restaurant.doesRestaurantExistFromUrl.useQuery(getValues(), {
       enabled: findRestaurant,
       onSettled: () => {
         setFindRestaurant(false);
-      },
-      onSuccess: async (payload) => {
-        if (!payload) {
-          const restaurantResponse = await fetch(
-            `${env.NEXT_PUBLIC_SCRAPER_URL}/restaurants`,
-            {
-              method: "POST",
-              body: JSON.stringify(getValues()),
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-          const fetchedRestaurant =
-            (await restaurantResponse.json()) as AggregatedRestaurant;
-          router.push(`/restaurant/${fetchedRestaurant?.id}`);
-          return;
-        }
-        router.push(`/restaurant/${payload.id}`);
       },
     });
 

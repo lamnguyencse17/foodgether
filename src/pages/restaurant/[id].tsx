@@ -5,6 +5,7 @@ import { prisma } from "../../server/db/client";
 import { SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
+import { useEffect } from "react";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -24,10 +25,10 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
   };
 };
 
-export async function getStaticProps({
+export const getStaticProps = async ({
   locale,
   params: { id },
-}: GetRestaurantServerParams) {
+}: GetRestaurantServerParams) => {
   const restaurant = await prisma.restaurant.findUnique({
     where: {
       id: parseInt(id),
@@ -48,7 +49,7 @@ export async function getStaticProps({
       ...(await serverSideTranslations(locale, ["common"])),
     },
   };
-}
+};
 
 type RestaurantPageProps = {
   restaurant: AggregatedRestaurantWithStringDate;
@@ -57,6 +58,8 @@ type RestaurantPageProps = {
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const router = useRouter();
   const { id } = router.query;
+
+  useEffect(() => {}, []);
 
   return <>{id}</>;
 };
