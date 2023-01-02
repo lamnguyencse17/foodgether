@@ -7,5 +7,13 @@
   "navbar": {
     "login": "Login",
     "logout": "Logout"
+  },
+  "error": {
+    "try_again": "Please try again later",
+    "SP_01": "We are currently experiencing issues getting info from URL. ",
+    "SP_02": "We are currently experiencing issues getting restaurant info.",
+    "SP_03": "We are currently experiencing issues getting restaurant's menu.",
+    "R_01": "We are currently experiencing issues processing restaurant data.",
+    "M_01": "We are currently experiencing issues processing menu data."
   }
 }

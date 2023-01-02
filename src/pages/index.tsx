@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import useStore from "../hooks/store";
 
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
@@ -32,6 +33,7 @@ export async function getStaticProps({ locale }: { locale: string }) {
 const Home: NextPage = () => {
   const { t } = useTranslation("common");
   const router = useRouter();
+  const setToast = useStore((state) => state.toast.setToast);
   const [findRestaurant, setFindRestaurant] = useState(false);
   const {
     register,
@@ -42,15 +44,18 @@ const Home: NextPage = () => {
     resolver: zodResolver(doesRestaurantExistFromUrlSchema),
   });
 
-  const restaurant = trpc.restaurant.fetchRestaurantFromUrl.useQuery(
-    getValues(),
-    {
-      enabled: findRestaurant,
-      onSuccess: (payload) => {
-        router.push(`/restaurant/${payload.id}`);
-      },
-    }
-  );
+  trpc.restaurant.fetchRestaurantFromUrl.useQuery(getValues(), {
+    enabled: findRestaurant,
+    onSuccess: (payload) => {
+      router.push(`/restaurant/${payload.id}`);
+    },
+    onError: (err) => {
+      setToast("error", {
+        title: t("error.try_again") || "",
+        description: t(`error.${err.message}`) || "",
+      });
+    },
+  });
 
   const doesRestaurantExistQuery =
     trpc.restaurant.doesRestaurantExistFromUrl.useQuery(getValues(), {
@@ -63,6 +68,7 @@ const Home: NextPage = () => {
   const onSubmit = async () => {
     setFindRestaurant(true);
   };
+
   const doesRestaurantAvailable =
     doesRestaurantExistQuery.isFetched && !doesRestaurantExistQuery.data;
 

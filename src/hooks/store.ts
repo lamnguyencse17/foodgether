@@ -4,12 +4,24 @@ import { devtools } from "zustand/middleware";
 import produce from "immer";
 
 type SessionUser = Session["user"];
+export type ToastKeyParam = "info" | "warning" | "success" | "error";
+type ToastValueParams = {
+  title?: string;
+  description?: string;
+};
 
 export type UseStoreType = {
   user: {
     data?: SessionUser;
     setUser: (user: SessionUser) => void;
     resetUser: () => void;
+  };
+  toast: {
+    info?: ToastValueParams;
+    warning?: ToastValueParams;
+    success?: ToastValueParams;
+    error?: ToastValueParams;
+    setToast: (key: ToastKeyParam, value?: ToastValueParams) => void;
   };
 };
 
@@ -32,6 +44,16 @@ const useStore = create<UseStoreType>()(
           }),
           false,
           "resetUser"
+        ),
+    },
+    toast: {
+      setToast: (key: ToastKeyParam, value?: ToastValueParams) =>
+        set(
+          produce((state) => {
+            state.toast[key] = value;
+          }),
+          false,
+          "setToast"
         ),
     },
   }))

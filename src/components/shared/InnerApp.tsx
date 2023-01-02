@@ -1,8 +1,8 @@
 import { Box, Container } from "@chakra-ui/react";
 import { NextComponentType, NextPageContext } from "next";
-import { appWithTranslation } from "next-i18next";
 import Head from "next/head";
 import { FunctionComponent } from "react";
+import { useDisplayToast } from "../../hooks/useDisplayToast";
 import useHandleAuthenticateUser from "../../hooks/useGetUser";
 import Favicon from "./Favicon";
 import Navbar from "./Navbar";
@@ -17,6 +17,7 @@ const InnerApp: FunctionComponent<InnerAppProps> = ({
   pageProps,
 }) => {
   useHandleAuthenticateUser();
+  useDisplayToast();
   return (
     <>
       <Head>

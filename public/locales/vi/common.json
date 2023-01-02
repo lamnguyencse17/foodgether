@@ -7,5 +7,13 @@
   "navbar": {
     "login": "Đăng nhập",
     "logout": "Đăng xuất"
+  },
+  "error": {
+    "try_again": "Vui lòng thử lại sau",
+    "SP_01": "Hiện tại chúng tôi không thể tìm thông tin từ URL này.",
+    "SP_02": "Hiện tại chúng tôi không thể tìm thông tin nhà hàng này.",
+    "SP_03": "Hiện tại chúng tôi không thể tìm thông tin menu của nhà hàng này.",
+    "R_01": "Hiện tại chúng tôi không thể xử lý thông tin nhà hàng này.",
+    "M_01": "Hiện tại chúng tôi không thể xử lý thông tin menu của nhà hàng này."
   }
 }
