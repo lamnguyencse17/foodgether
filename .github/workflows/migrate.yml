@@ -15,6 +15,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
+          cache: 'yarn'
       - run: yarn
       - name: Masking PRIVATE_URL value
         run: echo "::add-mask::$PRIVATE_URL"
