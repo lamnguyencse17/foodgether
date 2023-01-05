@@ -14,6 +14,7 @@ export const upsertMenu = async (menu: ShopeeMenu[], restaurantId: number) => {
 
   await prisma.dish.createMany({
     data: dishes.map((dish) => ({
+      id: dish.id,
       name: dish.name,
       description: dish.description,
       isAvailable: dish.is_available,
