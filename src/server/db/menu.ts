@@ -4,10 +4,16 @@ import { Prisma } from "@prisma/client";
 import { ShopeeMenu } from "../../types/shopee";
 
 export const upsertMenu = async (menu: ShopeeMenu[], restaurantId: number) => {
+  await prisma.dishTypes.deleteMany({
+    where: {
+      restaurantId,
+    },
+  });
   const allDishes = menu.flatMap((dishType) => dishType.dishes);
   const dishes = unique(allDishes, (dish) => dish.id);
-  const createDishPromises = dishes.map((dish) => {
-    const upsertData = {
+
+  await prisma.dish.createMany({
+    data: dishes.map((dish) => ({
       name: dish.name,
       description: dish.description,
       isAvailable: dish.is_available,
@@ -29,54 +35,48 @@ export const upsertMenu = async (menu: ShopeeMenu[], restaurantId: number) => {
             value: dish.discount_price.value,
             unit: dish.discount_price.unit,
           },
-    };
-    return prisma.dish.upsert({
-      where: {
-        id: dish.id,
-      },
-      create: {
-        id: dish.id,
-        ...upsertData,
-      },
-      update: upsertData,
-    });
+    })),
   });
-  const createdDish = await Promise.all(createDishPromises);
-  await Promise.all(
-    menu.map((dishType) => {
-      const upsertData = {
-        name: dishType.dish_type_name,
-        dishes: {
-          connect: createdDish.map((dish) => ({ id: dish.id })),
-        },
-        restaurant: {
-          connect: {
-            id: restaurantId,
-          },
-        },
-      };
-      return prisma.dishTypes.upsert({
-        where: {
-          id: dishType.dish_type_id,
-        },
-        create: {
-          id: dishType.dish_type_id,
-          ...upsertData,
-        },
-        update: upsertData,
-      });
-    })
-  );
-  return prisma.restaurant.findUnique({
+
+  await prisma.dishTypes.createMany({
+    data: menu.map((dishType) => ({
+      id: dishType.dish_type_id,
+      name: dishType.dish_type_name,
+      restaurantId,
+    })),
+  });
+
+  await prisma.dishTypeAndDishes.createMany({
+    data: menu.flatMap((dishType) => {
+      return dishType.dishes.map((dish) => ({
+        dishId: dish.id,
+        dishTypeId: dishType.dish_type_id,
+      }));
+    }),
+  });
+
+  const rawRestaurant = await prisma.restaurant.findUnique({
     where: {
       id: restaurantId,
     },
     include: {
       dishTypes: {
         include: {
-          dishes: true,
+          dishTypeAndDishes: {
+            include: {
+              dish: true,
+            },
+          },
         },
       },
     },
   });
+
+  return {
+    ...rawRestaurant,
+    dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
+      ...dishType,
+      dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
+    })),
+  };
 };

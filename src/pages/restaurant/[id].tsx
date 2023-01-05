@@ -5,11 +5,24 @@ import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
-import { Box } from "@chakra-ui/react";
-import { get } from "radash";
+import {
+  Box,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  Heading,
+  HStack,
+  StackDivider,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { get, isEmpty } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
 import { trpc } from "../../utils/trpc";
+import { useTranslation } from "next-i18next";
+import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -33,18 +46,30 @@ export const getStaticProps = async ({
   locale,
   params: { id },
 }: GetRestaurantServerParams) => {
-  const restaurant = await prisma.restaurant.findUnique({
+  const rawRestaurant = await prisma.restaurant.findUnique({
     where: {
       id: parseInt(id),
     },
     include: {
       dishTypes: {
         include: {
-          dishes: true,
+          dishTypeAndDishes: {
+            include: {
+              dish: true,
+            },
+          },
         },
       },
     },
   });
+
+  const restaurant = {
+    ...rawRestaurant,
+    dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
+      ...dishType,
+      dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
+    })),
+  };
 
   return {
     props: {
@@ -61,17 +86,20 @@ type RestaurantPageProps = {
 };
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
+  const { t } = useTranslation();
   const router = useRouter();
+  const restaurantId = router.query.id || router.pathname.split("/").pop();
   const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
     {
-      id: parseInt(router.query.id as unknown as string),
+      id: parseInt(restaurantId as unknown as string),
     },
     {
-      enabled: !restaurant,
+      enabled: isEmpty(restaurant) && !isNaN(restaurantId as unknown as number),
       refetchOnWindowFocus: false,
       retryOnMount: false,
     }
   );
+
   const confirmedRestaurant = (restaurant ||
     getRestaurantQuery.data ||
     {}) as NonNullable<AggregatedRestaurantWithStringDate>;
@@ -80,6 +108,12 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
   const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
 
+  const dishTypes = get(
+    confirmedRestaurant,
+    "dishTypes",
+    []
+  ) as AggregatedDishTypesWithStringDate[];
+
   return (
     <>
       <Head>
@@ -87,13 +121,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
         <meta name="description" content={name} />
       </Head>
       <main>
-        <Box
-          maxH="xs"
-          display="flex"
-          flexDirection={["column", "row", "row"]}
-          gap={10}
-          padding={4}
-        >
+        <VStack width="100%">
           <RestaurantHeader
             photo={restaurantHeaderImage}
             name={name}
@@ -101,7 +129,59 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
             priceRange={priceRange}
             isAvailable={isAvailable}
           />
-        </Box>
+          <Box width="full" mt={1} paddingX={4}>
+            <Divider orientation="horizontal" />
+          </Box>
+          <HStack gap={5} width="full" paddingX={4} alignItems="flex-start">
+            <Box width="3xs">
+              <Card>
+                <CardHeader>
+                  <Heading size="md">{t("restaurant_page.menu")}</Heading>
+                </CardHeader>
+                <CardBody>
+                  <VStack divider={<StackDivider />} spacing="4">
+                    {dishTypes.map((dishType) => (
+                      <Box key={dishType.id}>
+                        <Heading size="xs" textTransform="uppercase">
+                          {dishType.name}
+                        </Heading>
+                      </Box>
+                    ))}
+                  </VStack>
+                </CardBody>
+              </Card>
+            </Box>
+
+            <Box flex={1}>
+              <Card>
+                <CardBody>
+                  <VStack divider={<StackDivider />} spacing="4">
+                    {dishTypes.map((dishType) => (
+                      <Box key={dishType.id} width="full">
+                        <Heading size="xs" textTransform="uppercase">
+                          {dishType.name}
+                        </Heading>
+                        <VStack divider={<StackDivider />} spacing="2">
+                          {dishType.dishes.map((dish) => (
+                            <Card key={dish.id} width="full">
+                              <CardBody>
+                                <HStack>
+                                  <Text pt="2" fontSize="sm">
+                                    {dish.name}
+                                  </Text>
+                                </HStack>
+                              </CardBody>
+                            </Card>
+                          ))}
+                        </VStack>
+                      </Box>
+                    ))}
+                  </VStack>
+                </CardBody>
+              </Card>
+            </Box>
+          </HStack>
+        </VStack>
       </main>
     </>
   );

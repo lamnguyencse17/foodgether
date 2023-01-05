@@ -24,7 +24,13 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <>
+    <Box
+      maxH="xs"
+      display="flex"
+      flexDirection={["column", "row", "row"]}
+      gap={10}
+      padding={4}
+    >
       <Box maxH={["100%", "2xs", "3xs"]} maxW={["100%", "sm", "md"]}>
         {photo && (
           <Image
@@ -71,7 +77,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
           </HStack>
         )}
       </VStack>
-    </>
+    </Box>
   );
 };
 

@@ -7,7 +7,8 @@
   "restaurant_page": {
     "cover_photo": "Ảnh bìa {{name}}",
     "is_closed": "Đóng cửa",
-    "is_open": "Mở cửa"
+    "is_open": "Mở cửa",
+    "menu": "Thực đơn"
   },
   "navbar": {
     "login": "Đăng nhập",

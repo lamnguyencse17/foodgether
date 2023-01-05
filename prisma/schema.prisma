@@ -81,12 +81,25 @@ model DishTypes {
   name         String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
-  dishes       Dish[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  dishTypeAndDishes DishTypeAndDishes[]
+
   @@unique([id(sort: Desc)])
+}
+
+model DishTypeAndDishes {
+  id Int @id @default(autoincrement())
+
+  dish   Dish @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  dishId Int
+
+  dishType   DishTypes @relation(fields: [dishTypeId], references: [id], onDelete: Cascade)
+  dishTypeId Int
+
+  @@unique([id, dishId])
 }
 
 model Dish {
@@ -96,15 +109,13 @@ model Dish {
   isAvailable Boolean @default(true)
   isActive    Boolean @default(true)
 
-  dishTypes   DishTypes? @relation(fields: [dishTypesId], references: [id], onDelete: Cascade)
-  dishTypesId Int?
-
   price Json
 
   discountPrice Json
 
   photos Json
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  dishTypeAndDishes DishTypeAndDishes[]
 }
