@@ -11,6 +11,11 @@ export const upsertMenu = async (menu: ShopeeMenu[], restaurantId: number) => {
   });
   const allDishes = menu.flatMap((dishType) => dishType.dishes);
   const dishes = unique(allDishes, (dish) => dish.id);
+  await prisma.dish.deleteMany({
+    where: {
+      restaurantId,
+    },
+  });
 
   await prisma.dish.createMany({
     data: dishes.map((dish) => ({
@@ -36,6 +41,7 @@ export const upsertMenu = async (menu: ShopeeMenu[], restaurantId: number) => {
             value: dish.discount_price.value,
             unit: dish.discount_price.unit,
           },
+      restaurantId,
     })),
   });
 

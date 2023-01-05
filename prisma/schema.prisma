@@ -72,6 +72,7 @@ model Restaurant {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  dish      Dish[]
 
   @@index([url], name: "url")
 }
@@ -118,4 +119,7 @@ model Dish {
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   dishTypeAndDishes DishTypeAndDishes[]
+
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int?
 }
