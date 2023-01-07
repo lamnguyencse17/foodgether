@@ -120,6 +120,40 @@ model Dish {
   updatedAt         DateTime            @updatedAt
   dishTypeAndDishes DishTypeAndDishes[]
 
+  options Option[]
+
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int?
+}
+
+model Option {
+  id          Int                       @id @default(autoincrement())
+  isMandatory Boolean                   @default(false)
+  name        String
+  ntop        String
+  items       OptionItemConfiguration[]
+  dish        Dish?                     @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  dishId      Int?
+}
+
+model OptionItemConfiguration {
+  id          Int          @id @default(autoincrement())
+  minQuantity Int
+  maxQuantity Int
+  items       OptionItem[]
+  option      Option?      @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  optionId    Int?
+}
+
+model OptionItem {
+  id                        Int                      @id @default(autoincrement())
+  name                      String
+  weight                    Int?
+  price                     Json
+  ntopPrice                 Json
+  isDefault                 Boolean                  @default(false)
+  maxQuantity               Int?
+  topOrder                  Int                      @default(0)
+  optionItemConfiguration   OptionItemConfiguration? @relation(fields: [optionItemConfigurationId], references: [id], onDelete: Cascade)
+  optionItemConfigurationId Int?
 }
