@@ -18,7 +18,7 @@ type RestaurantMenuItemProps = {
 const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   dish,
 }) => {
-  const photo = dish.photos[dish.photos.length - 1];
+  const photo = dish.photos[0];
 
   return (
     <Card width="full" variant="outline" direction="row">
