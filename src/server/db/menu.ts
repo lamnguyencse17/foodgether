@@ -4,6 +4,11 @@ import { Prisma } from "@prisma/client";
 import { ShopeeMenu } from "../../types/shopee";
 
 export const upsertMenu = async (menu: ShopeeMenu[], restaurantId: number) => {
+  await prisma.dish.deleteMany({
+    where: {
+      restaurantId,
+    },
+  });
   await prisma.dishTypes.deleteMany({
     where: {
       restaurantId,
