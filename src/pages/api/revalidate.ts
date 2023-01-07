@@ -7,11 +7,11 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    console.log(req.body.url);
+    console.log("Revalidate URL on functions: ", req.body.url);
     await res.revalidate(req.body.url as string);
     return res.json({ revalidated: true });
   } catch (err) {
-    console.log(err);
+    console.log("Errow while revalidating: ", err);
     // If there was an error, Next.js will continue
     // to show the last successfully generated page
     return res.status(500).send("Error revalidating");
