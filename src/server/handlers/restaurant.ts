@@ -78,9 +78,18 @@ export const fetchRestaurantFromUrl = publicProcedure
         restaurantId
       );
       const response = await fetch(
-        `${env.NEXTAUTH_URL}/api/revalidate?secret=${env.REVALIDATION_TOKEN}&url=/restaurant/${restaurantId}`
+        `${env.NEXTAUTH_URL}/api/revalidate?secret=${env.REVALIDATION_TOKEN}`,
+        {
+          method: "POST",
+          body: JSON.stringify({ url: `/restaurant/${restaurantId}` }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      console.log(await response.json());
+      if (response.status !== 200) {
+        console.log(response);
+      }
       return { ...completedRestaurant };
     } catch (err) {
       console.error(err);
