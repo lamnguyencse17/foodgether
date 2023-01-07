@@ -79,11 +79,11 @@ export const fetchRestaurantFromUrl = publicProcedure
       );
       console.log(
         "Requesting revalidation",
-        `${env.NEXTAUTH_URL}/api/revalidate?secret=${env.REVALIDATION_TOKEN}`
+        `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`
       );
       console.log("Revalidating", `/restaurant/${restaurantId}`);
       const response = await fetch(
-        `${env.NEXTAUTH_URL}/api/revalidate?secret=${env.REVALIDATION_TOKEN}`,
+        `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
         {
           method: "POST",
           body: JSON.stringify({ url: `/restaurant/${restaurantId}` }),

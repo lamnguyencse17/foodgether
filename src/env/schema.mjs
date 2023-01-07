@@ -23,6 +23,7 @@ export const serverSchema = z.object({
   AUTH0_CLIENT_SECRET: z.string(),
   AUTH0_ISSUER: z.string().url(),
   REVALIDATION_TOKEN: z.string(),
+  REVALIDATE_URL: z.string().url(),
 });
 
 /**
