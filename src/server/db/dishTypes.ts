@@ -11,7 +11,7 @@ export const upsertDishTypes = async (
     },
   });
 
-  return prisma.dishTypes.createMany({
+  await prisma.dishTypes.createMany({
     data: menu.map((dishType) => ({
       id: dishType.dish_type_id,
       name: dishType.dish_type_name,
