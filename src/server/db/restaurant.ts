@@ -31,3 +31,30 @@ export const upsertRestaurant = async (restaurant: ShopeeRestaurant) => {
     update: upsertData,
   });
 };
+
+export const getAggregatedRestaurant = async (restaurantId: number) => {
+  const rawRestaurant = await prisma.restaurant.findUnique({
+    where: {
+      id: restaurantId,
+    },
+    include: {
+      dishTypes: {
+        include: {
+          dishTypeAndDishes: {
+            include: {
+              dish: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return {
+    ...rawRestaurant,
+    dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
+      ...dishType,
+      dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
+    })),
+  };
+};

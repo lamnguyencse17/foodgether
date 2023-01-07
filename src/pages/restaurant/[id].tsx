@@ -13,6 +13,12 @@ import { trpc } from "../../utils/trpc";
 import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
 import RestaurantMenuSection from "../../components/restaurant/RestaurantMenuSection";
 import RestaurantMenu from "../../components/restaurant/RestaurantMenu";
+import {
+  fetchShopeeMenu,
+  fetchShopeeRestaurantFromId,
+} from "../../server/service/shopee";
+import { upsertRestaurant } from "../../server/db/restaurant";
+import { updateRestaurantMenu } from "../../server/handlers/restaurant";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -52,6 +58,26 @@ export const getStaticProps = async ({
       },
     },
   });
+
+  if (!rawRestaurant) {
+    const restaurantResponse = await fetchShopeeRestaurantFromId(parseInt(id));
+    await upsertRestaurant(restaurantResponse.reply.delivery_detail);
+    const menu = await fetchShopeeMenu(
+      restaurantResponse.reply.delivery_detail.delivery_id
+    );
+    const completedRestaurant = await updateRestaurantMenu(
+      parseInt(id),
+      menu.reply.menu_infos
+    );
+    return {
+      props: {
+        restaurant: convertObjectWithDates(
+          completedRestaurant
+        ) as AggregatedRestaurantWithStringDate,
+        ...(await serverSideTranslations(locale, ["common"])),
+      },
+    };
+  }
 
   const restaurant = {
     ...rawRestaurant,

@@ -1,9 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import camelcaseKeys from "camelcase-keys";
 import { env } from "../../env/server.mjs";
+import { ShopeeMenu } from "../../types/shopee";
 import { errors } from "../common/constants";
-import { upsertMenu } from "../db/menu";
-import { upsertRestaurant } from "../db/restaurant";
+import { upsertDish } from "../db/dish";
+import { upsertDishTypeAndDishes } from "../db/dishTypeAndDishes";
+import { upsertDishTypes } from "../db/dishTypes";
+import { getAggregatedRestaurant, upsertRestaurant } from "../db/restaurant";
 import {
   doesRestaurantExistFromUrlSchema,
   fetchRestaurantFromIdSchema,
@@ -16,6 +19,16 @@ import {
   fetchShopeeRestaurantId,
 } from "../service/shopee";
 import { publicProcedure } from "../trpc/trpc";
+
+export const updateRestaurantMenu = async (
+  restaurantId: number,
+  menu: ShopeeMenu[]
+) => {
+  await upsertDish(restaurantId, menu);
+  await upsertDishTypes(restaurantId, menu);
+  await upsertDishTypeAndDishes(menu);
+  return getAggregatedRestaurant(restaurantId);
+};
 
 export const doesRestaurantExistFromUrl = publicProcedure
   .input(doesRestaurantExistFromUrlSchema)
@@ -73,9 +86,9 @@ export const fetchRestaurantFromUrl = publicProcedure
       });
     }
     try {
-      const completedRestaurant = await upsertMenu(
-        menu.reply.menu_infos,
-        restaurantId
+      const completedRestaurant = await updateRestaurantMenu(
+        restaurantId,
+        menu.reply.menu_infos
       );
       const response = await fetch(
         `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
@@ -132,10 +145,23 @@ export const fetchRestaurantFromId = publicProcedure
       });
     }
     try {
-      const completedRestaurant = await upsertMenu(
-        menu.reply.menu_infos,
-        input.id
+      const completedRestaurant = await updateRestaurantMenu(
+        input.id,
+        menu.reply.menu_infos
       );
+      const response = await fetch(
+        `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
+        {
+          method: "POST",
+          body: JSON.stringify({ url: `/restaurant/${input.id}` }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status !== 200) {
+        console.log(response);
+      }
       return { ...completedRestaurant };
     } catch (err) {
       console.error(err);
