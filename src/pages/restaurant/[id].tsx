@@ -93,7 +93,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const confirmedRestaurant = (restaurant ||
     getRestaurantQuery.data ||
     {}) as NonNullable<AggregatedRestaurantWithStringDate>;
-  const { name, address, priceRange, isAvailable } = confirmedRestaurant;
+  const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
 
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
   const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
@@ -118,6 +118,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
             address={address}
             priceRange={priceRange}
             isAvailable={isAvailable}
+            url={url}
           />
           <Box width="full" mt={1} paddingX={4}>
             <Divider orientation="horizontal" />

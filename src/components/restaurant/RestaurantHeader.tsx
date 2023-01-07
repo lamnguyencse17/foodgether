@@ -3,6 +3,8 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { Photo } from "../../types/shared";
 import { useTranslation } from "next-i18next";
+import Link from "next/link";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 type RestaurantHeaderProps = {
   photo?: Photo;
@@ -13,6 +15,7 @@ type RestaurantHeaderProps = {
     minPrice: number;
     maxPrice: number;
   };
+  url: string;
 };
 
 const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
@@ -21,6 +24,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   address = "",
   isAvailable = false,
   priceRange,
+  url = "",
 }) => {
   const { t } = useTranslation("common");
   return (
@@ -49,7 +53,14 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
       </Box>
 
       <VStack flex={1} alignItems="flex-start">
-        <Heading>{name}</Heading>
+        <Heading>
+          <Link href={url} target="_blank">
+            <Box alignItems="center" justifyContent="center">
+              {name} <ExternalLinkIcon pb={1} />
+            </Box>
+          </Link>
+        </Heading>
+
         <Text>{address}</Text>
         <HStack justifyContent="center" alignItems="center">
           <Image
