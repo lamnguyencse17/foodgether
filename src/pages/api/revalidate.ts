@@ -7,7 +7,6 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   try {
-    console.log("Revalidate URL on functions: ", req.body.url);
     await res.revalidate(req.body.url as string);
     return res.json({ revalidated: true });
   } catch (err) {

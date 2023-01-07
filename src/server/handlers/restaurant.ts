@@ -77,11 +77,6 @@ export const fetchRestaurantFromUrl = publicProcedure
         menu.reply.menu_infos,
         restaurantId
       );
-      console.log(
-        "Requesting revalidation",
-        `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`
-      );
-      console.log("Revalidating", `/restaurant/${restaurantId}`);
       const response = await fetch(
         `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
         {
