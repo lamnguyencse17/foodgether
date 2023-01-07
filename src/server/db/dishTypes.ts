@@ -17,5 +17,6 @@ export const upsertDishTypes = async (
       name: dishType.dish_type_name,
       restaurantId,
     })),
+    skipDuplicates: true,
   });
 };
