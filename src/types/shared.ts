@@ -16,3 +16,9 @@ export type Photo = {
   width: number;
   height: number;
 };
+
+export type Price = {
+  text: string;
+  unit: string;
+  value: number;
+};

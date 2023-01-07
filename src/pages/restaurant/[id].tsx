@@ -5,24 +5,14 @@ import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
-import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  Heading,
-  HStack,
-  StackDivider,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Divider, HStack, VStack } from "@chakra-ui/react";
 import { get, isEmpty } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
 import { trpc } from "../../utils/trpc";
-import { useTranslation } from "next-i18next";
 import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
+import RestaurantMenuSection from "../../components/restaurant/RestaurantMenuSection";
+import RestaurantMenu from "../../components/restaurant/RestaurantMenu";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -86,9 +76,9 @@ type RestaurantPageProps = {
 };
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
-  const { t } = useTranslation();
   const router = useRouter();
   const restaurantId = router.query.id || router.pathname.split("/").pop();
+
   const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
     {
       id: parseInt(restaurantId as unknown as string),
@@ -133,53 +123,9 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
             <Divider orientation="horizontal" />
           </Box>
           <HStack gap={5} width="full" paddingX={4} alignItems="flex-start">
-            <Box width="3xs">
-              <Card>
-                <CardHeader>
-                  <Heading size="md">{t("restaurant_page.menu")}</Heading>
-                </CardHeader>
-                <CardBody>
-                  <VStack divider={<StackDivider />} spacing="4">
-                    {dishTypes.map((dishType) => (
-                      <Box key={dishType.id}>
-                        <Heading size="xs" textTransform="uppercase">
-                          {dishType.name}
-                        </Heading>
-                      </Box>
-                    ))}
-                  </VStack>
-                </CardBody>
-              </Card>
-            </Box>
+            <RestaurantMenuSection dishTypes={dishTypes} />
 
-            <Box flex={1}>
-              <Card>
-                <CardBody>
-                  <VStack divider={<StackDivider />} spacing="4">
-                    {dishTypes.map((dishType) => (
-                      <Box key={dishType.id} width="full">
-                        <Heading size="xs" textTransform="uppercase">
-                          {dishType.name}
-                        </Heading>
-                        <VStack divider={<StackDivider />} spacing="2">
-                          {dishType.dishes.map((dish) => (
-                            <Card key={dish.id} width="full">
-                              <CardBody>
-                                <HStack>
-                                  <Text pt="2" fontSize="sm">
-                                    {dish.name}
-                                  </Text>
-                                </HStack>
-                              </CardBody>
-                            </Card>
-                          ))}
-                        </VStack>
-                      </Box>
-                    ))}
-                  </VStack>
-                </CardBody>
-              </Card>
-            </Box>
+            <RestaurantMenu dishTypes={dishTypes} />
           </HStack>
         </VStack>
       </main>
