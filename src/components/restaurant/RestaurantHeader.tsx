@@ -22,7 +22,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   isAvailable = false,
   priceRange,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
   return (
     <Box
       maxH="xs"

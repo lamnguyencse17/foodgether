@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import camelcaseKeys from "camelcase-keys";
+import { env } from "../../env/server.mjs";
 import { errors } from "../common/constants";
 import { upsertMenu } from "../db/menu";
 import { upsertRestaurant } from "../db/restaurant";
@@ -76,6 +77,10 @@ export const fetchRestaurantFromUrl = publicProcedure
         menu.reply.menu_infos,
         restaurantId
       );
+      const response = await fetch(
+        `${env.NEXTAUTH_URL}/api/revalidate?secret=${env.REVALIDATION_TOKEN}&url=/restaurant/${restaurantId}`
+      );
+      console.log(await response.json());
       return { ...completedRestaurant };
     } catch (err) {
       console.error(err);
