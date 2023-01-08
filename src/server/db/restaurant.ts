@@ -46,6 +46,9 @@ export const getAggregatedRestaurant = async (restaurantId: number) => {
             },
           },
         },
+        orderBy: {
+          displayOrder: "asc",
+        },
       },
     },
   });

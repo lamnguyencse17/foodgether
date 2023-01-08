@@ -26,7 +26,7 @@ export const updateRestaurantMenu = async (
 ) => {
   await upsertDish(restaurantId, menu);
   await upsertDishTypes(restaurantId, menu);
-  await upsertDishTypeAndDishes(menu);
+  await upsertDishTypeAndDishes(restaurantId, menu);
   return getAggregatedRestaurant(restaurantId);
 };
 
