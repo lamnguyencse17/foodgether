@@ -5,12 +5,6 @@ export const upsertDishTypes = async (
   restaurantId: number,
   menu: ShopeeMenu[]
 ) => {
-  await prisma.dishTypes.deleteMany({
-    where: {
-      restaurantId,
-    },
-  });
-
   await prisma.dishTypes.createMany({
     data: menu.map((dishType) => ({
       id: dishType.dish_type_id,

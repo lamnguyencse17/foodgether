@@ -20,31 +20,13 @@ export interface ShopeeMenuResponse {
   };
 }
 
-export interface ShopeePrice {
-  text: string;
-  value: number;
-  unit: string;
-}
-
-export interface ShopeeDiscountPrice {
-  text: string;
-  value: number;
-  unit: string;
-}
-
 export interface ShopeePhoto {
   width: number;
   value: string;
   height: number;
 }
 
-export interface ShopeeNtopPrice {
-  text: string;
-  unit: string;
-  value: number;
-}
-
-export interface ShopeePrice2 {
+export interface ShopeePrice {
   text: string;
   unit: string;
   value: number;
@@ -53,11 +35,11 @@ export interface ShopeePrice2 {
 export interface ShopeeItem {
   name: string;
   weight: number;
-  ntop_price: ShopeeNtopPrice;
+  ntop_price: ShopeePrice;
   max_quantity: number;
   is_default: boolean;
   top_order: number;
-  price: ShopeePrice2;
+  price: ShopeePrice;
   id: number;
 }
 
@@ -93,7 +75,7 @@ export interface ShopeeDish {
   name: string;
   price: ShopeePrice;
   is_active: boolean;
-  discount_price: ShopeeDiscountPrice;
+  discount_price: ShopeePrice;
   total_like: string;
   properties: any[];
   photos: ShopeePhoto[];
@@ -130,27 +112,15 @@ export interface ShopeeAvailableTime {
   times: string[];
 }
 
-export interface ShopeeServiceFee {
-  text: string;
-  value: number;
-}
+export interface ShopeeServiceFee extends Omit<ShopeePrice, "unit"> {}
 
 export interface ShopeeFormatText {
   resource_name: string;
   resource_args: string[];
 }
 
-export interface ShopeeAvgPrice {
-  text: string;
+export interface ShopeeAvgPrice extends ShopeePrice {
   format_text: ShopeeFormatText;
-  unit: string;
-  value: number;
-}
-
-export interface ShopeeMinOrderValue {
-  text: string;
-  unit: string;
-  value: number;
 }
 
 export interface ShopeeWeekDay {
@@ -177,18 +147,15 @@ export interface ShopeeOperating {
   text: ShopeeText;
 }
 
-export interface ShopeeText2 {
-  resource_name: string;
+export interface ShopeeTextWithArgs extends ShopeeText {
   resource_args: string[];
 }
 
-export interface ShopeeShippingFee {
-  text: ShopeeText2;
-  value: number;
+export interface ShopeeShippingFee extends Omit<ShopeePrice, "text"> {
+  text: ShopeeTextWithArgs;
   is_increasing: number;
   rate: number;
   minimum_fee: string;
-  unit: string;
 }
 
 export interface ShopeeDelivery {
@@ -198,7 +165,7 @@ export interface ShopeeDelivery {
   prepare_duration: number;
   payment_methods: number[];
   avg_price: ShopeeAvgPrice;
-  min_order_value: ShopeeMinOrderValue;
+  min_order_value: ShopeePrice;
   is_peak_mode: boolean;
   min_charge: string;
   is_open: boolean;
@@ -222,12 +189,6 @@ export interface ShopeePhoto {
 
 export interface ShopeeConfirmMethods {}
 
-export interface ShopeeMinOrderValue2 {
-  text: string;
-  unit: string;
-  value: number;
-}
-
 export interface ShopeePriceRange {
   min_price: number;
   max_price: number;
@@ -239,14 +200,8 @@ export interface ShopeePosition {
   longitude: number;
 }
 
-export interface ShopeePhoto2 {
-  width: number;
-  value: string;
-  height: number;
-}
-
 export interface ShopeeResPhoto {
-  photos: ShopeePhoto2[];
+  photos: ShopeePhoto[];
 }
 
 export interface ShopeeRestaurant {
@@ -288,7 +243,7 @@ export interface ShopeeRestaurant {
   address: string;
   name_en: string;
   is_now_delivery: boolean;
-  min_order_value: ShopeeMinOrderValue2;
+  min_order_value: ShopeePrice;
   root_category_ids: number[];
   campaigns: any[];
   name: string;

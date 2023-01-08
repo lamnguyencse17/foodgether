@@ -1,11 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import camelcaseKeys from "camelcase-keys";
+import { unique } from "radash";
 import { env } from "../../env/server.mjs";
 import { ShopeeMenu } from "../../types/shopee";
 import { errors } from "../common/constants";
 import { upsertDish } from "../db/dish";
 import { upsertDishTypeAndDishes } from "../db/dishTypeAndDishes";
 import { upsertDishTypes } from "../db/dishTypes";
+import { upsertOption } from "../db/option";
+import { upsertOptionItem } from "../db/optionItem";
 import { getAggregatedRestaurant, upsertRestaurant } from "../db/restaurant";
 import {
   doesRestaurantExistFromUrlSchema,
@@ -24,7 +27,25 @@ export const updateRestaurantMenu = async (
   restaurantId: number,
   menu: ShopeeMenu[]
 ) => {
-  await upsertDish(restaurantId, menu);
+  const dishIdList = menu.flatMap((dishType) =>
+    dishType.dishes.map((dish) => dish.id)
+  );
+  const allDishes = menu.flatMap((dishType) => dishType.dishes);
+  const dishList = unique(allDishes, (dish) => dish.id);
+  const optionList = dishList.flatMap((dish) =>
+    dish.options.map((config) => ({ ...config, dishId: dish.id }))
+  );
+  const optionItems = optionList.flatMap((option) =>
+    option.option_items.items.map((item) => ({
+      ...item,
+      dishId: option.dishId,
+      optionId: option.id,
+    }))
+  );
+
+  await upsertDish(restaurantId, dishList);
+  await upsertOption(optionList);
+  await upsertOptionItem(optionItems);
   await upsertDishTypes(restaurantId, menu);
   await upsertDishTypeAndDishes(restaurantId, menu);
   return getAggregatedRestaurant(restaurantId);

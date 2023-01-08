@@ -1,25 +1,14 @@
 import { isEmpty, unique } from "radash";
-import { ShopeeMenu } from "../../types/shopee";
+import { ShopeeDish, ShopeeMenu } from "../../types/shopee";
 import { prisma } from "./client";
 import { Prisma } from "@prisma/client";
 
-export const upsertDish = async (restaurantId: number, menu: ShopeeMenu[]) => {
-  await prisma.dish.deleteMany({
-    where: {
-      restaurantId,
-    },
-  });
-
-  const allDishes = menu.flatMap((dishType) => dishType.dishes);
-  const dishes = unique(allDishes, (dish) => dish.id);
-  await prisma.dish.deleteMany({
-    where: {
-      restaurantId,
-    },
-  });
-
+export const upsertDish = async (
+  restaurantId: number,
+  dishList: ShopeeDish[]
+) => {
   await prisma.dish.createMany({
-    data: dishes.map((dish) => ({
+    data: dishList.map((dish) => ({
       id: dish.id,
       name: dish.name,
       description: dish.description,
