@@ -23,7 +23,6 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
 }) => {
   const router = useRouter();
   const idHash = parseInt(router.asPath.split("#").pop() as string);
-  console.log(idHash);
 
   const { t } = useTranslation("common");
   return (
