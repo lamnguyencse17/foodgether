@@ -2,6 +2,8 @@ import { Box, Button, Text } from "@chakra-ui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useTranslation } from "next-i18next";
+import NextLink from "next/link";
+import { LinkBox, LinkOverlay } from "@chakra-ui/react";
 
 const Navbar = () => {
   const { t } = useTranslation("common");
@@ -15,10 +17,12 @@ const Navbar = () => {
       alignItems="center"
       paddingY={4}
     >
-      <Box display="flex" flexDirection="row" alignItems="center">
-        <Image src="/logo.svg" width="50" height="50" alt="Foodgether logo" />
-        <Text fontSize="3xl">Foodgether</Text>
-      </Box>
+      <LinkBox display="flex" flexDirection="row" alignItems="center">
+        <LinkOverlay display="flex" flexDirection="row" as={NextLink} href="/">
+          <Image src="/logo.svg" width="50" height="50" alt="Foodgether logo" />
+          <Text fontSize="3xl">Foodgether</Text>
+        </LinkOverlay>
+      </LinkBox>
       <Box>
         <Button onClick={sessionData ? () => signOut() : () => signIn()}>
           {sessionData ? t("navbar.logout") : t("navbar.login")}

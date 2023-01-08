@@ -29,7 +29,12 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
           <VStack divider={<StackDivider />} spacing="4">
             {dishTypes.map((dishType) => (
               <Box key={dishType.id} width="full">
-                <Heading size="xs" textTransform="uppercase" mb="3">
+                <Heading
+                  size="xs"
+                  textTransform="uppercase"
+                  mb="3"
+                  id={dishType.id.toString()}
+                >
                   {dishType.name}
                 </Heading>
                 <VStack divider={<StackDivider />} spacing="2">
