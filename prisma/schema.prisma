@@ -73,6 +73,7 @@ model Restaurant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   dish      Dish[]
+  option    Option[]
 
   @@index([url], name: "url")
 }
@@ -131,17 +132,20 @@ model Dish {
 }
 
 model Option {
-  id          Int          @default(autoincrement())
-  isMandatory Boolean      @default(false)
-  name        String
-  ntop        String
-  items       OptionItem[]
-  dish        Dish?        @relation(fields: [dishId], references: [id], onDelete: Cascade)
-  dishId      Int
+  id           Int          @default(autoincrement())
+  isMandatory  Boolean      @default(false)
+  name         String
+  ntop         String
+  items        OptionItem[]
+  dish         Dish?        @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  dishId       Int
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int
+
   minQuantity Int
   maxQuantity Int
 
-  @@id([id, dishId])
+  @@id([id, dishId, restaurantId])
 }
 
 model OptionItem {
@@ -155,8 +159,9 @@ model OptionItem {
   topOrder    Int     @default(0)
   dishId      Int
 
-  option   Option? @relation(fields: [optionId, dishId], references: [id, dishId], onDelete: Cascade)
-  optionId Int?
+  option       Option? @relation(fields: [optionId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
+  optionId     Int?
+  restaurantId Int
 
-  @@id([id, dishId])
+  @@id([id, dishId, restaurantId])
 }

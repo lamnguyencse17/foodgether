@@ -4,6 +4,7 @@ import { ShopeeItem } from "../../types/shopee";
 import { prisma } from "./client";
 
 export const upsertOptionItem = async (
+  restaurantId: number,
   optionItemList: (ShopeeItem & { optionId: number; dishId: number })[]
 ) => {
   const createData = optionItemList.map((optionItem) => ({
@@ -29,6 +30,7 @@ export const upsertOptionItem = async (
     topOrder: optionItem.top_order,
     dishId: optionItem.dishId,
     optionId: optionItem.optionId,
+    restaurantId,
   }));
   await prisma.optionItem.createMany({
     data: createData,

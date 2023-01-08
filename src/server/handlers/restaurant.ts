@@ -42,10 +42,10 @@ export const updateRestaurantMenu = async (
   await Promise.all([
     upsertDish(restaurantId, dishList),
     upsertDishTypes(restaurantId, menu),
-    upsertOption(optionList),
   ]);
   await Promise.all([
-    upsertOptionItem(optionItems),
+    upsertOption(restaurantId, optionList),
+    upsertOptionItem(restaurantId, optionItems),
     upsertDishTypeAndDishes(restaurantId, menu),
   ]);
   return getAggregatedRestaurant(restaurantId);
