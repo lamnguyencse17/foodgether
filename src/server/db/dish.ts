@@ -1,5 +1,5 @@
-import { isEmpty, unique } from "radash";
-import { ShopeeDish, ShopeeMenu } from "../../types/shopee";
+import { isEmpty } from "radash";
+import { ShopeeDish } from "../../types/shopee";
 import { prisma } from "./client";
 import { Prisma } from "@prisma/client";
 

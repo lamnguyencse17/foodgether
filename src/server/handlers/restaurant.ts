@@ -27,9 +27,6 @@ export const updateRestaurantMenu = async (
   restaurantId: number,
   menu: ShopeeMenu[]
 ) => {
-  const dishIdList = menu.flatMap((dishType) =>
-    dishType.dishes.map((dish) => dish.id)
-  );
   const allDishes = menu.flatMap((dishType) => dishType.dishes);
   const dishList = unique(allDishes, (dish) => dish.id);
   const optionList = dishList.flatMap((dish) =>
@@ -42,12 +39,15 @@ export const updateRestaurantMenu = async (
       optionId: option.id,
     }))
   );
-
-  await upsertDish(restaurantId, dishList);
-  await upsertOption(optionList);
-  await upsertOptionItem(optionItems);
-  await upsertDishTypes(restaurantId, menu);
-  await upsertDishTypeAndDishes(restaurantId, menu);
+  await Promise.all([
+    upsertDish(restaurantId, dishList),
+    upsertDishTypes(restaurantId, menu),
+    upsertOption(optionList),
+  ]);
+  await Promise.all([
+    upsertOptionItem(optionItems),
+    upsertDishTypeAndDishes(restaurantId, menu),
+  ]);
   return getAggregatedRestaurant(restaurantId);
 };
 
