@@ -8,7 +8,8 @@
     "cover_photo": "Ảnh bìa {{name}}",
     "is_closed": "Đóng cửa",
     "is_open": "Mở cửa",
-    "menu": "Thực đơn"
+    "menu": "Thực đơn",
+    "option": "tuỳ chọn"
   },
   "navbar": {
     "login": "Đăng nhập",

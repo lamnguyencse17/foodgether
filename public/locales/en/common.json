@@ -8,7 +8,8 @@
     "cover_photo": "{{name}} cover photo",
     "is_closed": "Closed",
     "is_open": "Open",
-    "menu": "Menu"
+    "menu": "Menu",
+    "option": "option"
   },
   "navbar": {
     "login": "Login",

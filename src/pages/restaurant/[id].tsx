@@ -151,8 +151,10 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
           </Box>
           <HStack gap={5} width="full" paddingX={4} alignItems="flex-start">
             <RestaurantMenuSection dishTypes={dishTypes} />
-
-            <RestaurantMenu dishTypes={dishTypes} />
+            <RestaurantMenu
+              dishTypes={dishTypes}
+              restaurantId={confirmedRestaurant.id}
+            />
           </HStack>
         </VStack>
       </main>

@@ -146,6 +146,7 @@ model Option {
   maxQuantity Int
 
   @@id([id, dishId, restaurantId])
+  @@index([dishId, restaurantId])
 }
 
 model OptionItem {

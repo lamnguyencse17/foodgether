@@ -3,24 +3,21 @@ import {
   Card,
   CardBody,
   Heading,
-  HStack,
-  Img,
   StackDivider,
-  Text,
   VStack,
 } from "@chakra-ui/react";
-import { isEmpty } from "radash";
 import { FunctionComponent } from "react";
 import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
-import { useTranslation } from "next-i18next";
 import RestaurantMenuItem from "./RestaurantMenuItem";
 
 type RestaurantMenuProps = {
   dishTypes: AggregatedDishTypesWithStringDate[];
+  restaurantId: number;
 };
 
 const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
   dishTypes,
+  restaurantId,
 }) => {
   return (
     <Box flex={1}>
@@ -39,7 +36,11 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
                 </Heading>
                 <VStack divider={<StackDivider />} spacing="2">
                   {dishType.dishes.map((dish) => (
-                    <RestaurantMenuItem dish={dish} key={dish.id} />
+                    <RestaurantMenuItem
+                      dish={dish}
+                      key={dish.id}
+                      restaurantId={restaurantId}
+                    />
                   ))}
                 </VStack>
               </Box>
