@@ -9,7 +9,9 @@
     "is_closed": "Đóng cửa",
     "is_open": "Mở cửa",
     "menu": "Thực đơn",
-    "option": "tuỳ chọn"
+    "option": "tuỳ chọn",
+    "mandatory_choice": "(Chọn {{amount}})",
+    "optional_choice": "(Không bắt buộc, nhiều nhất {{amount}})"
   },
   "navbar": {
     "login": "Đăng nhập",

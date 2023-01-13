@@ -9,7 +9,9 @@
     "is_closed": "Closed",
     "is_open": "Open",
     "menu": "Menu",
-    "option": "option"
+    "option": "option",
+    "mandatory_choice": "(Choose {{amount}})",
+    "optional_choice": "(Optional, Max {{amount}})"
   },
   "navbar": {
     "login": "Login",

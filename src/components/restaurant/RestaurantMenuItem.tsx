@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardBody,
+  Heading,
   HStack,
   Img,
   Modal,
@@ -91,10 +92,35 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {dish.name} - {t("restaurant_page.option")}
+            <Heading size="md">
+              {dish.name} - {t("restaurant_page.option")}
+            </Heading>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>aaaa</ModalBody>
+          <ModalBody>
+            {!isEmpty(dishOptionQuery.data) &&
+              dishOptionQuery.data?.map((option) => {
+                const optionConfig = option.isMandatory
+                  ? t("restaurant_page.mandatory_choice", {
+                      amount: option.maxQuantity,
+                    })
+                  : t("restaurant_page.optional_choice", {
+                      amount: option.maxQuantity,
+                    });
+                return (
+                  <Box key={option.id} paddingY={3}>
+                    <Heading size="sm">
+                      {option.name} {optionConfig}
+                    </Heading>
+                    {option.items.map((item) => (
+                      <Box key={item.id}>
+                        <Text>{item.name}</Text>
+                      </Box>
+                    ))}
+                  </Box>
+                );
+              })}
+          </ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
