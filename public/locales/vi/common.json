@@ -11,7 +11,8 @@
     "menu": "Thực đơn",
     "option": "tuỳ chọn",
     "mandatory_choice": "(Chọn {{amount}})",
-    "optional_choice": "(Không bắt buộc, nhiều nhất {{amount}})"
+    "optional_choice": "(Không bắt buộc, nhiều nhất {{amount}})",
+    "empty_option": "Món ăn này không thể được tuỳ chỉnh"
   },
   "navbar": {
     "login": "Đăng nhập",

@@ -3,16 +3,8 @@ import {
   Button,
   Card,
   CardBody,
-  Heading,
   HStack,
   Img,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
   useDisclosure,
   VStack,
@@ -22,6 +14,7 @@ import { FunctionComponent } from "react";
 import { DishWithStringDate } from "../../types/dish";
 import { trpc } from "../../utils/trpc";
 import { useTranslation } from "next-i18next";
+import ItemOptionModal from "./ItemOptionModal";
 
 type RestaurantMenuItemProps = {
   dish: DishWithStringDate;
@@ -88,48 +81,13 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
           </HStack>
         </CardBody>
       </Card>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="md">
-              {dish.name} - {t("restaurant_page.option")}
-            </Heading>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {!isEmpty(dishOptionQuery.data) &&
-              dishOptionQuery.data?.map((option) => {
-                const optionConfig = option.isMandatory
-                  ? t("restaurant_page.mandatory_choice", {
-                      amount: option.maxQuantity,
-                    })
-                  : t("restaurant_page.optional_choice", {
-                      amount: option.maxQuantity,
-                    });
-                return (
-                  <Box key={option.id} paddingY={3}>
-                    <Heading size="sm">
-                      {option.name} {optionConfig}
-                    </Heading>
-                    {option.items.map((item) => (
-                      <Box key={item.id}>
-                        <Text>{item.name}</Text>
-                      </Box>
-                    ))}
-                  </Box>
-                );
-              })}
-          </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant="ghost">Secondary Action</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <ItemOptionModal
+        isOpen={isOpen}
+        onClose={onClose}
+        dish={dish}
+        options={dishOptionQuery.data}
+      />
     </>
   );
 };

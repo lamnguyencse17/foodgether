@@ -11,7 +11,8 @@
     "menu": "Menu",
     "option": "option",
     "mandatory_choice": "(Choose {{amount}})",
-    "optional_choice": "(Optional, Max {{amount}})"
+    "optional_choice": "(Optional, Max {{amount}})",
+    "empty_option": "No option available for this dish"
   },
   "navbar": {
     "login": "Login",
