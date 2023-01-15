@@ -99,6 +99,7 @@ type RestaurantPageProps = {
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const router = useRouter();
+
   const restaurantId = router.query.id || router.pathname.split("/").pop();
 
   const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(

@@ -4,6 +4,7 @@ import Head from "next/head";
 import { FunctionComponent } from "react";
 import { useDisplayToast } from "../../hooks/useDisplayToast";
 import useHandleAuthenticateUser from "../../hooks/useGetUser";
+import useI18nLocale from "../../hooks/useI18nLocale";
 import Favicon from "./Favicon";
 import Navbar from "./Navbar";
 
@@ -16,6 +17,7 @@ const InnerApp: FunctionComponent<InnerAppProps> = ({
   Component,
   pageProps,
 }) => {
+  useI18nLocale();
   useHandleAuthenticateUser();
   useDisplayToast();
   return (
