@@ -13,8 +13,8 @@
     "scraper-build": "npx tsc --outDir ./scraper/dist --p ./scraper/tsconfig.json"
   },
   "dependencies": {
-    "@chakra-ui/icons": "2.0.4",
-    "@chakra-ui/react": "2.4.4",
+    "@chakra-ui/icons": "^2.0.4",
+    "@chakra-ui/react": "^2.4.4",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@hookform/resolvers": "^2.9.10",

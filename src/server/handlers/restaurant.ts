@@ -115,7 +115,7 @@ export const fetchRestaurantFromUrl = publicProcedure
         `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
         {
           method: "POST",
-          body: JSON.stringify({ url: `/restaurant/${restaurantId}` }),
+          body: JSON.stringify({ url: `/restaurant/${restaurantId}/` }),
           headers: {
             "Content-Type": "application/json",
           },
@@ -174,7 +174,7 @@ export const fetchRestaurantFromId = publicProcedure
         `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
         {
           method: "POST",
-          body: JSON.stringify({ url: `/restaurant/${input.id}` }),
+          body: JSON.stringify({ url: `/restaurant/${input.id}/` }),
           headers: {
             "Content-Type": "application/json",
           },
