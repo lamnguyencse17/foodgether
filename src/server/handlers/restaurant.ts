@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import axios from "axios";
 import camelcaseKeys from "camelcase-keys";
 import { unique } from "radash";
 import { env } from "../../env/server.mjs";
@@ -22,6 +23,21 @@ import {
   fetchShopeeRestaurantId,
 } from "../service/shopee";
 import { publicProcedure } from "../trpc/trpc";
+
+const revalidateRestaurant = async (restaurantId: number) => {
+  const response = await axios.post(
+    `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
+    { url: `/restaurant/${restaurantId}/` },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (response.status !== 200) {
+    console.log(errors.menu.UPSERT_MENU, response);
+  }
+};
 
 export const updateRestaurantMenu = async (
   restaurantId: number,
@@ -114,22 +130,10 @@ export const fetchRestaurantFromUrl = publicProcedure
         restaurantId,
         menu.reply.menu_infos
       );
-      const response = await fetch(
-        `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
-        {
-          method: "POST",
-          body: JSON.stringify({ url: `/restaurant/${restaurantId}/` }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status !== 200) {
-        console.log(errors.menu.UPSERT_MENU, response);
-      }
+      await revalidateRestaurant(restaurantId);
       return { ...completedRestaurant };
     } catch (err) {
-      console.error(err);
+      console.error(errors.menu.UPSERT_MENU, err);
       throw new TRPCError({
         message: errors.menu.UPSERT_MENU,
         code: "INTERNAL_SERVER_ERROR",
@@ -176,22 +180,10 @@ export const fetchRestaurantFromId = publicProcedure
         input.id,
         menu.reply.menu_infos
       );
-      const response = await fetch(
-        `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
-        {
-          method: "POST",
-          body: JSON.stringify({ url: `/restaurant/${input.id}/` }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status !== 200) {
-        console.log("REVALIDATE ERROR: ", response);
-      }
+      await revalidateRestaurant(input.id);
       return { ...completedRestaurant };
     } catch (err) {
-      console.error(err);
+      console.error(errors.menu.UPSERT_MENU, err);
       throw new TRPCError({
         message: errors.menu.UPSERT_MENU,
         code: "INTERNAL_SERVER_ERROR",
