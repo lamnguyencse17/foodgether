@@ -37,7 +37,6 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
     { enabled: isOpen, staleTime: 60 * 1000 }
   );
 
-  console.log(dishOptionQuery.data);
   const showOption = () => {
     onOpen();
   };

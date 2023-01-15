@@ -41,11 +41,6 @@ const getUrlParamsFromUrl = (url: string) => {
 export const fetchShopeeRestaurantId = async (
   url: string
 ): Promise<RestaurantIdResponse> => {
-  console.log(
-    `https://gappapi.deliverynow.vn/api/delivery/get_from_url?url=${getUrlParamsFromUrl(
-      url
-    )}`
-  );
   const restaurantIdResponse = await fetch(
     `https://gappapi.deliverynow.vn/api/delivery/get_from_url?url=${getUrlParamsFromUrl(
       url

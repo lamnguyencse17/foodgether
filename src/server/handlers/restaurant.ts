@@ -82,7 +82,10 @@ export const fetchRestaurantFromUrl = publicProcedure
       deliveryId
     );
     if (restaurantResponse.result !== "success") {
-      console.log(restaurantResponse);
+      console.log(
+        errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
+        restaurantResponse
+      );
       throw new TRPCError({
         message: errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -100,7 +103,7 @@ export const fetchRestaurantFromUrl = publicProcedure
 
     const menu = await fetchShopeeMenu(deliveryId);
     if (menu.result !== "success") {
-      console.log(menu);
+      console.log(errors.shopee.SHOPEE_MENU_FETCH_FAILED, menu);
       throw new TRPCError({
         message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -122,7 +125,7 @@ export const fetchRestaurantFromUrl = publicProcedure
         }
       );
       if (response.status !== 200) {
-        console.log(response);
+        console.log(errors.menu.UPSERT_MENU, response);
       }
       return { ...completedRestaurant };
     } catch (err) {
@@ -139,7 +142,10 @@ export const fetchRestaurantFromId = publicProcedure
   .query(async ({ input }) => {
     const restaurantResponse = await fetchShopeeRestaurantFromId(input.id);
     if (restaurantResponse.result !== "success") {
-      console.log(restaurantResponse);
+      console.log(
+        errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
+        restaurantResponse
+      );
       throw new TRPCError({
         message: errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -159,7 +165,7 @@ export const fetchRestaurantFromId = publicProcedure
       restaurantResponse.reply.delivery_detail.delivery_id
     );
     if (menu.result !== "success") {
-      console.log(menu);
+      console.log(errors.shopee.SHOPEE_MENU_FETCH_FAILED, menu);
       throw new TRPCError({
         message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -181,7 +187,7 @@ export const fetchRestaurantFromId = publicProcedure
         }
       );
       if (response.status !== 200) {
-        console.log(response);
+        console.log("REVALIDATE ERROR: ", response);
       }
       return { ...completedRestaurant };
     } catch (err) {
