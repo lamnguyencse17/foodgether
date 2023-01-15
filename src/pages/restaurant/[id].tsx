@@ -1,6 +1,4 @@
 import { useRouter } from "next/router";
-
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
@@ -74,7 +72,6 @@ export const getStaticProps = async ({
         restaurant: convertObjectWithDates(
           completedRestaurant
         ) as AggregatedRestaurantWithStringDate,
-        ...(await serverSideTranslations(locale, ["common"])),
       },
     };
   }
@@ -92,7 +89,6 @@ export const getStaticProps = async ({
       restaurant: convertObjectWithDates(
         restaurant
       ) as AggregatedRestaurantWithStringDate,
-      ...(await serverSideTranslations(locale, ["common"])),
     },
   };
 };

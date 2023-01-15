@@ -14,7 +14,7 @@ import {
 import { Option, OptionItem } from "@prisma/client";
 import { isEmpty } from "radash";
 import { FunctionComponent } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 import { DishWithStringDate } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
@@ -34,7 +34,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   options,
   dish,
 }) => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   if (!options) return null;
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

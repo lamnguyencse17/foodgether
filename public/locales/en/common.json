@@ -1,29 +1,31 @@
 {
-  "index_page": {
-    "waiting_for_scraper": "Oof. We don't have this menu at table yet. A servant is bringing it to you soon.",
-    "url_input_placeholder": "Your Shopee Food URL goes here...",
-    "start_button": "Go"
-  },
-  "restaurant_page": {
-    "cover_photo": "{{name}} cover photo",
-    "is_closed": "Closed",
-    "is_open": "Open",
-    "menu": "Menu",
-    "option": "option",
-    "mandatory_choice": "(Choose {{amount}})",
-    "optional_choice": "(Optional, Max {{amount}})",
-    "empty_option": "No option available for this dish"
-  },
-  "navbar": {
-    "login": "Login",
-    "logout": "Logout"
-  },
-  "error": {
-    "try_again": "Please try again later",
-    "SP_01": "We are currently experiencing issues getting info from URL. ",
-    "SP_02": "We are currently experiencing issues getting restaurant info.",
-    "SP_03": "We are currently experiencing issues getting restaurant's menu.",
-    "R_01": "We are currently experiencing issues processing restaurant data.",
-    "M_01": "We are currently experiencing issues processing menu data."
+  "translation": {
+    "index_page": {
+      "waiting_for_scraper": "Oof. We don't have this menu at table yet. A servant is bringing it to you soon.",
+      "url_input_placeholder": "Your Shopee Food URL goes here...",
+      "start_button": "Go"
+    },
+    "restaurant_page": {
+      "cover_photo": "{{name}} cover photo",
+      "is_closed": "Closed",
+      "is_open": "Open",
+      "menu": "Menu",
+      "option": "option",
+      "mandatory_choice": "(Choose {{amount}})",
+      "optional_choice": "(Optional, Max {{amount}})",
+      "empty_option": "No option available for this dish"
+    },
+    "navbar": {
+      "login": "Login",
+      "logout": "Logout"
+    },
+    "error": {
+      "try_again": "Please try again later",
+      "SP_01": "We are currently experiencing issues getting info from URL. ",
+      "SP_02": "We are currently experiencing issues getting restaurant info.",
+      "SP_03": "We are currently experiencing issues getting restaurant's menu.",
+      "R_01": "We are currently experiencing issues processing restaurant data.",
+      "M_01": "We are currently experiencing issues processing menu data."
+    }
   }
 }

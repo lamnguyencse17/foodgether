@@ -13,7 +13,7 @@ import { isEmpty } from "radash";
 import { FunctionComponent } from "react";
 import { DishWithStringDate } from "../../types/dish";
 import { trpc } from "../../utils/trpc";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 import ItemOptionModal from "./ItemOptionModal";
 
 type RestaurantMenuItemProps = {
@@ -27,7 +27,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
 }) => {
   const photo = dish.photos[0];
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
 
   const dishOptionQuery = trpc.option.getOptionFromDishId.useQuery(
     {

@@ -1,12 +1,12 @@
 import { Box, Button, Text } from "@chakra-ui/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 import NextLink from "next/link";
 import { LinkBox, LinkOverlay } from "@chakra-ui/react";
 
 const Navbar = () => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   const { data: sessionData } = useSession();
   return (
     <Box

@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { FunctionComponent } from "react";
 import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -24,7 +24,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
   const router = useRouter();
   const idHash = parseInt(router.asPath.split("#").pop() as string);
 
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   return (
     <Box width="3xs">
       <Card>

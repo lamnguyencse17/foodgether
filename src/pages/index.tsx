@@ -17,21 +17,12 @@ import {
 import { trpc } from "../utils/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import useStore from "../hooks/store";
 
-export async function getStaticProps({ locale }: { locale: string }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ["common"])),
-    },
-  };
-}
-
 const Home: NextPage = () => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   const router = useRouter();
   const setToast = useStore((state) => state.toast.setToast);
   const [findRestaurant, setFindRestaurant] = useState(false);

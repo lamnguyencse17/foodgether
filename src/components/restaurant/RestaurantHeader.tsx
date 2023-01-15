@@ -2,7 +2,7 @@ import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { Photo } from "../../types/shared";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
@@ -26,7 +26,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   priceRange,
   url = "",
 }) => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   return (
     <Box
       maxH="xs"
