@@ -15,5 +15,6 @@ const config = {
   images: {
     domains: ["images.foody.vn"],
   },
+  trailingSlash: true,
 };
 export default config;
