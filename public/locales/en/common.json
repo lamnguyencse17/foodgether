@@ -13,7 +13,20 @@
       "option": "option",
       "mandatory_choice": "(Choose {{amount}})",
       "optional_choice": "(Optional, Max {{amount}})",
-      "empty_option": "No option available for this dish"
+      "empty_option": "No option available for this dish",
+      "create_invitation": "Create invitation"
+    },
+    "invitation_page": {
+      "cover_photo": "{{name}} cover photo",
+      "is_closed": "Closed",
+      "is_open": "Open",
+      "menu": "Menu",
+      "option": "option",
+      "mandatory_choice": "(Choose {{amount}})",
+      "optional_choice": "(Optional, Max {{amount}})",
+      "empty_option": "No option available for this dish",
+      "create_invitation": "Create invitation",
+      "invitation_description": "Invitation to order at {{name}}"
     },
     "navbar": {
       "login": "Login",

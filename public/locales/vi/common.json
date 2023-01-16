@@ -13,7 +13,20 @@
       "option": "tuỳ chọn",
       "mandatory_choice": "(Chọn {{amount}})",
       "optional_choice": "(Không bắt buộc, nhiều nhất {{amount}})",
-      "empty_option": "Món ăn này không thể được tuỳ chỉnh"
+      "empty_option": "Món ăn này không thể được tuỳ chỉnh",
+      "create_invitation": "Tạo lời mời"
+    },
+    "invitation_page": {
+      "cover_photo": "Ảnh bìa {{name}}",
+      "is_closed": "Đóng cửa",
+      "is_open": "Mở cửa",
+      "menu": "Thực đơn",
+      "option": "tuỳ chọn",
+      "mandatory_choice": "(Chọn {{amount}})",
+      "optional_choice": "(Không bắt buộc, nhiều nhất {{amount}})",
+      "empty_option": "Món ăn này không thể được tuỳ chỉnh",
+      "create_invitation": "Tạo lời mời",
+      "invitation_description": "Lời mời đặt mua tại {{name}}"
     },
     "navbar": {
       "login": "Đăng nhập",

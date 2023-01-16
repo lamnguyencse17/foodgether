@@ -6,17 +6,13 @@ import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
 import { Box, Divider, HStack, VStack } from "@chakra-ui/react";
 import { get, isEmpty } from "radash";
 import Head from "next/head";
-import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
+import RestaurantHeader from "../../components/invitation/RestaurantHeader";
 import { trpc } from "../../utils/trpc";
 import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
-import RestaurantMenuSection from "../../components/restaurant/RestaurantMenuSection";
-import RestaurantMenu from "../../components/restaurant/RestaurantMenu";
-import {
-  fetchShopeeMenu,
-  fetchShopeeRestaurantFromId,
-} from "../../server/service/shopee";
-import { upsertRestaurant } from "../../server/db/restaurant";
-import { updateRestaurantMenu } from "../../server/handlers/restaurant";
+import RestaurantMenuSection from "../../components/invitation/RestaurantMenuSection";
+import RestaurantMenu from "../../components/invitation/RestaurantMenu";
+import { AggregatedInvitationWithStringDate } from "../../types/invitation";
+import { useTranslation } from "react-i18next";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -37,69 +33,66 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
 };
 
 export const getStaticProps = async ({
-  locale,
   params: { id },
 }: GetRestaurantServerParams) => {
-  const rawRestaurant = await prisma.restaurant.findUnique({
+  const rawInvitation = await prisma.invitation.findUnique({
     where: {
-      id: parseInt(id),
+      id,
     },
     include: {
-      dishTypes: {
+      restaurant: {
         include: {
-          dishTypeAndDishes: {
+          dishTypes: {
             include: {
-              dish: true,
+              dishTypeAndDishes: {
+                include: {
+                  dish: true,
+                },
+              },
             },
           },
+        },
+      },
+      createdBy: {
+        select: {
+          name: true,
         },
       },
     },
   });
 
-  if (!rawRestaurant) {
-    const restaurantResponse = await fetchShopeeRestaurantFromId(parseInt(id));
-    await upsertRestaurant(restaurantResponse.reply.delivery_detail);
-    const menu = await fetchShopeeMenu(
-      restaurantResponse.reply.delivery_detail.delivery_id
-    );
-    const completedRestaurant = await updateRestaurantMenu(
-      parseInt(id),
-      menu.reply.menu_infos
-    );
+  if (!rawInvitation) {
     return {
       props: {
-        restaurant: convertObjectWithDates(
-          completedRestaurant
-        ) as AggregatedRestaurantWithStringDate,
+        invitation: null,
       },
     };
   }
-
-  const restaurant = {
-    ...rawRestaurant,
-    dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
-      ...dishType,
-      dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
-    })),
-  };
-
+  const invitation = convertObjectWithDates({
+    ...rawInvitation,
+    restaurant: {
+      ...rawInvitation.restaurant,
+      dishTypes: rawInvitation.restaurant?.dishTypes.map((dishType) => ({
+        ...dishType,
+        dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
+      })),
+    },
+  });
   return {
     props: {
-      restaurant: convertObjectWithDates(
-        restaurant
-      ) as AggregatedRestaurantWithStringDate,
+      invitation,
     },
   };
 };
 
-type RestaurantPageProps = {
-  restaurant: AggregatedRestaurantWithStringDate;
+type InvitationPageProps = {
+  invitation: AggregatedInvitationWithStringDate | null;
 };
 
-const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
+const RestaurantPage = ({ invitation }: InvitationPageProps) => {
+  const { t } = useTranslation();
   const router = useRouter();
-
+  const restaurant = invitation?.restaurant;
   const restaurantId = router.query.id || router.pathname.split("/").pop();
 
   const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
@@ -126,12 +119,14 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
     "dishTypes",
     []
   ) as AggregatedDishTypesWithStringDate[];
-
+  const description = t("invitation_page.invitation_description", {
+    name,
+  }) as string;
   return (
     <>
       <Head>
-        <title>{name}</title>
-        <meta name="description" content={name} />
+        <title>{description}</title>
+        <meta name="description" content={description} />
       </Head>
       <main>
         <VStack width="100%">

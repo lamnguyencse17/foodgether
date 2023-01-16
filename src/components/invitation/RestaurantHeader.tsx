@@ -1,12 +1,11 @@
-import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent } from "react";
 import { Photo } from "../../types/shared";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { trpc } from "../../utils/trpc";
-import { useRouter } from "next/router";
 
 type RestaurantHeaderProps = {
   photo?: Photo;
@@ -31,13 +30,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   restaurantId = 0,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const createInvitationMutate = trpc.invitation.createInvitation.useMutation();
-
-  useEffect(() => {
-    if (!createInvitationMutate.data) return;
-    router.push(`/invitation/${createInvitationMutate.data.id}`);
-  }, [createInvitationMutate.data, router]);
   return (
     <Box
       maxH="xs"
@@ -52,7 +45,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
             src={photo.value}
             height={photo.height}
             width={photo.width}
-            alt={t("restaurant_page.cover_photo", {
+            alt={t("invitation_page.cover_photo", {
               name: name,
             })}
             style={{
@@ -80,14 +73,14 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
             height={30}
             alt={
               isAvailable
-                ? t("restaurant_page.is_open")
-                : t("restaurant_page.is_closed")
+                ? t("invitation_page.is_open")
+                : t("invitation_page.is_closed")
             }
           />
           <Text textColor={isAvailable ? "green" : "red"}>
             {isAvailable
-              ? t("restaurant_page.is_open")
-              : t("restaurant_page.is_closed")}
+              ? t("invitation_page.is_open")
+              : t("invitation_page.is_closed")}
           </Text>
         </HStack>
         {priceRange && (
@@ -98,15 +91,6 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
             </Text>
           </HStack>
         )}
-        <Button
-          onClick={() => {
-            createInvitationMutate.mutate({
-              restaurantId,
-            });
-          }}
-        >
-          {t("restaurant_page.create_invitation")}
-        </Button>
       </VStack>
     </Box>
   );
