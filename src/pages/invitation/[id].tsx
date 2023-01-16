@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 
 export async function getStaticPaths() {
   const idObjectList =
-    (await prisma.restaurant.findMany({
+    (await prisma.invitation.findMany({
       select: { id: true },
     })) || [];
 
