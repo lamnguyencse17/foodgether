@@ -1,4 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { Redis } from "ioredis";
+import { createPrismaRedisCache } from "prisma-redis-middleware";
+import { RedisMemoryOptions } from "prisma-redis-middleware/dist/types.js";
 
 import { env } from "../../env/server.mjs";
 
@@ -17,3 +20,24 @@ export const prisma =
 if (env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
+
+const redis = new Redis(env.REDIS_URL);
+
+const cacheMiddleware = createPrismaRedisCache({
+  models: [{ model: "Restaurant", cacheTime: 180, cacheKey: "id" }],
+  storage: {
+    type: "redis",
+    options: {
+      client: redis,
+      invalidation: { referencesTTL: 300 },
+      log: console,
+    } as unknown as RedisMemoryOptions,
+  },
+  excludeModels: ["Session"],
+  cacheTime: 300,
+  onError: (key) => {
+    console.log("error", key);
+  },
+});
+
+prisma.$use(cacheMiddleware);

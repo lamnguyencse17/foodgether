@@ -19,6 +19,7 @@ import { DishWithStringDate } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 import useStore from "../../hooks/store";
+import { cartItemSchema } from "../../server/schemas/order";
 
 type ItemOptionModalProps = {
   isOpen: boolean;
@@ -46,7 +47,13 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   }, []);
 
   const onOrder = () => {
-    addToCart({ options: currentDishOption, dishId: dish.id, uid: uid(7) });
+    const newCartItem = {
+      options: currentDishOption,
+      dishId: dish.id,
+      uid: uid(7),
+    };
+    cartItemSchema.parse(newCartItem);
+    addToCart(newCartItem);
     onCloseModal();
   };
 
@@ -86,13 +93,13 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                       items={option.items}
                       name={option.name}
                       key={option.id}
-                      dishTypeId={option.id}
+                      optionId={option.id}
                     />
                   ) : (
                     <MultipleOptionalChoice
                       items={option.items}
                       key={option.id}
-                      dishTypeId={option.id}
+                      optionId={option.id}
                       maxQuantity={option.maxQuantity}
                     />
                   )}

@@ -3,30 +3,33 @@ import { OptionItem } from "@prisma/client";
 import { cluster } from "radash";
 import { ChangeEvent, FunctionComponent } from "react";
 import useStore from "../../../hooks/store";
+import { dishOptionValueSchema } from "../../../server/schemas/order";
 
 type MultipleOptionalChoiceProps = {
   items: OptionItem[];
-  dishTypeId: number;
+  optionId: number;
   maxQuantity: number;
 };
 
 const MultipleOptionalChoice: FunctionComponent<
   MultipleOptionalChoiceProps
-> = ({ items, dishTypeId, maxQuantity }) => {
+> = ({ items, optionId, maxQuantity }) => {
   const { setDishOption, data } = useStore((state) => state.currentDishOption);
-  const value = (data.find((option) => option.dishTypeId === dishTypeId)
-    ?.value || []) as number[];
+  const value = (data.find((option) => option.optionId === optionId)?.value ||
+    []) as number[];
   const hItems = cluster(items, Math.ceil(items.length / 2));
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, item: OptionItem) => {
     const newValue = e.target.checked
       ? [...value, item.id]
       : value.filter((v) => v !== item.id);
-    setDishOption({
-      dishTypeId: dishTypeId,
-      mandatory: false,
+    const dishOption = {
+      optionId,
+      mandatory: false as const,
       value: newValue,
-    });
+    };
+    dishOptionValueSchema.parse(dishOption);
+    setDishOption(dishOption);
   };
 
   return (

@@ -3,6 +3,7 @@ import create from "zustand";
 import { devtools } from "zustand/middleware";
 import produce from "immer";
 import { replaceOrAppend } from "radash";
+import { CartItem, DishOptionValue } from "../server/schemas/order";
 
 type SessionUser = Session["user"];
 export type ToastKeyParam = "info" | "warning" | "success" | "error";
@@ -17,19 +18,6 @@ type UserStoreType = {
   resetUser: () => void;
 };
 
-type OptionMandatoryValue = {
-  dishTypeId: number;
-  mandatory: false;
-  value: number[];
-};
-type OptionalChoiceValue = {
-  dishTypeId: number;
-  mandatory: true;
-  value: number;
-};
-
-type DishOptionValue = OptionMandatoryValue | OptionalChoiceValue;
-
 type DishOptionStoreType = {
   data: DishOptionValue[];
   setDishOption: (value: DishOptionValue) => void;
@@ -42,12 +30,6 @@ type ToastStoreType = {
   success?: ToastValueParams;
   error?: ToastValueParams;
   setToast: (key: ToastKeyParam, value?: ToastValueParams) => void;
-};
-
-type CartItem = {
-  dishId: number;
-  options: DishOptionValue[];
-  uid: string;
 };
 
 type CartStoreType = {
@@ -101,7 +83,7 @@ const useStore = create<UseStoreType>()(
             const newOptions = replaceOrAppend(
               state.currentDishOption.data || [],
               value,
-              (filter) => filter.dishTypeId === value.dishTypeId
+              (filter) => filter.optionId === value.optionId
             );
             state.currentDishOption.data = newOptions;
           }),

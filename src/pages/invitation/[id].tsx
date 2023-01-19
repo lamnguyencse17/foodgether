@@ -4,10 +4,9 @@ import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
 import { Box, Divider, HStack, VStack } from "@chakra-ui/react";
-import { get, isEmpty } from "radash";
+import { get } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/invitation/RestaurantHeader";
-import { trpc } from "../../utils/trpc";
 import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
 import RestaurantMenuSection from "../../components/invitation/RestaurantMenuSection";
 import RestaurantMenu from "../../components/invitation/RestaurantMenu";
@@ -93,21 +92,10 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
   const restaurant = invitation?.restaurant;
-  const restaurantId = router.query.id || router.pathname.split("/").pop();
-
-  const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
-    {
-      id: parseInt(restaurantId as unknown as string),
-    },
-    {
-      enabled: isEmpty(restaurant) && !isNaN(restaurantId as unknown as number),
-      refetchOnWindowFocus: false,
-      retryOnMount: false,
-    }
-  );
+  const invitationId = (router.query.id ||
+    router.pathname.split("/").pop()) as string;
 
   const confirmedRestaurant = (restaurant ||
-    getRestaurantQuery.data ||
     {}) as NonNullable<AggregatedRestaurantWithStringDate>;
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
 
@@ -138,6 +126,7 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
             isAvailable={isAvailable}
             url={url}
             restaurantId={confirmedRestaurant.id}
+            invitationId={invitationId}
           />
           <Box width="full" mt={1} paddingX={4}>
             <Divider orientation="horizontal" />

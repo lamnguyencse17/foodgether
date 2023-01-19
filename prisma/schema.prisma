@@ -239,11 +239,10 @@ model OrderDishOptionItem {
   orderDishOption   OrderDishOption @relation(fields: [orderDishOptionId], references: [id], onDelete: Cascade)
   orderDishOptionId Int
 
-  optionItem       OptionItem @relation(fields: [optionItemId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
-  optionItemId     Int
-  optionItemDishId Int
-  dishId           Int
-  restaurantId     Int
+  optionItem   OptionItem @relation(fields: [optionItemId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
+  optionItemId Int
+  dishId       Int
+  restaurantId Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
