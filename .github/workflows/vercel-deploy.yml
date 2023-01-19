@@ -1,15 +1,20 @@
-name: Vercel Production Deployment
+name: Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  PRIVATE_URL: ${{ secrets.PRIVATE_URL }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
 on:
-  workflow_run:
-    workflows: ["Migrate production database"]
-    branches: [main]
-    types: 
-      - completed
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 jobs:
-  deploy-production:
+  migrate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,12 +26,24 @@ jobs:
       - run: yarn
       - name: Masking PRIVATE_URL value
         run: echo "::add-mask::$PRIVATE_URL"
-        env:
-          DATABASE_URL: ${{ secrets.PRIVATE_URL }}
       - name: Masking DB_NAME value
         run: echo "::add-mask::$DB_NAME"
-        env:
-          DATABASE_URL: ${{ secrets.DB_NAME }}
+      - run: yarn prisma migrate deploy
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: "migrate"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: 'yarn'
+      - run: yarn
+      - name: Masking PRIVATE_URL value
+        run: echo "::add-mask::$PRIVATE_URL"
+      - name: Masking DB_NAME value
+        run: echo "::add-mask::$DB_NAME"
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
@@ -34,4 +51,4 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
