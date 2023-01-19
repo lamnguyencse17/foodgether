@@ -26,7 +26,8 @@
       "optional_choice": "(Optional, Max {{amount}})",
       "empty_option": "No option available for this dish",
       "create_invitation": "Create invitation",
-      "invitation_description": "Invitation to order at {{name}}"
+      "invitation_description": "Invitation to order at {{name}}",
+      "order": "Order"
     },
     "navbar": {
       "login": "Login",

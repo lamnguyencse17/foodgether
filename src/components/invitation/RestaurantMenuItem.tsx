@@ -4,6 +4,7 @@ import {
   Card,
   CardBody,
   HStack,
+  IconButton,
   Img,
   Text,
   useDisclosure,
@@ -15,6 +16,7 @@ import { DishWithStringDate } from "../../types/dish";
 import { trpc } from "../../utils/trpc";
 import { useTranslation } from "react-i18next";
 import ItemOptionModal from "./ItemOptionModal";
+import { AddIcon } from "@chakra-ui/icons";
 
 type RestaurantMenuItemProps = {
   dish: DishWithStringDate;
@@ -77,6 +79,12 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
                 </Text>
               )}
             </VStack>
+            <IconButton
+              aria-label={dish.name}
+              icon={<AddIcon />}
+              size="sm"
+              onClick={showOption}
+            />
           </HStack>
         </CardBody>
       </Card>

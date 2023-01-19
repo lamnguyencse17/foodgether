@@ -1,13 +1,30 @@
 import { Select } from "@chakra-ui/react";
 import { OptionItem } from "@prisma/client";
-import { FunctionComponent } from "react";
+import { ChangeEventHandler, FunctionComponent } from "react";
+import useStore from "../../../hooks/store";
 
-const SingleMandatoryOption: FunctionComponent<{
+type SingleMandatoryOptionProps = {
   items: OptionItem[];
+  dishTypeId: number;
   name: string;
-}> = ({ items, name }) => {
+};
+
+const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
+  items,
+  name,
+  dishTypeId,
+}) => {
+  const { setDishOption } = useStore((state) => state.currentDishOption);
+
+  const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    setDishOption({
+      dishTypeId,
+      mandatory: true,
+      value: parseInt(e.target.value),
+    });
+  };
   return (
-    <Select placeholder={name}>
+    <Select placeholder={name} onChange={handleChangeOption}>
       {items.map((item) => (
         <option key={item.id} value={item.id}>
           {item.name}

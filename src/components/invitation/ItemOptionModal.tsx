@@ -12,12 +12,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
-import { isEmpty } from "radash";
-import { FunctionComponent } from "react";
+import { isEmpty, uid } from "radash";
+import { FunctionComponent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { DishWithStringDate } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
+import useStore from "../../hooks/store";
 
 type ItemOptionModalProps = {
   isOpen: boolean;
@@ -35,6 +36,25 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   dish,
 }) => {
   const { t } = useTranslation();
+  const { data: currentDishOption, resetDishOption } = useStore(
+    (state) => state.currentDishOption
+  );
+  const { addToCart } = useStore((state) => state.cart);
+
+  useEffect(() => {
+    return () => {};
+  }, []);
+
+  const onOrder = () => {
+    addToCart({ options: currentDishOption, dishId: dish.id, uid: uid(7) });
+    onCloseModal();
+  };
+
+  const onCloseModal = () => {
+    resetDishOption();
+    onClose();
+  };
+
   if (!options) return null;
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -66,11 +86,14 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                       items={option.items}
                       name={option.name}
                       key={option.id}
+                      dishTypeId={option.id}
                     />
                   ) : (
                     <MultipleOptionalChoice
                       items={option.items}
                       key={option.id}
+                      dishTypeId={option.id}
+                      maxQuantity={option.maxQuantity}
                     />
                   )}
                 </Box>
@@ -82,8 +105,11 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <Button colorScheme="gray" mr={3} onClick={onCloseModal}>
             Close
+          </Button>
+          <Button colorScheme="blue" onClick={onOrder}>
+            {t("invitation_page.order")}
           </Button>
         </ModalFooter>
       </ModalContent>

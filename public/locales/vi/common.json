@@ -26,7 +26,8 @@
       "optional_choice": "(Không bắt buộc, nhiều nhất {{amount}})",
       "empty_option": "Món ăn này không thể được tuỳ chỉnh",
       "create_invitation": "Tạo lời mời",
-      "invitation_description": "Lời mời đặt mua tại {{name}}"
+      "invitation_description": "Lời mời đặt mua tại {{name}}",
+      "order": "Đặt món"
     },
     "navbar": {
       "login": "Đăng nhập",
