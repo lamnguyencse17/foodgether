@@ -7,9 +7,6 @@ env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
@@ -31,7 +28,7 @@ jobs:
       - run: yarn prisma migrate deploy
   deploy-production:
     runs-on: ubuntu-latest
-    needs: "migrate"
+    needs: ["migrate", "lint"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
