@@ -126,11 +126,10 @@ export const fetchRestaurantFromUrl = publicProcedure
       });
     }
     try {
-      const completedRestaurant = await updateRestaurantMenu(
-        restaurantId,
-        menu.reply.menu_infos
-      );
-      await revalidateRestaurant(restaurantId);
+      const [completedRestaurant] = await Promise.all([
+        updateRestaurantMenu(restaurantId, menu.reply.menu_infos),
+        revalidateRestaurant(restaurantId),
+      ]);
       return { ...completedRestaurant };
     } catch (err) {
       console.error(errors.menu.UPSERT_MENU, err);
@@ -176,11 +175,10 @@ export const fetchRestaurantFromId = publicProcedure
       });
     }
     try {
-      const completedRestaurant = await updateRestaurantMenu(
-        input.id,
-        menu.reply.menu_infos
-      );
-      await revalidateRestaurant(input.id);
+      const [completedRestaurant] = await Promise.all([
+        updateRestaurantMenu(input.id, menu.reply.menu_infos),
+        revalidateRestaurant(input.id),
+      ]);
       return { ...completedRestaurant };
     } catch (err) {
       console.error(errors.menu.UPSERT_MENU, err);

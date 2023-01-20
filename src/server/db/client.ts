@@ -30,7 +30,6 @@ const cacheMiddleware = createPrismaRedisCache({
     options: {
       client: redis,
       invalidation: { referencesTTL: 300 },
-      log: console,
     } as unknown as RedisMemoryOptions,
   },
   excludeModels: ["Session"],
