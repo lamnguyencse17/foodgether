@@ -29,7 +29,9 @@
       "invitation_description": "Lời mời đặt mua tại {{name}}",
       "order": "Đặt món",
       "cart": "Giỏ hàng",
-      "your_current_cart": "Giỏ hàng hiện tại"
+      "your_current_cart": "Giỏ hàng hiện tại",
+      "cart_option": "Tuỳ chọn",
+      "cart_items": "Thành phần của tuỳ chọn"
     },
     "navbar": {
       "login": "Đăng nhập",

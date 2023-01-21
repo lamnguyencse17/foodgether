@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Heading,
   IconButton,
   Modal,
   ModalBody,
@@ -9,7 +10,15 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Table,
+  TableContainer,
+  Tbody,
+  Text,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import { isEmpty } from "radash";
 import { useTranslation } from "react-i18next";
@@ -43,7 +52,41 @@ const FloatingCart = () => {
         <ModalContent>
           <ModalHeader>{t("invitation_page.your_current_cart")}</ModalHeader>
           <ModalCloseButton />
-          <ModalBody></ModalBody>
+          <ModalBody>
+            {cart.map((cartItem) => (
+              <VStack key={cartItem.uid}>
+                <Heading>{cartItem.dishId}</Heading>
+                <TableContainer>
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>{t("invitation_page.cart_option")}</Th>
+                        <Th>{t("invitation_page.cart_items")}</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {cartItem.options.map((option) => (
+                        <Tr key={option.optionId}>
+                          <Th>{option.optionId}</Th>
+                          <Th>
+                            {option.mandatory ? (
+                              <Text>{option.value}</Text>
+                            ) : (
+                              <VStack>
+                                {option.value.map((item) => (
+                                  <Text key={item}>{item}</Text>
+                                ))}
+                              </VStack>
+                            )}
+                          </Th>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </VStack>
+            ))}
+          </ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>

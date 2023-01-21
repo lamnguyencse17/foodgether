@@ -10,10 +10,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { isEmpty } from "radash";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
+import useStore from "../../hooks/store";
 import { DishWithStringDate } from "../../types/dish";
+import { listifyOptions } from "../../utils/transform";
 import { trpc } from "../../utils/trpc";
-import { useTranslation } from "react-i18next";
 import ItemOptionModal from "./ItemOptionModal";
 
 type RestaurantMenuItemProps = {
@@ -25,9 +26,11 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   dish,
   restaurantId,
 }) => {
+  const { data: optionDict } = useStore((state) => state.optionDict);
+  const options = optionDict?.options || {};
   const photo = dish.photos[0];
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const { t } = useTranslation();
+  const trpcContext = trpc.useContext();
 
   const dishOptionQuery = trpc.option.getOptionFromDishId.useQuery(
     {
@@ -37,9 +40,19 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
     { enabled: isOpen, staleTime: 60 * 1000 }
   );
 
+  const option = options[dish.id];
+  const currentOption =
+    (option && listifyOptions(option)) || dishOptionQuery.data;
+
   const showOption = () => {
     onOpen();
   };
+
+  useEffect(() => {
+    if (dishOptionQuery.isFetching && option) {
+      trpcContext.option.getOptionFromDishId.cancel();
+    }
+  }, [dishOptionQuery.isFetching, option]);
 
   return (
     <>
@@ -97,7 +110,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         dish={dish}
-        options={dishOptionQuery.data}
+        options={currentOption}
       />
     </>
   );

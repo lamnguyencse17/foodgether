@@ -113,7 +113,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
 
         <ModalFooter>
           <Button colorScheme="gray" mr={3} onClick={onCloseModal}>
-            {t("invitation_page.close")}
+            {t("common.close")}
           </Button>
           <Button colorScheme="blue" onClick={onOrder}>
             {t("invitation_page.order")}

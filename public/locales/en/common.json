@@ -29,7 +29,9 @@
       "invitation_description": "Invitation to order at {{name}}",
       "order": "Order",
       "cart": "Cart",
-      "your_current_cart": "Your current cart"
+      "your_current_cart": "Your current cart",
+      "cart_option": "Option",
+      "cart_items": "Item(s)"
     },
     "navbar": {
       "login": "Login",

@@ -1,5 +1,3 @@
-import { Dish, DishTypes, Restaurant } from "@prisma/client";
-
 export type MetaStringDate = {
   createdAt: string;
   updatedAt: string;

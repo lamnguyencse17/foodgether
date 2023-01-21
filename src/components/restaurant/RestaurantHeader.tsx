@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { FunctionComponent, useEffect } from "react";
 import { Photo } from "../../types/shared";
@@ -28,6 +28,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   isAvailable = false,
   priceRange,
   url = "",
+  restaurantId = -1,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -97,6 +98,15 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
             </Text>
           </HStack>
         )}
+        <Button
+          onClick={() => {
+            createInvitationMutate.mutate({
+              restaurantId,
+            });
+          }}
+        >
+          {t("restaurant_page.create_invitation")}
+        </Button>
       </VStack>
     </Box>
   );

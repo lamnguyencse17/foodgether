@@ -21,7 +21,9 @@ if (env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
 
-const redis = new Redis(env.REDIS_URL);
+const redis = new Redis(env.REDIS_URL, {
+  lazyConnect: true,
+});
 
 const cacheMiddleware = createPrismaRedisCache({
   models: [{ model: "Restaurant", cacheTime: 180, cacheKey: "id" }],

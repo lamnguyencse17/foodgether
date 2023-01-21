@@ -4,7 +4,7 @@ import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
 import { Box, Divider, HStack, Stack, VStack } from "@chakra-ui/react";
-import { get } from "radash";
+import { get, group, isEmpty, mapValues, objectify } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/invitation/RestaurantHeader";
 import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
@@ -13,6 +13,9 @@ import RestaurantMenu from "../../components/invitation/RestaurantMenu";
 import { AggregatedInvitationWithStringDate } from "../../types/invitation";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../components/invitation/FloatingCart";
+import useStore from "../../hooks/store";
+import { trpc } from "../../utils/trpc";
+import { useEffect } from "react";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -90,11 +93,34 @@ type InvitationPageProps = {
 };
 
 const RestaurantPage = ({ invitation }: InvitationPageProps) => {
+  const { data: optionDict, setOptionDict } = useStore(
+    (state) => state.optionDict
+  );
   const { t } = useTranslation();
   const router = useRouter();
   const restaurant = invitation?.restaurant;
+  const restaurantId = restaurant?.id;
   const invitationId = (router.query.id ||
     router.pathname.split("/").pop()) as string;
+
+  const haveCorrectOptionDict =
+    optionDict && optionDict?.restaurantId === restaurantId;
+
+  const shouldFetchOptionDict =
+    !isEmpty(restaurant) &&
+    // getRestaurantQuery.isFetched &&
+    // isValidRestaurantId &&
+    !haveCorrectOptionDict;
+
+  const getOptionForAllDishesQuery =
+    trpc.option.getOptionForAllDishFromRestaurantId.useQuery(
+      {
+        restaurantId: restaurantId || -1,
+      },
+      {
+        enabled: shouldFetchOptionDict,
+      }
+    );
 
   const confirmedRestaurant = (restaurant ||
     {}) as NonNullable<AggregatedRestaurantWithStringDate>;
@@ -111,6 +137,35 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
   const description = t("invitation_page.invitation_description", {
     name,
   }) as string;
+
+  useEffect(() => {
+    if (getOptionForAllDishesQuery.isFetched && !haveCorrectOptionDict) {
+      const groupedDict = group(
+        getOptionForAllDishesQuery.data || [],
+        (option) => option.dishId
+      );
+      const newOptionDict = mapValues(groupedDict, (value) =>
+        objectify(
+          value || [],
+          (option) => option.id,
+          (option) => ({
+            ...option,
+            items: objectify(option.items, (optionItem) => optionItem.id),
+          })
+        )
+      );
+      setOptionDict({
+        restaurantId: restaurantId || -1,
+        options: newOptionDict,
+      });
+    }
+  }, [
+    getOptionForAllDishesQuery.data,
+    getOptionForAllDishesQuery.isFetched,
+    haveCorrectOptionDict,
+    restaurantId,
+  ]);
+
   return (
     <>
       <Head>
