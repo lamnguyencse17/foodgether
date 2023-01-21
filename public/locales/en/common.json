@@ -27,7 +27,9 @@
       "empty_option": "No option available for this dish",
       "create_invitation": "Create invitation",
       "invitation_description": "Invitation to order at {{name}}",
-      "order": "Order"
+      "order": "Order",
+      "cart": "Cart",
+      "your_current_cart": "Your current cart"
     },
     "navbar": {
       "login": "Login",
@@ -40,6 +42,9 @@
       "SP_03": "We are currently experiencing issues getting restaurant's menu.",
       "R_01": "We are currently experiencing issues processing restaurant data.",
       "M_01": "We are currently experiencing issues processing menu data."
+    },
+    "common": {
+      "close": "Close"
     }
   }
 }

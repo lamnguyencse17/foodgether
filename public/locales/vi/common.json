@@ -27,7 +27,9 @@
       "empty_option": "Món ăn này không thể được tuỳ chỉnh",
       "create_invitation": "Tạo lời mời",
       "invitation_description": "Lời mời đặt mua tại {{name}}",
-      "order": "Đặt món"
+      "order": "Đặt món",
+      "cart": "Giỏ hàng",
+      "your_current_cart": "Giỏ hàng hiện tại"
     },
     "navbar": {
       "login": "Đăng nhập",
@@ -40,6 +42,9 @@
       "SP_03": "Hiện tại chúng tôi không thể tìm thông tin menu của nhà hàng này.",
       "R_01": "Hiện tại chúng tôi không thể xử lý thông tin nhà hàng này.",
       "M_01": "Hiện tại chúng tôi không thể xử lý thông tin menu của nhà hàng này."
+    },
+    "common": {
+      "close": "Đóng"
     }
   }
 }

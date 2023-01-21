@@ -12,6 +12,7 @@ import RestaurantMenuSection from "../../components/invitation/RestaurantMenuSec
 import RestaurantMenu from "../../components/invitation/RestaurantMenu";
 import { AggregatedInvitationWithStringDate } from "../../types/invitation";
 import { useTranslation } from "react-i18next";
+import FloatingCart from "../../components/invitation/FloatingCart";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -139,6 +140,7 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
             />
           </HStack>
         </VStack>
+        <FloatingCart />
       </main>
     </>
   );
