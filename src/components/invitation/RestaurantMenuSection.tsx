@@ -4,6 +4,7 @@ import {
   CardBody,
   CardHeader,
   Heading,
+  Stack,
   StackDivider,
   VStack,
 } from "@chakra-ui/react";
@@ -26,17 +27,18 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
 
   const { t } = useTranslation();
   return (
-    <Box width="3xs">
+    <Box maxW={["100%", "100%", "3xs"]} overflowX="auto">
       <Card>
         <CardHeader>
           <Heading size="md">{t("invitation_page.menu")}</Heading>
         </CardHeader>
         <CardBody>
-          <VStack
+          <Stack
             divider={<StackDivider />}
             spacing="4"
             justifyContent="flex-start"
             alignItems="flex-start"
+            direction={["row", "row", "column"]}
           >
             {dishTypes.map((dishType) => (
               <Box key={dishType.id}>
@@ -59,7 +61,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
                 </Link>
               </Box>
             ))}
-          </VStack>
+          </Stack>
         </CardBody>
       </Card>
     </Box>

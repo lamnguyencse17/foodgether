@@ -1,4 +1,4 @@
-import { Box, Container } from "@chakra-ui/react";
+import { Box, Container, VStack } from "@chakra-ui/react";
 import { NextComponentType, NextPageContext } from "next";
 import Head from "next/head";
 import { FunctionComponent } from "react";
@@ -25,12 +25,14 @@ const InnerApp: FunctionComponent<InnerAppProps> = ({
       <Head>
         <Favicon />
       </Head>
-      <Box width="100%" height="100%">
+      <VStack width="100%" height="100%">
         <Navbar />
         <Container maxW="container.xl">
-          <Component {...pageProps} />
+          <VStack>
+            <Component {...pageProps} />
+          </VStack>
         </Container>
-      </Box>
+      </VStack>
     </>
   );
 };

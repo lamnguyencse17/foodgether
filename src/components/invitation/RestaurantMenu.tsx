@@ -20,7 +20,7 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
   restaurantId,
 }) => {
   return (
-    <Box flex={1}>
+    <Box flex={[null, null, 1]} maxW="full">
       <Card>
         <CardBody>
           <VStack divider={<StackDivider />} spacing="4">

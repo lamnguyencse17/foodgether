@@ -44,13 +44,13 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   };
   return (
     <Box
-      maxH="xs"
+      maxH="fit-content"
       display="flex"
-      flexDirection={["column", "row", "row"]}
+      flexDirection={["column", "column", "row"]}
       gap={10}
       padding={4}
     >
-      <Box maxH={["100%", "2xs", "3xs"]} maxW={["100%", "sm", "md"]}>
+      <Box maxH={["100%", "2xs", "3xs"]} maxW={["100%", "2xs", "md"]}>
         {photo && (
           <Image
             src={photo.value}
@@ -68,7 +68,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
       </Box>
 
       <VStack flex={1} alignItems="flex-start">
-        <Heading>
+        <Heading size={["md", "md", "lg"]}>
           <Link href={url} target="_blank">
             <Box alignItems="center" justifyContent="center">
               {name} <ExternalLinkIcon pb={1} />
