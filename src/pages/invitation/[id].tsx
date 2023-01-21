@@ -136,7 +136,7 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
             direction={["column", "column", "row"]}
             width="100%"
             paddingX={4}
-            alignItems={["center", "flex-start", "flex-start"]}
+            alignItems={["center", "center", "flex-start"]}
           >
             <RestaurantMenuSection dishTypes={dishTypes} />
             <RestaurantMenu

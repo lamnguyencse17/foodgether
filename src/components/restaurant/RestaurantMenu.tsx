@@ -20,7 +20,7 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
   restaurantId,
 }) => {
   return (
-    <Box flex={1}>
+    <Box flex={[null, null, 1]} maxW="full">
       <Card>
         <CardBody>
           <VStack divider={<StackDivider />} spacing="4">
@@ -34,7 +34,12 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
                 >
                   {dishType.name}
                 </Heading>
-                <VStack divider={<StackDivider />} spacing="2">
+                <VStack
+                  divider={<StackDivider />}
+                  spacing="2"
+                  justifyContent={["center", "center", "flex-start"]}
+                  alignItems={["center", "center", "flex-start"]}
+                >
                   {dishType.dishes.map((dish) => (
                     <RestaurantMenuItem
                       dish={dish}

@@ -3,7 +3,7 @@ import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
-import { Box, Divider, HStack, VStack } from "@chakra-ui/react";
+import { Box, Divider, HStack, Stack, VStack } from "@chakra-ui/react";
 import { get, isEmpty } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
@@ -133,7 +133,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
         <title>{name}</title>
         <meta name="description" content={name} />
       </Head>
-      <main>
+      <main style={{ width: "100%" }}>
         <VStack width="100%">
           <RestaurantHeader
             photo={restaurantHeaderImage}
@@ -147,13 +147,18 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
           <Box width="full" mt={1} paddingX={4}>
             <Divider orientation="horizontal" />
           </Box>
-          <HStack gap={5} width="full" paddingX={4} alignItems="flex-start">
+          <Stack
+            direction={["column", "column", "row"]}
+            width="100%"
+            paddingX={4}
+            alignItems={["center", "center", "flex-start"]}
+          >
             <RestaurantMenuSection dishTypes={dishTypes} />
             <RestaurantMenu
               dishTypes={dishTypes}
               restaurantId={confirmedRestaurant.id}
             />
-          </HStack>
+          </Stack>
         </VStack>
       </main>
     </>

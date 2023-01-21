@@ -75,10 +75,16 @@ const Home: NextPage = () => {
         <title>Foodgether</title>
         <meta name="description" content="Foodgether homepage" />
       </Head>
-      <main>
+      <main style={{ width: "100%" }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl>
-            <Box display="flex" flexDirection="row">
+            <Box
+              display="flex"
+              flexDirection={["column", "column", "row"]}
+              justifyContent={["center", "center", "flex-start"]}
+              alignItems={["center", "center", "flex-start"]}
+              gap={3}
+            >
               <Input
                 id="url"
                 placeholder={t("index_page.url_input_placeholder") || ""}
@@ -89,7 +95,7 @@ const Home: NextPage = () => {
               <FormErrorMessage>
                 {errors.url && errors.url.message}
               </FormErrorMessage>
-              <Button isLoading={isSubmitting} type="submit">
+              <Button isLoading={isSubmitting} type="submit" width={16}>
                 {t("index_page.start_button")}
               </Button>
             </Box>

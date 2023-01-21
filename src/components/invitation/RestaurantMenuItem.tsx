@@ -30,7 +30,6 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
 }) => {
   const photo = dish.photos[0];
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const { t } = useTranslation();
 
   const dishOptionQuery = trpc.option.getOptionFromDishId.useQuery(
     {

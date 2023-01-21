@@ -3,8 +3,8 @@ import {
   Button,
   Card,
   CardBody,
-  HStack,
   Img,
+  Stack,
   Text,
   useDisclosure,
   VStack,
@@ -43,7 +43,13 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
 
   return (
     <>
-      <Card width="full" variant="outline" direction="row">
+      <Card
+        width="full"
+        variant="outline"
+        direction={["column", "column", "row"]}
+        alignItems={["center", "center", "flex-start"]}
+        justifyContent={["center", "center", "flex-start"]}
+      >
         <Box maxH="40" maxW="40">
           {photo && (
             <Img
@@ -58,10 +64,16 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
         </Box>
 
         <CardBody>
-          <HStack alignItems="flex-start" justifyContent="flex-start">
+          <Stack
+            alignItems={["center", "center", "flex-start"]}
+            justifyContent={["center", "center", "flex-start"]}
+            direction={["column", "column", "row"]}
+          >
             <Box flex={1}>
               <Button variant="link" onClick={showOption}>
-                <Text fontWeight="semibold">{dish.name}</Text>
+                <Text fontWeight="semibold" fontSize={["md", "md", "lg"]}>
+                  {dish.name}
+                </Text>
               </Button>
               <Text fontSize="sm">{dish.description}</Text>
             </Box>
@@ -77,7 +89,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
                 </Text>
               )}
             </VStack>
-          </HStack>
+          </Stack>
         </CardBody>
       </Card>
 
