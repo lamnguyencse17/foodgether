@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { isEmpty } from "radash";
 import { FunctionComponent, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import useStore from "../../hooks/store";
 import { DishWithStringDate } from "../../types/dish";
 import { listifyOptions } from "../../utils/transform";
@@ -26,6 +27,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   dish,
   restaurantId,
 }) => {
+  const { t } = useTranslation();
   const { data: optionDict } = useStore((state) => state.optionDict);
   const options = optionDict?.options || {};
   const photo = dish.photos[0];
@@ -92,13 +94,17 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
             </Box>
             <VStack alignItems="flex-start" justifyContent="flex-start">
               {isEmpty(dish.discountPrice) ? (
-                <Text>{dish.price.text}</Text>
+                <Text>
+                  {t("common.price_number", { val: dish.price.value })}
+                </Text>
               ) : (
-                <Text as="s">{dish.price.text}</Text>
+                <Text as="s">
+                  {t("common.price_number", { val: dish.price.value })}
+                </Text>
               )}
               {!isEmpty(dish.discountPrice) && (
                 <Text textColor="blue.400" fontWeight="bold">
-                  {dish.discountPrice?.text}
+                  {t("common.price_number", { val: dish.discountPrice?.value })}
                 </Text>
               )}
             </VStack>

@@ -18,6 +18,7 @@ import ItemOptionModal from "./ItemOptionModal";
 import { AddIcon } from "@chakra-ui/icons";
 import useStore from "../../hooks/store";
 import { listifyOptions } from "../../utils/transform";
+import { useTranslation } from "react-i18next";
 
 type RestaurantMenuItemProps = {
   dish: DishWithStringDate;
@@ -28,6 +29,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   dish,
   restaurantId,
 }) => {
+  const { t } = useTranslation();
   const { data: optionDict } = useStore((state) => state.optionDict);
   const options = optionDict?.options || {};
   const photo = dish.photos[0];
@@ -93,13 +95,17 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
             </Box>
             <VStack alignItems="flex-start" justifyContent="flex-start">
               {isEmpty(dish.discountPrice) ? (
-                <Text>{dish.price.text}</Text>
+                <Text>
+                  {t("common.price_number", { val: dish.price.value })}
+                </Text>
               ) : (
-                <Text as="s">{dish.price.text}</Text>
+                <Text as="s">
+                  {t("common.price_number", { val: dish.price.value })}
+                </Text>
               )}
               {!isEmpty(dish.discountPrice) && (
                 <Text textColor="blue.400" fontWeight="bold">
-                  {dish.discountPrice?.text}
+                  {t("common.price_number", { val: dish.discountPrice?.value })}
                 </Text>
               )}
             </VStack>

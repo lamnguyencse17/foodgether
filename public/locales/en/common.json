@@ -31,7 +31,12 @@
       "cart": "Cart",
       "your_current_cart": "Your current cart",
       "cart_option": "Option",
-      "cart_items": "Item(s)"
+      "cart_items": "Item(s)",
+      "price": "Price",
+      "unknown_dish": "Unknown dish",
+      "unknown_option": "Unknown option",
+      "unknown_option_item": "Unknown item",
+      "total_price": "Total price"
     },
     "navbar": {
       "login": "Login",
@@ -46,7 +51,8 @@
       "M_01": "We are currently experiencing issues processing menu data."
     },
     "common": {
-      "close": "Close"
+      "close": "Close",
+      "price_number": "{{val, currency(VND)}}"
     }
   }
 }

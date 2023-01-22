@@ -3355,10 +3355,10 @@ quick-lru@^6.1.1:
   resolved "https://registry.npmjs.org/quick-lru/-/quick-lru-6.1.1.tgz#f8e5bf9010376c126c80c1a62827a526c0e60adf"
   integrity sha512-S27GBT+F0NTRiehtbrgaSE1idUAJ5bX8dPAQTdylEyNlrdcH5X4Lz7Edz3DYzecbsCluD5zO8ZNEe04z3D3u6Q==
 
-radash@^10.3.2:
-  version "10.3.2"
-  resolved "https://registry.npmjs.org/radash/-/radash-10.3.2.tgz#688e1db43d3d75694540dd5866358aa4be68af80"
-  integrity sha512-ixLKg4xJFVYDEHck4/30BonhHPw+3bQAkSoyAPTICi57xEDUPQgh4VtzRl0hNUjymBaAfYp/VjmvWujSVCe0FQ==
+radash@^10.7.0:
+  version "10.7.0"
+  resolved "https://registry.npmjs.org/radash/-/radash-10.7.0.tgz#aaa164f9697a440d848b88323d51d1bc4f39608a"
+  integrity sha512-dz5NUcGnvn080kKJnyPtqVnP4MWoiwp5qQhEQFK/qMJxCjffQd8tMR4cybxy6y5hupYa5UkSlJRSRY2F7GPBxQ==
 
 rc@^1.2.7:
   version "1.2.8"

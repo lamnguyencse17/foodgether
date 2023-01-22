@@ -24,12 +24,24 @@ import {
 import { get, isEmpty } from "radash";
 import { useTranslation } from "react-i18next";
 import { BiCart } from "react-icons/bi";
+import shallow from "zustand/shallow";
 import useStore from "../../hooks/store";
 
 const FloatingCart = () => {
   const { t } = useTranslation();
-  const { data: cart } = useStore((state) => state.cart);
-  const { data: optionDict } = useStore((state) => state.optionDict);
+  const {
+    cart: { data: cart },
+    optionDict: { data: optionDict },
+    dishDict: { data: dishDict },
+  } = useStore(
+    (state) => ({
+      dishDict: state.dishDict,
+      cart: state.cart,
+      optionDict: state.optionDict,
+    }),
+    shallow
+  );
+
   const options = optionDict?.options || {};
   const { isOpen, onOpen, onClose } = useDisclosure();
   if (isEmpty(cart)) {
@@ -63,7 +75,13 @@ const FloatingCart = () => {
                 justifyContent="flex-start"
                 alignItems="flex-start"
               >
-                <Heading>{cartItem.dishId}</Heading>
+                <Heading>
+                  {get(
+                    dishDict,
+                    `dishes.${cartItem.dishId}.name`,
+                    t("inivitation_page.unknown_dish")
+                  )}
+                </Heading>
                 {isEmpty(cartItem.options) ? null : (
                   <TableContainer whiteSpace="normal">
                     <Table variant="simple">
@@ -71,6 +89,7 @@ const FloatingCart = () => {
                         <Tr>
                           <Th>{t("invitation_page.cart_option")}</Th>
                           <Th>{t("invitation_page.cart_items")}</Th>
+                          <Th>{t("invitation_page.price")}</Th>
                         </Tr>
                       </Thead>
                       <Tbody width={5}>
@@ -80,7 +99,7 @@ const FloatingCart = () => {
                               {get(
                                 options,
                                 `${cartItem.dishId}.${option.optionId}.name`,
-                                "Unknown option"
+                                t("inivitation_page.unknown_option")
                               )}
                             </Th>
                             <Th>
@@ -93,8 +112,35 @@ const FloatingCart = () => {
                                       {get(
                                         options,
                                         `${cartItem.dishId}.${option.optionId}.items.${item}.name`,
-                                        "Unknown option item"
-                                      )}
+                                        t("inivitation_page.unknown_item")
+                                      )}{" "}
+                                    </Text>
+                                  ))}
+                                </VStack>
+                              )}
+                            </Th>
+                            <Th>
+                              {option.mandatory ? (
+                                <Text>
+                                  {t("common.price_number", {
+                                    val: get(
+                                      options,
+                                      `${cartItem.dishId}.${option.optionId}.items.${option.optionId}.price.text`,
+                                      t("inivitation_page.unknown_item")
+                                    ),
+                                  })}
+                                </Text>
+                              ) : (
+                                <VStack alignItems="flex-start">
+                                  {option.value.map((item) => (
+                                    <Text key={item}>
+                                      {t("common.price_number", {
+                                        val: get(
+                                          options,
+                                          `${cartItem.dishId}.${option.optionId}.items.${item}.price.value`,
+                                          t("inivitation_page.unknown_item")
+                                        ),
+                                      })}
                                     </Text>
                                   ))}
                                 </VStack>
@@ -102,6 +148,41 @@ const FloatingCart = () => {
                             </Th>
                           </Tr>
                         ))}
+                        <Tr>
+                          <Th>{t("invitation_page.total_price")}</Th>
+                          <Th />
+                          <Th>
+                            {t("common.price_number", {
+                              val:
+                                (get(
+                                  dishDict,
+                                  `dishes.${cartItem.dishId}.price.value`,
+                                  0
+                                ) as number) + // TODO: waiting for a fix
+                                cartItem.options.reduce((acc, option) => {
+                                  return (
+                                    acc +
+                                    (option.mandatory
+                                      ? (get(
+                                          options,
+                                          `${cartItem.dishId}.${option.optionId}.items.${option.optionId}.price.value`,
+                                          0
+                                        ) as number) // TODO: waiting for a fix
+                                      : option.value.reduce((acc, item) => {
+                                          return (
+                                            acc +
+                                            (get(
+                                              options,
+                                              `${cartItem.dishId}.${option.optionId}.items.${item}.price.value`,
+                                              0
+                                            ) as number) // TODO: waiting for a fix
+                                          );
+                                        }, 0))
+                                  );
+                                }, 0),
+                            })}
+                          </Th>
+                        </Tr>
                       </Tbody>
                     </Table>
                   </TableContainer>

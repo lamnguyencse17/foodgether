@@ -98,7 +98,8 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
           <HStack>
             <Image src="/price.svg" width={24} height={24} alt="" />
             <Text>
-              {priceRange.minPrice} - {priceRange.maxPrice}
+              {t("common.price_number", { val: priceRange.minPrice })} -{" "}
+              {t("common.price_number", { val: priceRange.maxPrice })}
             </Text>
           </HStack>
         )}

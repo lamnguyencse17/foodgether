@@ -3,8 +3,8 @@ import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { convertObjectWithDates } from "../../utils/date";
 import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
-import { Box, Divider, HStack, Stack, VStack } from "@chakra-ui/react";
-import { get, group, isEmpty, mapEntries, mapValues, objectify } from "radash";
+import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
+import { get, group, isEmpty, mapValues, objectify, unique } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
 import { trpc } from "../../utils/trpc";
@@ -104,6 +104,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const { data: optionDict, setOptionDict } = useStore(
     (state) => state.optionDict
   );
+  const { data: dishDict, setDishDict } = useStore((state) => state.dishDict);
   const restaurantIdString =
     router.query.id || router.pathname.split("/").pop();
   const restaurantId = parseInt(restaurantIdString as unknown as string);
@@ -184,6 +185,23 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
     haveCorrectOptionDict,
     restaurantId,
   ]);
+
+  useEffect(() => {
+    if (
+      !dishDict ||
+      (dishDict.restaurantId !== restaurantId && confirmedRestaurant)
+    ) {
+      setDishDict({
+        restaurantId,
+        dishes: objectify(
+          (confirmedRestaurant.dishTypes || []).flatMap(
+            (dishType) => dishType.dishes
+          ),
+          (item) => item.id
+        ),
+      });
+    }
+  }, [confirmedRestaurant, dishDict, restaurantId, setDishDict]);
 
   return (
     <>

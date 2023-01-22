@@ -96,6 +96,7 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
   const { data: optionDict, setOptionDict } = useStore(
     (state) => state.optionDict
   );
+  const { data: dishDict, setDishDict } = useStore((state) => state.dishDict);
   const { t } = useTranslation();
   const router = useRouter();
   const restaurant = invitation?.restaurant;
@@ -123,8 +124,8 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
       }
     );
 
-  const confirmedRestaurant = (restaurant ||
-    {}) as NonNullable<AggregatedRestaurantWithStringDate>;
+  const confirmedRestaurant =
+    restaurant as NonNullable<AggregatedRestaurantWithStringDate>;
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
 
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
@@ -166,6 +167,23 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
     haveCorrectOptionDict,
     restaurantId,
   ]);
+
+  useEffect(() => {
+    if (
+      !dishDict ||
+      (dishDict.restaurantId !== confirmedRestaurant.id && confirmedRestaurant)
+    ) {
+      setDishDict({
+        restaurantId: confirmedRestaurant.id,
+        dishes: objectify(
+          (confirmedRestaurant.dishTypes || []).flatMap(
+            (dishType) => dishType.dishes
+          ),
+          (item) => item.id
+        ),
+      });
+    }
+  }, [confirmedRestaurant, dishDict, restaurantId, setDishDict]);
 
   return (
     <>
