@@ -37,7 +37,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
       dishId: dish.id,
       restaurantId,
     },
-    { enabled: isOpen, staleTime: 60 * 1000 }
+    { enabled: isOpen && !options[dish.id], staleTime: 60 * 1000 }
   );
 
   const option = options[dish.id];
