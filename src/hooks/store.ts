@@ -1,5 +1,5 @@
 import { Session } from "next-auth";
-import create from "zustand";
+import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import produce from "immer";
 import { replaceOrAppend } from "radash";

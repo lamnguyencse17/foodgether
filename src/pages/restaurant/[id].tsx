@@ -145,8 +145,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
     );
 
   const confirmedRestaurant = (restaurant ||
-    getRestaurantQuery.data ||
-    {}) as NonNullable<AggregatedRestaurantWithStringDate>;
+    getRestaurantQuery.data) as NonNullable<AggregatedRestaurantWithStringDate>;
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
 
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
