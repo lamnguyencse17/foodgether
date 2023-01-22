@@ -119,6 +119,7 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
       },
       {
         enabled: shouldFetchOptionDict,
+        refetchOnWindowFocus: false,
       }
     );
 

@@ -139,6 +139,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
       },
       {
         enabled: shouldFetchOptionDict,
+        refetchOnWindowFocus: false,
       }
     );
 

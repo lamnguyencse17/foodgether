@@ -5,6 +5,7 @@ import produce from "immer";
 import { replaceOrAppend } from "radash";
 import { CartItem, DishOptionValue } from "../server/schemas/order";
 import { Option, OptionItem } from "@prisma/client";
+import { DishWithStringDate } from "../types/dish";
 
 type SessionUser = Session["user"];
 export type ToastKeyParam = "info" | "warning" | "success" | "error";
@@ -58,12 +59,23 @@ type OptionDictStore = {
   setOptionDict: (value: OptionDictStore["data"]) => void;
 };
 
+type DishDictStore = {
+  data?: {
+    restaurantId: number;
+    dishes: {
+      [dishId: string]: DishWithStringDate;
+    };
+  };
+  setDishDict: (value: DishDictStore["data"]) => void;
+};
+
 export type UseStoreType = {
   user: UserStoreType;
   toast: ToastStoreType;
   currentDishOption: DishOptionStoreType;
   cart: CartStoreType;
   optionDict: OptionDictStore;
+  dishDict: DishDictStore;
 };
 
 const useStore = create<UseStoreType>()(
@@ -141,6 +153,17 @@ const useStore = create<UseStoreType>()(
           }),
           false,
           "setOptionDict"
+        ),
+    },
+    dishDict: {
+      data: undefined,
+      setDishDict: (value) =>
+        set(
+          produce((state) => {
+            state.dishDict.data = value;
+          }),
+          false,
+          "setDishDict"
         ),
     },
   }))
