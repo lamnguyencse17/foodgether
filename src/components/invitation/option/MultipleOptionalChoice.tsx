@@ -1,6 +1,6 @@
 import { Checkbox, CheckboxGroup, HStack, VStack } from "@chakra-ui/react";
 import { OptionItem } from "@prisma/client";
-import { cluster, get } from "radash";
+import { cluster, get, toggle } from "radash";
 import { ChangeEvent, FunctionComponent } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
@@ -35,19 +35,18 @@ const MultipleOptionalChoice: FunctionComponent<
   const hItems = cluster(items, Math.ceil(items.length / 2));
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, item: OptionItem) => {
-    const newValue = e.target.checked
-      ? [
-          ...value,
-          {
-            id: item.id,
-            price: get(
-              dict,
-              `${dishId}.${optionId}.items.${item.id}.price.value`,
-              0
-            ) as number,
-          },
-        ]
-      : value.filter((v) => v.id !== item.id);
+    const newValue = toggle(
+      value,
+      {
+        id: item.id,
+        price: get(
+          dict,
+          `${dishId}.${optionId}.items.${item.id}.price.value`,
+          0
+        ) as number,
+      },
+      (optionItem) => optionItem.id
+    );
     const dishOption = {
       optionId,
       mandatory: false as const,

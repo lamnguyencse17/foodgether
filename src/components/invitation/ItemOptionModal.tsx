@@ -51,7 +51,6 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     shallow
   );
   const { addToCart } = useStore((state) => state.cart);
-  const optionDictData = optionDict?.options || {};
 
   useEffect(() => {
     return () => {};
