@@ -39,7 +39,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxW="600px">
         <ModalHeader>
           <Heading size="md">
             {dish.name} - {t("restaurant_page.option")}
