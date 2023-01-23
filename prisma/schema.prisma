@@ -216,6 +216,9 @@ model OrderDish {
   dishId       Int
   restaurantId Int
 
+  dishPrice  Int
+  totalPrice Int
+
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   orderDishOption OrderDishOption[]
@@ -229,6 +232,7 @@ model OrderDishOption {
   optionId     Int
   dishId       Int
   restaurantId Int
+  price        Int
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
@@ -244,6 +248,7 @@ model OrderDishOptionItem {
   optionItemId Int
   dishId       Int
   restaurantId Int
+  price        Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

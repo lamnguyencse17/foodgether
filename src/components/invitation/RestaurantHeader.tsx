@@ -15,6 +15,7 @@ import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { trpc } from "../../utils/trpc";
 import useStore from "../../hooks/store";
+import { createOrderSchema } from "../../server/schemas/order";
 
 type RestaurantHeaderProps = {
   photo?: Photo;
@@ -45,6 +46,11 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   const { data: cart } = useStore((state) => state.cart);
 
   const handleOrder = () => {
+    createOrderSchema.parse({
+      restaurantId,
+      invitationId,
+      items: cart,
+    });
     createOrder.mutate({
       restaurantId,
       invitationId,

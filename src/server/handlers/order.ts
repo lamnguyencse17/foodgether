@@ -51,21 +51,26 @@ export const createOrder = protectedProcedure
                             },
                           },
                         },
+                        price: option.price,
                       }
-                    : option.value.map((value) => ({
+                    : option.value.map((optionItem) => ({
                         optionItem: {
                           connect: {
                             id_dishId_restaurantId: {
-                              id: value,
+                              id: optionItem.id,
                               dishId: item.dishId,
                               restaurantId: input.restaurantId,
                             },
                           },
                         },
+                        price: optionItem.price,
                       })),
                 },
+                price: option.price,
               })),
             },
+            dishPrice: item.dishPrice,
+            totalPrice: item.totalPrice,
           })),
         },
       },
