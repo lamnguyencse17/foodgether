@@ -1,4 +1,12 @@
-import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  HStack,
+  Skeleton,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import { FunctionComponent, useEffect } from "react";
 import { Photo } from "../../types/shared";
@@ -45,9 +53,10 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
       flexDirection={["column", "column", "row"]}
       gap={10}
       padding={4}
+      width="100%"
     >
       <Box maxH={["100%", "2xs", "3xs"]} maxW={["100%", "2xs", "md"]}>
-        {photo && (
+        {photo ? (
           <Image
             src={photo.value}
             height={photo.height}
@@ -60,16 +69,22 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
             }}
             priority={true}
           />
+        ) : (
+          <Skeleton height="200px" width="96" />
         )}
       </Box>
 
       <VStack flex={1} alignItems="flex-start">
         <Heading size={["md", "md", "lg"]}>
-          <Link href={url} target="_blank">
-            <Box alignItems="center" justifyContent="center">
-              {name} <ExternalLinkIcon pb={1} />
-            </Box>
-          </Link>
+          {name ? (
+            <Link href={url} target="_blank">
+              <Box alignItems="center" justifyContent="center">
+                {name} <ExternalLinkIcon pb={1} />
+              </Box>
+            </Link>
+          ) : (
+            <Skeleton height="6" width="80" />
+          )}
         </Heading>
 
         <Text>{address}</Text>
@@ -90,13 +105,16 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
               : t("invitation_page.is_closed")}
           </Text>
         </HStack>
-        {priceRange && (
+        {priceRange ? (
           <HStack>
             <Image src="/price.svg" width={24} height={24} alt="" />
             <Text>
-              {priceRange.minPrice} - {priceRange.maxPrice}
+              {t("common.price_number", { val: priceRange.minPrice })} -{" "}
+              {t("common.price_number", { val: priceRange.maxPrice })}
             </Text>
           </HStack>
+        ) : (
+          <Skeleton height="6" width="64" />
         )}
         <Button
           onClick={() => {
@@ -104,6 +122,7 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
               restaurantId,
             });
           }}
+          disabled={restaurantId === -1}
         >
           {t("restaurant_page.create_invitation")}
         </Button>

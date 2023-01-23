@@ -8,7 +8,7 @@ const useI18nLocale = () => {
 
   useEffect(() => {
     i18n.changeLanguage(router.locale || "en");
-  }, []);
+  }, [i18n, router.locale]);
 };
 
 export default useI18nLocale;

@@ -4,6 +4,7 @@ import {
   CardBody,
   CardHeader,
   Heading,
+  Skeleton,
   Stack,
   StackDivider,
 } from "@chakra-ui/react";
@@ -13,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { isEmpty } from "radash";
 
 type RestaurantMenuSectionProps = {
   dishTypes: AggregatedDishTypesWithStringDate[];
@@ -39,27 +41,31 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
             alignItems="flex-start"
             direction={["row", "row", "column"]}
           >
-            {dishTypes.map((dishType) => (
-              <Box key={dishType.id}>
-                <Link
-                  as={NextLink}
-                  href={`#${dishType.id}`}
-                  color={
-                    !isNaN(idHash) && idHash === dishType.id
-                      ? "blue.400"
-                      : undefined
-                  }
-                >
-                  <Heading
-                    size="xs"
-                    textTransform="uppercase"
-                    fontWeight="normal"
+            {!isEmpty(dishTypes) ? (
+              dishTypes.map((dishType) => (
+                <Box key={dishType.id}>
+                  <Link
+                    as={NextLink}
+                    href={`#${dishType.id}`}
+                    color={
+                      !isNaN(idHash) && idHash === dishType.id
+                        ? "blue.400"
+                        : undefined
+                    }
                   >
-                    {dishType.name}
-                  </Heading>
-                </Link>
-              </Box>
-            ))}
+                    <Heading
+                      size="xs"
+                      textTransform="uppercase"
+                      fontWeight="normal"
+                    >
+                      {dishType.name}
+                    </Heading>
+                  </Link>
+                </Box>
+              ))
+            ) : (
+              <Skeleton height="6" width="36" />
+            )}
           </Stack>
         </CardBody>
       </Card>

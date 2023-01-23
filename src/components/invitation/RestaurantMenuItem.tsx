@@ -55,7 +55,11 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
     if (dishOptionQuery.isFetching && option) {
       trpcContext.option.getOptionFromDishId.cancel();
     }
-  }, [dishOptionQuery.isFetching, option]);
+  }, [
+    dishOptionQuery.isFetching,
+    option,
+    trpcContext.option.getOptionFromDishId,
+  ]);
 
   return (
     <>

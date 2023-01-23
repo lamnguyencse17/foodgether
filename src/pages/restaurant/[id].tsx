@@ -17,7 +17,7 @@ import {
 } from "../../server/service/shopee";
 import { upsertRestaurant } from "../../server/db/restaurant";
 import { updateRestaurantMenu } from "../../server/handlers/restaurant";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import useStore from "../../hooks/store";
 
 export async function getStaticPaths() {
@@ -39,60 +39,76 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
 };
 
 export const getStaticProps = async ({
-  locale,
   params: { id },
 }: GetRestaurantServerParams) => {
-  const rawRestaurant = await prisma.restaurant.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-    include: {
-      dishTypes: {
-        include: {
-          dishTypeAndDishes: {
-            include: {
-              dish: true,
+  if (isNaN(parseInt(id)) || !id) {
+    return {
+      props: {
+        restaurant: {},
+      },
+    };
+  }
+  try {
+    const rawRestaurant = await prisma.restaurant.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+      include: {
+        dishTypes: {
+          include: {
+            dishTypeAndDishes: {
+              include: {
+                dish: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  if (!rawRestaurant) {
-    const restaurantResponse = await fetchShopeeRestaurantFromId(parseInt(id));
-    await upsertRestaurant(restaurantResponse.reply.delivery_detail);
-    const menu = await fetchShopeeMenu(
-      restaurantResponse.reply.delivery_detail.delivery_id
-    );
-    const completedRestaurant = await updateRestaurantMenu(
-      parseInt(id),
-      menu.reply.menu_infos
-    );
+    if (!rawRestaurant) {
+      const restaurantResponse = await fetchShopeeRestaurantFromId(
+        parseInt(id)
+      );
+      await upsertRestaurant(restaurantResponse.reply.delivery_detail);
+      const menu = await fetchShopeeMenu(
+        restaurantResponse.reply.delivery_detail.delivery_id
+      );
+      const completedRestaurant = await updateRestaurantMenu(
+        parseInt(id),
+        menu.reply.menu_infos
+      );
+      return {
+        props: {
+          restaurant: convertObjectWithDates(
+            completedRestaurant
+          ) as AggregatedRestaurantWithStringDate,
+        },
+      };
+    }
+
+    const restaurant = {
+      ...rawRestaurant,
+      dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
+        ...dishType,
+        dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
+      })),
+    };
+
     return {
       props: {
         restaurant: convertObjectWithDates(
-          completedRestaurant
+          restaurant
         ) as AggregatedRestaurantWithStringDate,
       },
     };
+  } catch (err) {
+    return {
+      props: {
+        restaurant: {},
+      },
+    };
   }
-
-  const restaurant = {
-    ...rawRestaurant,
-    dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
-      ...dishType,
-      dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
-    })),
-  };
-
-  return {
-    props: {
-      restaurant: convertObjectWithDates(
-        restaurant
-      ) as AggregatedRestaurantWithStringDate,
-    },
-  };
 };
 
 type RestaurantPageProps = {
@@ -107,15 +123,14 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const { data: dishDict, setDishDict } = useStore((state) => state.dishDict);
   const restaurantIdString =
     router.query.id || router.pathname.split("/").pop();
-  const restaurantId = parseInt(restaurantIdString as unknown as string);
 
-  const isValidRestaurantId = !isNaN(restaurantIdString as unknown as number);
+  const restaurantId = parseInt(restaurantIdString as unknown as string);
+  const isValidRestaurantId = !isNaN(restaurantId as unknown as number);
 
   const haveCorrectOptionDict =
     optionDict && optionDict?.restaurantId === restaurantId;
 
   const shouldFetchRestaurant = !isEmpty(restaurant) && isValidRestaurantId;
-
   const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
     {
       id: restaurantId,
@@ -144,8 +159,12 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
       }
     );
 
-  const confirmedRestaurant = (restaurant ||
-    getRestaurantQuery.data) as NonNullable<AggregatedRestaurantWithStringDate>;
+  const confirmedRestaurant = useMemo(() => {
+    return (restaurant ||
+      getRestaurantQuery.data ||
+      {}) as NonNullable<AggregatedRestaurantWithStringDate>;
+  }, [getRestaurantQuery.data, restaurant]);
+
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
 
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
@@ -186,9 +205,15 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   ]);
 
   useEffect(() => {
+    console.log(
+      !dishDict,
+      dishDict && dishDict.restaurantId !== restaurantId,
+      confirmedRestaurant
+    );
     if (
-      !dishDict ||
-      (dishDict.restaurantId !== restaurantId && confirmedRestaurant)
+      dishDict &&
+      dishDict.restaurantId !== restaurantId &&
+      confirmedRestaurant
     ) {
       setDishDict({
         restaurantId,
@@ -200,7 +225,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
         ),
       });
     }
-  }, [confirmedRestaurant, dishDict, restaurantId, setDishDict]);
+  }, [confirmedRestaurant, dishDict, restaurantId]);
 
   return (
     <>

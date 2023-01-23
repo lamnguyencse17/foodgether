@@ -143,6 +143,9 @@ export const fetchRestaurantFromUrl = publicProcedure
 export const fetchRestaurantFromId = publicProcedure
   .input(fetchRestaurantFromIdSchema)
   .query(async ({ input }) => {
+    if (isNaN(input.id) || !input.id) {
+      return {};
+    }
     const restaurantResponse = await fetchShopeeRestaurantFromId(input.id);
     if (restaurantResponse.result !== "success") {
       console.log(

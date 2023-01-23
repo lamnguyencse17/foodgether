@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import FloatingCart from "../../components/invitation/FloatingCart";
 import useStore from "../../hooks/store";
 import { trpc } from "../../utils/trpc";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -124,21 +124,10 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
       }
     );
 
-  const confirmedRestaurant =
-    restaurant as NonNullable<AggregatedRestaurantWithStringDate>;
-  const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
-
-  const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
-  const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
-
-  const dishTypes = get(
-    confirmedRestaurant,
-    "dishTypes",
-    []
-  ) as AggregatedDishTypesWithStringDate[];
-  const description = t("invitation_page.invitation_description", {
-    name,
-  }) as string;
+  const confirmedRestaurant = useMemo(() => {
+    return (restaurant ||
+      {}) as NonNullable<AggregatedRestaurantWithStringDate>;
+  }, [restaurant]);
 
   useEffect(() => {
     if (getOptionForAllDishesQuery.isFetched && !haveCorrectOptionDict) {
@@ -183,7 +172,22 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
         ),
       });
     }
-  }, [confirmedRestaurant, dishDict, restaurantId, setDishDict]);
+  }, [confirmedRestaurant, dishDict, restaurantId]);
+
+  const { name, address, priceRange, isAvailable, url } =
+    confirmedRestaurant || {};
+
+  const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
+  const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
+
+  const dishTypes = get(
+    confirmedRestaurant,
+    "dishTypes",
+    []
+  ) as AggregatedDishTypesWithStringDate[];
+  const description = t("invitation_page.invitation_description", {
+    name,
+  }) as string;
 
   return (
     <>
