@@ -39,15 +39,16 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String?
-  email         String?      @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  invitations   Invitation[]
-  orders        Order[]
+  id              String           @id @default(cuid())
+  name            String?
+  email           String?          @unique
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  invitations     Invitation[]
+  orders          Order[]
+  blacklistedUser BlacklistedUser?
 }
 
 model VerificationToken {
@@ -252,4 +253,12 @@ model OrderDishOptionItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model BlacklistedUser {
+  id     String  @id @default(cuid())
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  @@unique([userId])
 }
