@@ -38,6 +38,12 @@
       "unknown_option_item": "Unknown item",
       "total_price": "Total price"
     },
+    "invitation_manage_page": {
+      "cover_photo": "{{name}} cover photo",
+      "is_closed": "Closed",
+      "is_open": "Open",
+      "invitation_description": "Invitation to order at {{name}}"
+    },
     "navbar": {
       "login": "Login",
       "logout": "Logout"

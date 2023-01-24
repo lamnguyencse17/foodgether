@@ -1,10 +1,9 @@
 import { Dish } from "@prisma/client";
-import { MetaStringDate, Photo, Price } from "./shared";
+import { Photo, Price } from "./shared";
 
-export type DishWithStringDate = Omit<
+export type DishWithPriceAndPhoto = Omit<
   Dish,
-  "createdAt" | "updatedAt" | "photos" | "price" | "discountPrice"
-> &
-  MetaStringDate & { photos: Photo[] } & { price: Price } & {
-    discountPrice: Price | null;
-  };
+  "photos" | "price" | "discountPrice"
+> & { photos: Photo[] } & { price: Price } & {
+  discountPrice: Price | null;
+};

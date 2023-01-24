@@ -1,14 +1,13 @@
 import { useRouter } from "next/router";
 import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
-import { convertObjectWithDates } from "../../utils/date";
-import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
+import { AggregatedRestaurant } from "../../types/restaurant";
 import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
 import { get, group, isEmpty, mapValues, objectify, unique } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
 import { trpc } from "../../utils/trpc";
-import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
+import { AggregatedDishTypes } from "../../types/dishTypes";
 import RestaurantMenuSection from "../../components/restaurant/RestaurantMenuSection";
 import RestaurantMenu from "../../components/restaurant/RestaurantMenu";
 import {
@@ -80,9 +79,7 @@ export const getStaticProps = async ({
       );
       return {
         props: {
-          restaurant: convertObjectWithDates(
-            completedRestaurant
-          ) as AggregatedRestaurantWithStringDate,
+          restaurant: completedRestaurant,
         },
       };
     }
@@ -97,9 +94,7 @@ export const getStaticProps = async ({
 
     return {
       props: {
-        restaurant: convertObjectWithDates(
-          restaurant
-        ) as AggregatedRestaurantWithStringDate,
+        restaurant,
       },
     };
   } catch (err) {
@@ -112,7 +107,7 @@ export const getStaticProps = async ({
 };
 
 type RestaurantPageProps = {
-  restaurant: AggregatedRestaurantWithStringDate;
+  restaurant: AggregatedRestaurant;
 };
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
@@ -162,7 +157,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const confirmedRestaurant = useMemo(() => {
     return (restaurant ||
       getRestaurantQuery.data ||
-      {}) as NonNullable<AggregatedRestaurantWithStringDate>;
+      {}) as NonNullable<AggregatedRestaurant>;
   }, [getRestaurantQuery.data, restaurant]);
 
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
@@ -174,7 +169,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
     confirmedRestaurant,
     "dishTypes",
     []
-  ) as AggregatedDishTypesWithStringDate[];
+  ) as AggregatedDishTypes[];
 
   useEffect(() => {
     if (getOptionForAllDishesQuery.isFetched && !haveCorrectOptionDict) {

@@ -1,30 +1,27 @@
 import { useRouter } from "next/router";
-import { prisma } from "../../server/db/client";
-import { Photo, SharedPropsFromServer } from "../../types/shared";
-import { convertObjectWithDates } from "../../utils/date";
-import { AggregatedRestaurantWithStringDate } from "../../types/restaurant";
-import { Box, Divider, HStack, Stack, VStack } from "@chakra-ui/react";
+import { prisma } from "../../../server/db/client";
+import { Photo, SharedPropsFromServer } from "../../../types/shared";
+import { AggregatedRestaurant } from "../../../types/restaurant";
+import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
 import { get, group, isEmpty, mapValues, objectify } from "radash";
 import Head from "next/head";
-import RestaurantHeader from "../../components/invitation/RestaurantHeader";
-import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
-import RestaurantMenuSection from "../../components/invitation/RestaurantMenuSection";
-import RestaurantMenu from "../../components/invitation/RestaurantMenu";
-import { AggregatedInvitationWithStringDate } from "../../types/invitation";
+import RestaurantHeader from "../../../components/invitation/RestaurantHeader";
+import { AggregatedDishTypes } from "../../../types/dishTypes";
+import RestaurantMenuSection from "../../../components/invitation/RestaurantMenuSection";
+import RestaurantMenu from "../../../components/invitation/RestaurantMenu";
+import { AggregatedInvitation } from "../../../types/invitation";
 import { useTranslation } from "react-i18next";
-import FloatingCart from "../../components/invitation/FloatingCart";
-import useStore from "../../hooks/store";
-import { trpc } from "../../utils/trpc";
+import FloatingCart from "../../../components/invitation/FloatingCart";
+import useStore from "../../../hooks/store";
+import { trpc } from "../../../utils/trpc";
 import { useEffect, useMemo } from "react";
+import { getAllInvitationIds } from "../../../server/db/invitation";
 
 export async function getStaticPaths() {
-  const idObjectList =
-    (await prisma.invitation.findMany({
-      select: { id: true },
-    })) || [];
+  const invitationIds = await getAllInvitationIds();
 
   return {
-    paths: idObjectList.map(({ id }) => ({ params: { id: id.toString() } })),
+    paths: invitationIds.map((id) => ({ params: { id } })),
     fallback: true,
   };
 }
@@ -71,7 +68,7 @@ export const getStaticProps = async ({
       },
     };
   }
-  const invitation = convertObjectWithDates({
+  const invitation = {
     ...rawInvitation,
     restaurant: {
       ...rawInvitation.restaurant,
@@ -80,7 +77,7 @@ export const getStaticProps = async ({
         dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
       })),
     },
-  });
+  };
   return {
     props: {
       invitation,
@@ -89,7 +86,7 @@ export const getStaticProps = async ({
 };
 
 type InvitationPageProps = {
-  invitation: AggregatedInvitationWithStringDate | null;
+  invitation: AggregatedInvitation | null;
 };
 
 const RestaurantPage = ({ invitation }: InvitationPageProps) => {
@@ -125,8 +122,7 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
     );
 
   const confirmedRestaurant = useMemo(() => {
-    return (restaurant ||
-      {}) as NonNullable<AggregatedRestaurantWithStringDate>;
+    return (restaurant || {}) as NonNullable<AggregatedRestaurant>;
   }, [restaurant]);
 
   useEffect(() => {
@@ -184,7 +180,7 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
     confirmedRestaurant,
     "dishTypes",
     []
-  ) as AggregatedDishTypesWithStringDate[];
+  ) as AggregatedDishTypes[];
   const description = t("invitation_page.invitation_description", {
     name,
   }) as string;

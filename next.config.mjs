@@ -18,5 +18,8 @@ const config = {
     domains: ["images.foody.vn"],
   },
   trailingSlash: true,
+  experimental: {
+    swcPlugins: [["next-superjson-plugin", {}]],
+  },
 };
 export default config;

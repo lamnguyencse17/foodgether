@@ -38,6 +38,12 @@
       "unknown_option_item": "Thành phần tuỳ chọn không xác định",
       "total_price": "Tổng giá"
     },
+    "invitation_manage_page": {
+      "cover_photo": "Ảnh bìa {{name}}",
+      "is_closed": "Đóng cửa",
+      "is_open": "Mở cửa",
+      "invitation_description": "Lời mời đặt mua tại {{name}}"
+    },
     "navbar": {
       "login": "Đăng nhập",
       "logout": "Đăng xuất"

@@ -15,7 +15,7 @@ import { Option, OptionItem } from "@prisma/client";
 import { isEmpty } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
-import { DishWithStringDate } from "../../types/dish";
+import { DishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 
@@ -25,7 +25,7 @@ type ItemOptionModalProps = {
   options?: (Option & {
     items: OptionItem[];
   })[];
-  dish: DishWithStringDate;
+  dish: DishWithPriceAndPhoto;
 };
 
 const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({

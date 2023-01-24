@@ -9,11 +9,11 @@ import {
 } from "@chakra-ui/react";
 import { isEmpty } from "radash";
 import { FunctionComponent } from "react";
-import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
+import { AggregatedDishTypes } from "../../types/dishTypes";
 import RestaurantMenuItem from "./RestaurantMenuItem";
 
 type RestaurantMenuProps = {
-  dishTypes: AggregatedDishTypesWithStringDate[];
+  dishTypes: AggregatedDishTypes[];
   restaurantId: number;
 };
 

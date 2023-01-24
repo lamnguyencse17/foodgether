@@ -7,10 +7,9 @@ import {
   Skeleton,
   Stack,
   StackDivider,
-  VStack,
 } from "@chakra-ui/react";
 import { FunctionComponent } from "react";
-import { AggregatedDishTypesWithStringDate } from "../../types/dishTypes";
+import { AggregatedDishTypes } from "../../types/dishTypes";
 import { useTranslation } from "react-i18next";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
@@ -18,7 +17,7 @@ import { useRouter } from "next/router";
 import { isEmpty } from "radash";
 
 type RestaurantMenuSectionProps = {
-  dishTypes: AggregatedDishTypesWithStringDate[];
+  dishTypes: AggregatedDishTypes[];
 };
 
 const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({

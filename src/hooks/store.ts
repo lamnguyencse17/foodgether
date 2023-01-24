@@ -5,7 +5,7 @@ import produce from "immer";
 import { replaceOrAppend } from "radash";
 import { CartItem, DishOptionValue } from "../server/schemas/order";
 import { Option, OptionItem } from "@prisma/client";
-import { DishWithStringDate } from "../types/dish";
+import { DishWithPriceAndPhoto } from "../types/dish";
 
 type SessionUser = Session["user"];
 export type ToastKeyParam = "info" | "warning" | "success" | "error";
@@ -63,7 +63,7 @@ type DishDictStore = {
   data?: {
     restaurantId: number;
     dishes: {
-      [dishId: string]: DishWithStringDate;
+      [dishId: string]: DishWithPriceAndPhoto;
     };
   };
   setDishDict: (value: DishDictStore["data"]) => void;

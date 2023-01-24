@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { isEmpty } from "radash";
 import { FunctionComponent, useEffect } from "react";
-import { DishWithStringDate } from "../../types/dish";
+import { DishWithPriceAndPhoto } from "../../types/dish";
 import { trpc } from "../../utils/trpc";
 import ItemOptionModal from "./ItemOptionModal";
 import { AddIcon } from "@chakra-ui/icons";
@@ -21,7 +21,7 @@ import { listifyOptions } from "../../utils/transform";
 import { useTranslation } from "react-i18next";
 
 type RestaurantMenuItemProps = {
-  dish: DishWithStringDate;
+  dish: DishWithPriceAndPhoto;
   restaurantId: number;
 };
 

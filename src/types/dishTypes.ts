@@ -1,16 +1,6 @@
 import { DishTypes } from "@prisma/client";
-import { DishWithStringDate } from "./dish";
-import { MetaStringDate } from "./shared";
+import { DishWithPriceAndPhoto } from "./dish";
 
-export type DishTypesWithStringDate = Omit<
-  DishTypes,
-  "createdAt" | "updatedAt"
-> &
-  MetaStringDate;
-
-export type AggregatedDishTypesWithStringDate = Omit<
-  DishTypesWithStringDate,
-  "dishes"
-> & {
-  dishes: DishWithStringDate[];
+export type AggregatedDishTypes = DishTypes & {
+  dishes: DishWithPriceAndPhoto[];
 };

@@ -13,13 +13,13 @@ import { isEmpty } from "radash";
 import { FunctionComponent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import useStore from "../../hooks/store";
-import { DishWithStringDate } from "../../types/dish";
+import { DishWithPriceAndPhoto } from "../../types/dish";
 import { listifyOptions } from "../../utils/transform";
 import { trpc } from "../../utils/trpc";
 import ItemOptionModal from "./ItemOptionModal";
 
 type RestaurantMenuItemProps = {
-  dish: DishWithStringDate;
+  dish: DishWithPriceAndPhoto;
   restaurantId: number;
 };
 
