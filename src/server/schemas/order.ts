@@ -40,3 +40,5 @@ export const createOrderSchema = z.object({
   restaurantId: z.number(),
   items: z.array(cartItemSchema),
 });
+
+export type CreateOrderParams = z.infer<typeof createOrderSchema>;

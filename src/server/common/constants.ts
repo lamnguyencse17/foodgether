@@ -10,4 +10,9 @@ export const errors = {
   menu: {
     UPSERT_MENU: "M_01",
   },
+  order: {
+    AUDIT_FAILED_AT_OPTION: "O_01",
+    AUDIT_FAILED_AT_DISH: "O_02",
+    AUDIT_FAILED_AT_TOTAL: "O_03",
+  },
 };

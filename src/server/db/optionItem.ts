@@ -36,3 +36,17 @@ export const upsertOptionItem = async (
     data: createData,
   });
 };
+
+export const getOptionItemPrice = (
+  filterList: { id: number; restaurantId: number; dishId: number }[]
+) => {
+  return prisma.optionItem.findMany({
+    where: {
+      OR: filterList,
+    },
+    select: {
+      price: true,
+      id: true,
+    },
+  });
+};

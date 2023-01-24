@@ -35,3 +35,24 @@ export const upsertDish = async (
     })),
   });
 };
+
+export const getDishPrice = (dishIds: number[], restaurantId: number) => {
+  return prisma.dish.findMany({
+    where: {
+      AND: [
+        {
+          id: {
+            in: dishIds,
+          },
+        },
+        {
+          restaurantId: restaurantId,
+        },
+      ],
+    },
+    select: {
+      price: true,
+      id: true,
+    },
+  });
+};
