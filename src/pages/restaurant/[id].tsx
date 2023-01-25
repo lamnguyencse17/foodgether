@@ -3,7 +3,7 @@ import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { AggregatedRestaurant } from "../../types/restaurant";
 import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
-import { get, group, isEmpty, mapValues, objectify, unique } from "radash";
+import { get, isEmpty, objectify } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
 import { trpc } from "../../utils/trpc";
@@ -18,6 +18,7 @@ import { upsertRestaurant } from "../../server/db/restaurant";
 import { updateRestaurantMenu } from "../../server/handlers/restaurant";
 import { useEffect, useMemo } from "react";
 import useStore from "../../hooks/store";
+import useSetOptionDict from "../../hooks/useSetOptionDict";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -112,18 +113,12 @@ type RestaurantPageProps = {
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const router = useRouter();
-  const { data: optionDict, setOptionDict } = useStore(
-    (state) => state.optionDict
-  );
   const { data: dishDict, setDishDict } = useStore((state) => state.dishDict);
   const restaurantIdString =
     router.query.id || router.pathname.split("/").pop();
 
   const restaurantId = parseInt(restaurantIdString as unknown as string);
   const isValidRestaurantId = !isNaN(restaurantId as unknown as number);
-
-  const haveCorrectOptionDict =
-    optionDict && optionDict?.restaurantId === restaurantId;
 
   const shouldFetchRestaurant = !isEmpty(restaurant) && isValidRestaurantId;
   const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
@@ -137,28 +132,13 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
     }
   );
 
-  const shouldFetchOptionDict =
-    !isEmpty(restaurant) &&
-    getRestaurantQuery.isFetched &&
-    isValidRestaurantId &&
-    !haveCorrectOptionDict;
-
-  const getOptionForAllDishesQuery =
-    trpc.option.getOptionForAllDishFromRestaurantId.useQuery(
-      {
-        restaurantId,
-      },
-      {
-        enabled: shouldFetchOptionDict,
-        refetchOnWindowFocus: false,
-      }
-    );
-
   const confirmedRestaurant = useMemo(() => {
     return (restaurant ||
       getRestaurantQuery.data ||
       {}) as NonNullable<AggregatedRestaurant>;
   }, [getRestaurantQuery.data, restaurant]);
+
+  useSetOptionDict(confirmedRestaurant);
 
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
 
@@ -172,39 +152,6 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   ) as AggregatedDishTypes[];
 
   useEffect(() => {
-    if (getOptionForAllDishesQuery.isFetched && !haveCorrectOptionDict) {
-      const groupedDict = group(
-        getOptionForAllDishesQuery.data || [],
-        (option) => option.dishId
-      );
-      const newOptionDict = mapValues(groupedDict, (value) =>
-        objectify(
-          value || [],
-          (option) => option.id,
-          (option) => ({
-            ...option,
-            items: objectify(option.items, (optionItem) => optionItem.id),
-          })
-        )
-      );
-      setOptionDict({
-        restaurantId,
-        options: newOptionDict,
-      });
-    }
-  }, [
-    getOptionForAllDishesQuery.data,
-    getOptionForAllDishesQuery.isFetched,
-    haveCorrectOptionDict,
-    restaurantId,
-  ]);
-
-  useEffect(() => {
-    console.log(
-      !dishDict,
-      dishDict && dishDict.restaurantId !== restaurantId,
-      confirmedRestaurant
-    );
     if (
       dishDict &&
       dishDict.restaurantId !== restaurantId &&
