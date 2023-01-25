@@ -23,22 +23,8 @@ export const createInvitation = protectedProcedure
   .mutation(async ({ ctx, input }) => {
     const invitation = await ctx.prisma.invitation.create({
       data: {
-        createdBy: {
-          connect: {
-            id: ctx.session.user.id,
-          },
-        },
-        restaurant: {
-          connect: {
-            id: input.restaurantId,
-          },
-        },
-        invitationReference: {
-          create: {
-            restaurantId: input.restaurantId,
-            createdById: ctx.session.user.id,
-          },
-        },
+        ...input,
+        createdById: ctx.session.user.id,
       },
     });
     await revalidateInvitation(invitation.id);

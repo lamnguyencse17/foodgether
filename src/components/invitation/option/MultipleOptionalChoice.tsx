@@ -35,10 +35,6 @@ const MultipleOptionalChoice: FunctionComponent<
   const hItems = cluster(items, Math.ceil(items.length / 2));
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, item: OptionItem) => {
-    console.log(
-      get(dict, `${dishId}.${optionId}.items.${item.id}.price.value`, 0),
-      `${dishId}.${optionId}.items.${item.id}.price.value`
-    );
     const newValue = toggle(
       value,
       {
