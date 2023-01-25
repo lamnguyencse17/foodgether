@@ -179,32 +179,37 @@ model OptionItem {
 }
 
 model Invitation {
-  id           String     @id @default(cuid())
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  restaurantId Int
+  id           String      @id @default(cuid())
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  restaurantId Int?
 
-  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  createdById String
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   order     Order[]
+
+  invitationReference   InvitationReference @relation(fields: [invitationReferenceId], references: [id])
+  invitationReferenceId Int                 @unique
 }
 
 model Order {
-  id           Int        @id @default(autoincrement())
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  restaurantId Int
+  id           Int         @id @default(autoincrement())
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  restaurantId Int?
 
   invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   invitationId String
 
-  orderedBy   User   @relation(fields: [orderedById], references: [id], onDelete: Cascade)
-  orderedById String
+  orderedBy   User?   @relation(fields: [orderedById], references: [id], onDelete: SetNull)
+  orderedById String?
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  orderDish OrderDish[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  orderDish        OrderDish[]
+  orderReference   OrderReference @relation(fields: [orderReferenceId], references: [id])
+  orderReferenceId Int            @unique
 
   @@index([orderedById, createdAt(sort: Desc)])
 }
@@ -213,31 +218,36 @@ model OrderDish {
   id           Int   @id @default(autoincrement())
   order        Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId      Int
-  dish         Dish  @relation(fields: [dishId, restaurantId], references: [id, restaurantId], onDelete: Cascade)
-  dishId       Int
-  restaurantId Int
+  dish         Dish? @relation(fields: [dishId, restaurantId], references: [id, restaurantId], onDelete: SetNull)
+  dishId       Int?
+  restaurantId Int?
 
   dishPrice  Int
   totalPrice Int
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  orderDishOption OrderDishOption[]
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  orderDishOption      OrderDishOption[]
+  orderDishReference   OrderDishReference @relation(fields: [orderDishReferenceId], references: [id])
+  orderDishReferenceId Int                @unique
 }
 
 model OrderDishOption {
   id           Int       @id @default(autoincrement())
   orderDish    OrderDish @relation(fields: [orderDishId], references: [id], onDelete: Cascade)
   orderDishId  Int
-  option       Option    @relation(fields: [optionId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
-  optionId     Int
-  dishId       Int
-  restaurantId Int
-  price        Int
+  option       Option?   @relation(fields: [optionId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: SetNull)
+  optionId     Int?
+  dishId       Int?
+  restaurantId Int?
 
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  orderDishOptionItem OrderDishOptionItem[]
+  price Int
+
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+  orderDishOptionItem        OrderDishOptionItem[]
+  orderDishOptionReference   OrderDishOptionReference @relation(fields: [orderDishOptionReferenceId], references: [id])
+  orderDishOptionReferenceId Int                      @unique
 }
 
 model OrderDishOptionItem {
@@ -245,14 +255,17 @@ model OrderDishOptionItem {
   orderDishOption   OrderDishOption @relation(fields: [orderDishOptionId], references: [id], onDelete: Cascade)
   orderDishOptionId Int
 
-  optionItem   OptionItem @relation(fields: [optionItemId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
-  optionItemId Int
-  dishId       Int
-  restaurantId Int
-  price        Int
+  optionItem   OptionItem? @relation(fields: [optionItemId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: SetNull)
+  optionItemId Int?
+  dishId       Int?
+  restaurantId Int?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  price Int
+
+  createdAt                      DateTime                     @default(now())
+  updatedAt                      DateTime                     @updatedAt
+  orderDishOptionItemReference   OrderDishOptionItemReference @relation(fields: [orderDishOptionItemReferenceId], references: [id])
+  orderDishOptionItemReferenceId Int                          @unique
 }
 
 model BlacklistedUser {
@@ -261,4 +274,51 @@ model BlacklistedUser {
   userId String?
 
   @@unique([userId])
+}
+
+model OrderDishOptionItemReference {
+  id Int @id @default(autoincrement())
+
+  optionItemId Int
+  dishId       Int
+  restaurantId Int
+
+  orderDishOptionItem OrderDishOptionItem?
+}
+
+model OrderDishOptionReference {
+  id Int @id @default(autoincrement())
+
+  optionId     Int
+  dishId       Int
+  restaurantId Int
+
+  orderDishOption OrderDishOption?
+}
+
+model OrderDishReference {
+  id Int @id @default(autoincrement())
+
+  dishId       Int
+  restaurantId Int
+
+  orderDish OrderDish?
+}
+
+model OrderReference {
+  id Int @id @default(autoincrement())
+
+  restaurantId Int
+  invitationId String
+  orderedById  String
+  order        Order?
+  orderId      Int?
+}
+
+model InvitationReference {
+  id Int @id @default(autoincrement())
+
+  restaurantId Int
+  createdById  String
+  invitation   Invitation?
 }
