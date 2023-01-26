@@ -134,7 +134,11 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
 
   const confirmedRestaurant = useMemo(() => {
     return (
-      getRestaurantQuery.data ? getRestaurantQuery.data : restaurant
+      getRestaurantQuery.data
+        ? getRestaurantQuery.data
+        : restaurant
+        ? restaurant
+        : {}
     ) as NonNullable<AggregatedRestaurant>;
   }, [getRestaurantQuery.data, restaurant]);
 
