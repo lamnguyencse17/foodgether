@@ -18,3 +18,14 @@ export const upsertOption = async (
     })),
   });
 };
+
+export const getAllOptions = (restaurantId: number) => {
+  return prisma.option.findMany({
+    where: {
+      restaurantId: restaurantId,
+    },
+    include: {
+      items: true,
+    },
+  });
+};

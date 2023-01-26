@@ -4,20 +4,27 @@ import { AggregatedRestaurant } from "../types/restaurant";
 import { trpc } from "../utils/trpc";
 import useStore from "./store";
 
-const useSetOptionDict = (restaurant?: AggregatedRestaurant) => {
+const useSetOptionDict = (
+  isFetchingRestaurant: boolean,
+  restaurant?: AggregatedRestaurant
+) => {
   const restaurantId = restaurant?.id || -1;
   const { data: optionDict, setOptionDict } = useStore(
     (state) => state.optionDict
   );
 
   const haveCorrectOptionDict =
-    optionDict && optionDict?.restaurantId === restaurantId;
+    !!optionDict &&
+    optionDict?.restaurantId === restaurantId &&
+    !isEmpty(optionDict.options);
 
   const shouldFetchOptionDict =
     !isEmpty(restaurant) &&
     // getRestaurantQuery.isFetched &&
     // isValidRestaurantId &&
-    !haveCorrectOptionDict;
+    !haveCorrectOptionDict &&
+    !isFetchingRestaurant;
+
   const getOptionForAllDishesQuery =
     trpc.option.getOptionForAllDishFromRestaurantId.useQuery(
       {

@@ -74,12 +74,10 @@ model Restaurant {
 
   photos Json
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  dish        Dish[]
-  option      Option[]
-  invitations Invitation[]
-  order       Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  dish      Dish[]
+  option    Option[]
 
   @@index([url], name: "url")
 }
@@ -135,7 +133,6 @@ model Dish {
 
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int?
-  orderDish    OrderDish[]
 
   @@unique([id, restaurantId])
 }
@@ -151,9 +148,8 @@ model Option {
   restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
 
-  minQuantity     Int
-  maxQuantity     Int
-  orderDishOption OrderDishOption[]
+  minQuantity Int
+  maxQuantity Int
 
   @@id([id, dishId, restaurantId])
   @@index([dishId, restaurantId])
@@ -170,41 +166,42 @@ model OptionItem {
   topOrder    Int     @default(0)
   dishId      Int
 
-  option              Option?               @relation(fields: [optionId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
-  optionId            Int?
-  restaurantId        Int
-  orderDishOptionItem OrderDishOptionItem[]
+  option       Option? @relation(fields: [optionId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
+  optionId     Int?
+  restaurantId Int
 
   @@id([id, dishId, restaurantId])
 }
 
 model Invitation {
-  id           String     @id @default(cuid())
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  id           String @id @default(cuid())
   restaurantId Int
+  createdById  String
 
-  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  createdById String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  order     Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  restaurant Json
+  optionDict Json
+  dishDict   Json
+  order      Order[]
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     String?
 }
 
 model Order {
-  id           Int        @id @default(autoincrement())
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  id           Int @id @default(autoincrement())
   restaurantId Int
 
   invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   invitationId String
 
-  orderedBy   User   @relation(fields: [orderedById], references: [id], onDelete: Cascade)
   orderedById String
 
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   orderDish OrderDish[]
+  User      User?       @relation(fields: [userId], references: [id])
+  userId    String?
 
   @@index([orderedById, createdAt(sort: Desc)])
 }
@@ -213,7 +210,6 @@ model OrderDish {
   id           Int   @id @default(autoincrement())
   order        Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId      Int
-  dish         Dish  @relation(fields: [dishId, restaurantId], references: [id, restaurantId], onDelete: Cascade)
   dishId       Int
   restaurantId Int
 
@@ -229,7 +225,6 @@ model OrderDishOption {
   id           Int       @id @default(autoincrement())
   orderDish    OrderDish @relation(fields: [orderDishId], references: [id], onDelete: Cascade)
   orderDishId  Int
-  option       Option    @relation(fields: [optionId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
   optionId     Int
   dishId       Int
   restaurantId Int
@@ -245,7 +240,6 @@ model OrderDishOptionItem {
   orderDishOption   OrderDishOption @relation(fields: [orderDishOptionId], references: [id], onDelete: Cascade)
   orderDishOptionId Int
 
-  optionItem   OptionItem @relation(fields: [optionItemId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
   optionItemId Int
   dishId       Int
   restaurantId Int

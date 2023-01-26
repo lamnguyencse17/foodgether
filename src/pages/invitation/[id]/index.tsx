@@ -12,10 +12,9 @@ import RestaurantMenu from "../../../components/invitation/RestaurantMenu";
 import { AggregatedInvitation } from "../../../types/invitation";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../../components/invitation/FloatingCart";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { getAllInvitationIds } from "../../../server/db/invitation";
-import useSetOptionDict from "../../../hooks/useSetOptionDict";
-import useSetDishDict from "../../../hooks/useSetDishDict";
+import useStore from "../../../hooks/store";
 
 export async function getStaticPaths() {
   const invitationIds = await getAllInvitationIds();
@@ -35,49 +34,19 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
 export const getStaticProps = async ({
   params: { id },
 }: GetRestaurantServerParams) => {
-  const rawInvitation = await prisma.invitation.findUnique({
+  const invitation = await prisma.invitation.findUnique({
     where: {
       id,
     },
-    include: {
-      restaurant: {
-        include: {
-          dishTypes: {
-            include: {
-              dishTypeAndDishes: {
-                include: {
-                  dish: true,
-                },
-              },
-            },
-          },
-        },
-      },
-      createdBy: {
-        select: {
-          name: true,
-        },
-      },
-    },
   });
 
-  if (!rawInvitation) {
+  if (!invitation) {
     return {
       props: {
         invitation: null,
       },
     };
   }
-  const invitation = {
-    ...rawInvitation,
-    restaurant: {
-      ...rawInvitation.restaurant,
-      dishTypes: rawInvitation.restaurant?.dishTypes.map((dishType) => ({
-        ...dishType,
-        dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
-      })),
-    },
-  };
   return {
     props: {
       invitation,
@@ -92,6 +61,11 @@ type InvitationPageProps = {
 const RestaurantPage = ({ invitation }: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { setOptionDict, setDishDict } = useStore((state) => ({
+    setOptionDict: state.optionDict.setOptionDict,
+    setDishDict: state.dishDict.setDishDict,
+  }));
+
   const restaurant = invitation?.restaurant;
   const invitationId = (router.query.id ||
     router.pathname.split("/").pop()) as string;
@@ -100,8 +74,18 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
     return (restaurant || {}) as NonNullable<AggregatedRestaurant>;
   }, [restaurant]);
 
-  useSetOptionDict(restaurant);
-  useSetDishDict(restaurant);
+  useEffect(() => {
+    if (restaurant) {
+      setOptionDict({
+        restaurantId: restaurant.id,
+        options: invitation.optionDict,
+      });
+      setDishDict({
+        restaurantId: restaurant.id,
+        dishes: invitation.dishDict,
+      });
+    }
+  }, [confirmedRestaurant.id]);
 
   const { name, address, priceRange, isAvailable, url } =
     confirmedRestaurant || {};

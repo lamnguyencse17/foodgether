@@ -17,12 +17,6 @@ const useSetDishDict = (restaurant?: AggregatedRestaurant) => {
 
   useEffect(() => {
     if (setWhenEmptyDishDict || mismatchedRestaurant) {
-      console.log({
-        id: confirmedRestaurant.id,
-        setWhenEmptyDishDict,
-        mismatchedRestaurant,
-        dishDict,
-      });
       setDishDict({
         restaurantId: confirmedRestaurant.id,
         dishes: objectify(

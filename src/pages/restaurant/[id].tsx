@@ -19,6 +19,7 @@ import { updateRestaurantMenu } from "../../server/handlers/restaurant";
 import { useEffect, useMemo } from "react";
 import useStore from "../../hooks/store";
 import useSetOptionDict from "../../hooks/useSetOptionDict";
+import useSetDishDict from "../../hooks/useSetDishDict";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -113,7 +114,6 @@ type RestaurantPageProps = {
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const router = useRouter();
-  const { data: dishDict, setDishDict } = useStore((state) => state.dishDict);
   const restaurantIdString =
     router.query.id || router.pathname.split("/").pop();
 
@@ -133,12 +133,16 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   );
 
   const confirmedRestaurant = useMemo(() => {
-    return (restaurant ||
-      getRestaurantQuery.data ||
-      {}) as NonNullable<AggregatedRestaurant>;
+    return (
+      getRestaurantQuery.data ? getRestaurantQuery.data : restaurant
+    ) as NonNullable<AggregatedRestaurant>;
   }, [getRestaurantQuery.data, restaurant]);
 
-  useSetOptionDict(confirmedRestaurant);
+  useSetOptionDict(
+    getRestaurantQuery.isInitialLoading && getRestaurantQuery.isFetching,
+    confirmedRestaurant
+  );
+  useSetDishDict(confirmedRestaurant);
 
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
 
@@ -150,24 +154,6 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
     "dishTypes",
     []
   ) as AggregatedDishTypes[];
-
-  useEffect(() => {
-    if (
-      dishDict &&
-      dishDict.restaurantId !== restaurantId &&
-      confirmedRestaurant
-    ) {
-      setDishDict({
-        restaurantId,
-        dishes: objectify(
-          (confirmedRestaurant.dishTypes || []).flatMap(
-            (dishType) => dishType.dishes
-          ),
-          (item) => item.id
-        ),
-      });
-    }
-  }, [confirmedRestaurant, dishDict, restaurantId]);
 
   return (
     <>

@@ -72,7 +72,13 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
                   </Th>
                   <Th>
                     {option.mandatory ? (
-                      <Text>{option.value}</Text>
+                      <Text>
+                        {get(
+                          options,
+                          `${cartItem.dishId}.${option.optionId}.items.${option.value}.name`,
+                          t("inivitation_page.unknown_item")
+                        )}
+                      </Text>
                     ) : (
                       <VStack alignItems="flex-start">
                         {option.value.map((item) => (

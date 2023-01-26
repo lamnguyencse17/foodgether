@@ -1,3 +1,4 @@
+import { getAllOptions } from "../db/option";
 import {
   getOptionForAllDishSchema,
   getOptionFromDishIdSchema,
@@ -19,13 +20,6 @@ export const getOptionFromDishId = publicProcedure
 
 export const getOptionForAllDishFromRestaurantId = publicProcedure
   .input(getOptionForAllDishSchema)
-  .query(({ ctx, input }) => {
-    return ctx.prisma.option.findMany({
-      where: {
-        restaurantId: input.restaurantId,
-      },
-      include: {
-        items: true,
-      },
-    });
+  .query(({ input }) => {
+    return getAllOptions(input.restaurantId);
   });

@@ -52,10 +52,6 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   );
   const { addToCart } = useStore((state) => state.cart);
 
-  useEffect(() => {
-    return () => {};
-  }, []);
-
   const onOrder = () => {
     const dishPrice = get(
       dishDict,

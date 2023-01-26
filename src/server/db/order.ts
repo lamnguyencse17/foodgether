@@ -4,16 +4,8 @@ import { prisma } from "./client";
 export const createOrder = (order: CreateOrderParams, userId: string) => {
   return prisma.order.create({
     data: {
-      restaurant: {
-        connect: {
-          id: order.restaurantId,
-        },
-      },
-      orderedBy: {
-        connect: {
-          id: userId,
-        },
-      },
+      restaurantId: order.restaurantId,
+      orderedById: userId,
       invitation: {
         connect: {
           id: order.invitationId,
@@ -21,46 +13,25 @@ export const createOrder = (order: CreateOrderParams, userId: string) => {
       },
       orderDish: {
         create: order.items.map((item) => ({
-          dish: {
-            connect: {
-              id: item.dishId,
-            },
-          },
+          dishId: item.dishId,
+          restaurantId: order.restaurantId,
           orderDishOption: {
             create: item.options.map((option) => ({
-              option: {
-                connect: {
-                  id_dishId_restaurantId: {
-                    id: option.optionId,
-                    dishId: item.dishId,
-                    restaurantId: order.restaurantId,
-                  },
-                },
-              },
+              optionId: option.optionId,
+              dishId: item.dishId,
+              restaurantId: order.restaurantId,
               orderDishOptionItem: {
                 create: option.mandatory
                   ? {
-                      optionItem: {
-                        connect: {
-                          id_dishId_restaurantId: {
-                            id: option.value,
-                            dishId: item.dishId,
-                            restaurantId: order.restaurantId,
-                          },
-                        },
-                      },
+                      optionItemId: option.value,
+                      dishId: item.dishId,
+                      restaurantId: order.restaurantId,
                       price: option.price,
                     }
                   : option.value.map((optionItem) => ({
-                      optionItem: {
-                        connect: {
-                          id_dishId_restaurantId: {
-                            id: optionItem.id,
-                            dishId: item.dishId,
-                            restaurantId: order.restaurantId,
-                          },
-                        },
-                      },
+                      optionItemId: optionItem.id,
+                      dishId: item.dishId,
+                      restaurantId: order.restaurantId,
                       price: optionItem.price,
                     })),
               },

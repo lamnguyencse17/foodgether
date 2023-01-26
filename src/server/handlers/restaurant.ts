@@ -128,7 +128,7 @@ export const fetchRestaurantFromUrl = publicProcedure
     try {
       const [completedRestaurant] = await Promise.all([
         updateRestaurantMenu(restaurantId, menu.reply.menu_infos),
-        revalidateRestaurant(restaurantId),
+        // revalidateRestaurant(restaurantId),
       ]);
       return { ...completedRestaurant };
     } catch (err) {
@@ -180,7 +180,7 @@ export const fetchRestaurantFromId = publicProcedure
     try {
       const [completedRestaurant] = await Promise.all([
         updateRestaurantMenu(input.id, menu.reply.menu_infos),
-        revalidateRestaurant(input.id),
+        // revalidateRestaurant(input.id),
       ]);
       return { ...completedRestaurant };
     } catch (err) {
