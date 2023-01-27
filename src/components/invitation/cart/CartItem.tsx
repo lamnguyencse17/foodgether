@@ -75,7 +75,7 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
                       <Text>
                         {get(
                           options,
-                          `${cartItem.dishId}.${option.optionId}.items.${option.value}.name`,
+                          `${cartItem.dishId}.${option.optionId}.items.${option.value.optionItemId}.name`,
                           t("inivitation_page.unknown_item")
                         )}
                       </Text>
@@ -85,7 +85,7 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
                           <Text key={item.id}>
                             {get(
                               options,
-                              `${cartItem.dishId}.${option.optionId}.items.${item.id}.name`,
+                              `${cartItem.dishId}.${option.optionId}.items.${item.optionItemId}.name`,
                               t("inivitation_page.unknown_item")
                             )}{" "}
                           </Text>
