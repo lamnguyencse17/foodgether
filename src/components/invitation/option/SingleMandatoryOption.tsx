@@ -1,5 +1,6 @@
 import { Select } from "@chakra-ui/react";
 import { OptionItem } from "@prisma/client";
+import { nanoid } from "nanoid/async";
 import { get } from "radash";
 import { ChangeEventHandler, FunctionComponent } from "react";
 import { shallow } from "zustand/shallow";
@@ -31,16 +32,24 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
   );
   const dict = optionDict?.options || {};
 
-  const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = (e) => {
+  const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (
+    e
+  ) => {
+    const itemPrice = get(
+      dict,
+      `${dishId}.${optionId}.items.${e.target.value}.price.value`,
+      0
+    ) as number;
     const dishOption = {
       optionId,
       mandatory: true as const,
-      value: parseInt(e.target.value),
-      price: get(
-        dict,
-        `${dishId}.${optionId}.items.${e.target.value}.price.value`,
-        0
-      ) as number,
+      value: {
+        optionItemId: parseInt(e.target.value),
+        id: await nanoid(20),
+        price: itemPrice,
+      },
+      price: itemPrice,
+      id: await nanoid(20),
     };
     dishOptionValueSchema.parse(dishOption);
     setDishOption(dishOption);

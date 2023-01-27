@@ -22,6 +22,7 @@ import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 import useStore from "../../hooks/store";
 import { cartItemSchema } from "../../server/schemas/order";
 import { shallow } from "zustand/shallow";
+import { nanoid } from "nanoid/async";
 
 type ItemOptionModalProps = {
   isOpen: boolean;
@@ -55,7 +56,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   );
   const { addToCart } = useStore((state) => state.cart);
 
-  const onOrder = () => {
+  const onOrder = async () => {
     const dishPrice = get(
       dishDict,
       `dishes.${dish.id}.price.value`,
@@ -68,7 +69,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     const newCartItem = {
       options: currentDishOption,
       dishId: dish.id,
-      uid: uid(7),
+      id: await nanoid(20),
       dishPrice,
       totalPrice: dishPrice + totalOptionPrice,
     };

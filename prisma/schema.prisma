@@ -2,8 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native"]
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native"]
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -208,8 +209,8 @@ model Order {
 }
 
 model OrderDish {
-  id           Int   @id @default(autoincrement())
-  order        Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id           String @id
+  order        Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId      Int
   dishId       Int
   restaurantId Int
@@ -223,9 +224,10 @@ model OrderDish {
 }
 
 model OrderDishOption {
-  id           Int       @id @default(autoincrement())
+  id String @id
+
   orderDish    OrderDish @relation(fields: [orderDishId], references: [id], onDelete: Cascade)
-  orderDishId  Int
+  orderDishId  String
   optionId     Int
   dishId       Int
   restaurantId Int
@@ -237,9 +239,9 @@ model OrderDishOption {
 }
 
 model OrderDishOptionItem {
-  id                Int             @id @default(autoincrement())
+  id                String          @id
   orderDishOption   OrderDishOption @relation(fields: [orderDishOptionId], references: [id], onDelete: Cascade)
-  orderDishOptionId Int
+  orderDishOptionId String
 
   optionItemId Int
   dishId       Int

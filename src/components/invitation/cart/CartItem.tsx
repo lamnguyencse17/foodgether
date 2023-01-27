@@ -38,7 +38,7 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
 
   return (
     <VStack
-      key={cartItem.uid}
+      key={cartItem.id}
       divider={<StackDivider />}
       justifyContent="flex-start"
       alignItems="flex-start"

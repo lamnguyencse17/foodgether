@@ -2,6 +2,7 @@ import {
   CreateOrderParams,
   CartItem,
   OptionMandatoryValue,
+  OptionChoiceValue,
 } from "../schemas/order";
 import { getOptionItemPrice } from "../db/optionItem";
 import { getDishPrice } from "../db/dish";
@@ -23,6 +24,11 @@ type PriceObject = {
   price: number;
 };
 
+type OptionalPriceObject = PriceObject & {
+  id: string;
+  price: number;
+};
+
 export const auditOrder = async (order: CreateOrderParams) => {
   const dishIds = order.items.map((item) => item.dishId);
   const optionFilter = order.items.flatMap((item) =>
@@ -30,13 +36,13 @@ export const auditOrder = async (order: CreateOrderParams) => {
       option.mandatory
         ? [
             {
-              id: option.value,
+              id: option.value.optionItemId,
               dishId: item.dishId,
               restaurantId: order.restaurantId,
             },
           ]
         : option.value.map((optionItem) => ({
-            id: optionItem.id,
+            id: optionItem.optionItemId,
             dishId: item.dishId,
             restaurantId: order.restaurantId,
           }))
@@ -105,7 +111,8 @@ const auditMandatoryChoice = (
   keyedOptionItemPrice: PriceDict
 ) => {
   const doesPriceMatch =
-    option.price === get(keyedOptionItemPrice, `${option.value}.price`);
+    option.price ===
+    get(keyedOptionItemPrice, `${option.value.optionItemId}.price`);
   if (doesPriceMatch) {
     return option.price;
   }
@@ -116,13 +123,14 @@ const auditMandatoryChoice = (
 };
 
 const auditOptionalChoice = (
-  optionItems: PriceObject[],
+  optionItems: OptionChoiceValue["value"],
   keyedOptionItemPrice: PriceDict
 ) => {
   let totalOptionPrice = 0;
   optionItems.forEach((optionItem) => {
     const doesPriceMatch =
-      optionItem.price === get(keyedOptionItemPrice, `${optionItem.id}.price`);
+      optionItem.price ===
+      get(keyedOptionItemPrice, `${optionItem.optionItemId}.price`);
     if (doesPriceMatch) {
       totalOptionPrice += optionItem.price;
       return;

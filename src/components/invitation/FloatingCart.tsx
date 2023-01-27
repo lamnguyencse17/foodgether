@@ -57,7 +57,7 @@ const FloatingCart = () => {
           <ModalCloseButton />
           <ModalBody>
             {cart.map((cartItem) => (
-              <CartItem cartItem={cartItem} key={cartItem.uid} />
+              <CartItem cartItem={cartItem} key={cartItem.id} />
             ))}
           </ModalBody>
 

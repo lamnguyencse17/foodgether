@@ -3,7 +3,7 @@ import { prisma } from "../../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
 import { AggregatedRestaurant } from "../../../types/restaurant";
 import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
-import { get, isEmpty, uid } from "radash";
+import { get, isEmpty } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../../components/invitation/RestaurantHeader";
 import { AggregatedDishTypes } from "../../../types/dishTypes";
@@ -17,6 +17,7 @@ import { getAllRecentInvitationIds } from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
 import { trpc } from "../../../utils/trpc";
 import { CartItem } from "../../../server/schemas/order";
+import { nanoid } from "nanoid";
 
 export async function getStaticPaths() {
   const invitationIds = await getAllRecentInvitationIds();
@@ -89,40 +90,8 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
   );
 
   useEffect(() => {
-    if (cartQuery.data) {
-      const parsedCartData: CartItem[] = (cartQuery.data.orderDish || []).map(
-        (item) => ({
-          dishId: item.dishId,
-          dishPrice: item.dishPrice,
-          totalPrice: item.totalPrice,
-          uid: uid(7),
-          options: item.orderDishOption.map((option) => {
-            const mandatory = get(
-              invitation?.optionDict,
-              `${item.dishId}.${option.optionId}.isMandatory`,
-              false
-            );
-            return mandatory
-              ? {
-                  optionId: option.optionId,
-                  price: option.price,
-                  mandatory: true,
-                  value:
-                    (option.orderDishOptionItem[0] || {}).optionItemId || -1,
-                }
-              : {
-                  optionId: option.optionId,
-                  price: option.price,
-                  mandatory: false,
-                  value: option.orderDishOptionItem.map((item) => ({
-                    id: item.optionItemId,
-                    price: item.price,
-                  })),
-                };
-          }),
-        })
-      );
-      setCart(parsedCartData);
+    if (!isEmpty(cartQuery.data) && cartQuery.data) {
+      setCart(cartQuery.data);
       console.log(cartQuery.data);
     }
   }, [cartQuery.data]);

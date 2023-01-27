@@ -21,6 +21,10 @@ if (env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
 
+prisma.$on("query" as any, (e) => {
+  console.log("Duration: " + (e as Prisma.QueryEvent).duration + "ms");
+});
+
 const redis = new Redis(env.REDIS_URL, {
   lazyConnect: true,
 });

@@ -29,6 +29,7 @@
     "i18next": "^22.4.6",
     "immer": "^9.0.16",
     "ioredis": "^5.2.5",
+    "nanoid": "^4.0.0",
     "next": "13.1.4",
     "next-auth": "^4.18.8",
     "next-superjson-plugin": "^0.5.4",

@@ -1,20 +1,32 @@
 import { z } from "zod";
 
-export const optionMandatoryValueSchema = z.object({
-  optionId: z.number(),
-  mandatory: z.literal(true),
-  value: z.number(),
+const sharedOptionItem = z.object({
+  id: z.string(),
   price: z.number(),
+  optionItemId: z.number(),
 });
+
+const sharedOptionValue = z.object({
+  optionId: z.number(),
+  price: z.number(),
+  id: z.string(),
+});
+
+export const optionMandatoryValueSchema = sharedOptionValue.and(
+  z.object({
+    mandatory: z.literal(true),
+    value: sharedOptionItem,
+  })
+);
 
 export type OptionMandatoryValue = z.infer<typeof optionMandatoryValueSchema>;
 
-export const optionChoiceValueSchema = z.object({
-  optionId: z.number(),
-  mandatory: z.literal(false),
-  value: z.array(z.object({ id: z.number(), price: z.number() })),
-  price: z.number(),
-});
+export const optionChoiceValueSchema = sharedOptionValue.and(
+  z.object({
+    mandatory: z.literal(false),
+    value: z.array(sharedOptionItem),
+  })
+);
 
 export type OptionChoiceValue = z.infer<typeof optionChoiceValueSchema>;
 
@@ -30,7 +42,7 @@ export const cartItemSchema = z.object({
   options: z.array(dishOptionValueSchema),
   totalPrice: z.number(),
   dishPrice: z.number(),
-  uid: z.string(),
+  id: z.string(),
 });
 
 export type CartItem = z.infer<typeof cartItemSchema>;

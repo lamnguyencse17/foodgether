@@ -1,4 +1,4 @@
-import { Dish } from "@prisma/client";
+import { Dish, PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { errors } from "../common/constants";
 import { prisma } from "./client";
@@ -90,4 +90,14 @@ export const getInvitationForCreator = async (id: string) => {
     }),
   ]);
   return { ...invitation, orders, restaurant, creator };
+};
+
+export const getOptionDictOfInvitation = async (
+  prisma: PrismaClient,
+  invitationId: string
+) => {
+  return prisma.invitation.findUnique({
+    where: { id: invitationId },
+    select: { optionDict: true },
+  });
 };
