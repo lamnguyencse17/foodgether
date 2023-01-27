@@ -42,3 +42,10 @@ export const createOrderSchema = z.object({
 });
 
 export type CreateOrderParams = z.infer<typeof createOrderSchema>;
+
+export const getMemberCurrentOrderSchema = z.object({
+  invitationId: z.string().cuid(),
+  restaurantId: z.number(),
+});
+
+export type GetMemberCurrentOrderParams = z.infer<typeof createOrderSchema>;

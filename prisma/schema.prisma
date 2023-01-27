@@ -200,10 +200,11 @@ model Order {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   orderDish OrderDish[]
-  User      User?       @relation(fields: [userId], references: [id])
+  User      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId    String?
 
-  @@index([orderedById, createdAt(sort: Desc)])
+  @@unique([orderedById, restaurantId, invitationId])
+  @@index([restaurantId, invitationId, createdAt(sort: Desc)])
 }
 
 model OrderDish {

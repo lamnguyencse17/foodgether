@@ -124,6 +124,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
         onClose={onClose}
         dish={dish}
         options={currentOption}
+        isFetching={dishOptionQuery.isFetching}
       />
     </>
   );

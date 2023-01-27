@@ -19,11 +19,7 @@ const useSetOptionDict = (
     !isEmpty(optionDict.options);
 
   const shouldFetchOptionDict =
-    !isEmpty(restaurant) &&
-    // getRestaurantQuery.isFetched &&
-    // isValidRestaurantId &&
-    !haveCorrectOptionDict &&
-    !isFetchingRestaurant;
+    !isEmpty(restaurant) && !haveCorrectOptionDict && !isFetchingRestaurant;
 
   const getOptionForAllDishesQuery =
     trpc.option.getOptionForAllDishFromRestaurantId.useQuery(

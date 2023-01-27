@@ -15,4 +15,7 @@ export const errors = {
     AUDIT_FAILED_AT_DISH: "O_02",
     AUDIT_FAILED_AT_TOTAL: "O_03",
   },
+  invitation: {
+    ERROR_WHILE_GETTING_INVITATION: "I_01",
+  },
 };

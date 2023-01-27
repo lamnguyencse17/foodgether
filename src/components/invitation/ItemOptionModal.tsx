@@ -9,11 +9,12 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  SkeletonText,
   Text,
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
 import { get, isEmpty, uid } from "radash";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
@@ -29,6 +30,7 @@ type ItemOptionModalProps = {
     items: OptionItem[];
   })[];
   dish: DishWithPriceAndPhoto;
+  isFetching: boolean;
 };
 
 const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
@@ -36,6 +38,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   onClose,
   options,
   dish,
+  isFetching,
 }) => {
   const { t } = useTranslation();
   const {
@@ -90,7 +93,14 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {!isEmpty(options) ? (
+          {isEmpty(options) && !isFetching && (
+            <Text>{t("restaurant_page.empty_option")}</Text>
+          )}
+          {isEmpty(options) && isFetching && (
+            <SkeletonText noOfLines={5} skeletonHeight={4} />
+          )}
+          {!isEmpty(options) &&
+            !isFetching &&
             (options || []).map((option) => {
               const optionConfig = option.isMandatory
                 ? t("invitation_page.mandatory_choice", {
@@ -123,10 +133,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                   )}
                 </Box>
               );
-            })
-          ) : (
-            <Text>{t("invitation_page.empty_option")}</Text>
-          )}
+            })}
         </ModalBody>
 
         <ModalFooter>

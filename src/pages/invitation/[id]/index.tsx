@@ -3,7 +3,7 @@ import { prisma } from "../../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
 import { AggregatedRestaurant } from "../../../types/restaurant";
 import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
-import { get } from "radash";
+import { get, isEmpty, uid } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../../components/invitation/RestaurantHeader";
 import { AggregatedDishTypes } from "../../../types/dishTypes";
@@ -13,11 +13,13 @@ import { AggregatedInvitation } from "../../../types/invitation";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../../components/invitation/FloatingCart";
 import { useEffect, useMemo } from "react";
-import { getAllInvitationIds } from "../../../server/db/invitation";
+import { getAllRecentInvitationIds } from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
+import { trpc } from "../../../utils/trpc";
+import { CartItem } from "../../../server/schemas/order";
 
 export async function getStaticPaths() {
-  const invitationIds = await getAllInvitationIds();
+  const invitationIds = await getAllRecentInvitationIds();
 
   return {
     paths: invitationIds.map((id) => ({ params: { id } })),
@@ -58,12 +60,13 @@ type InvitationPageProps = {
   invitation: AggregatedInvitation | null;
 };
 
-const RestaurantPage = ({ invitation }: InvitationPageProps) => {
+const InvitationPage = ({ invitation }: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { setOptionDict, setDishDict } = useStore((state) => ({
+  const { setOptionDict, setDishDict, setCart } = useStore((state) => ({
     setOptionDict: state.optionDict.setOptionDict,
     setDishDict: state.dishDict.setDishDict,
+    setCart: state.cart.setCart,
   }));
 
   const restaurant = invitation?.restaurant;
@@ -73,6 +76,56 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
   const confirmedRestaurant = useMemo(() => {
     return (restaurant || {}) as NonNullable<AggregatedRestaurant>;
   }, [restaurant]);
+
+  const cartQuery = trpc.order.getMemberCurrentOrder.useQuery(
+    {
+      invitationId,
+      restaurantId: confirmedRestaurant.id,
+    },
+    {
+      enabled: !isEmpty(restaurant),
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  useEffect(() => {
+    if (cartQuery.data) {
+      const parsedCartData: CartItem[] = (cartQuery.data.orderDish || []).map(
+        (item) => ({
+          dishId: item.dishId,
+          dishPrice: item.dishPrice,
+          totalPrice: item.totalPrice,
+          uid: uid(7),
+          options: item.orderDishOption.map((option) => {
+            const mandatory = get(
+              invitation?.optionDict,
+              `${item.dishId}.${option.optionId}.isMandatory`,
+              false
+            );
+            return mandatory
+              ? {
+                  optionId: option.optionId,
+                  price: option.price,
+                  mandatory: true,
+                  value:
+                    (option.orderDishOptionItem[0] || {}).optionItemId || -1,
+                }
+              : {
+                  optionId: option.optionId,
+                  price: option.price,
+                  mandatory: false,
+                  value: option.orderDishOptionItem.map((item) => ({
+                    id: item.optionItemId,
+                    price: item.price,
+                  })),
+                };
+          }),
+        })
+      );
+      setCart(parsedCartData);
+      console.log(cartQuery.data);
+    }
+  }, [cartQuery.data]);
 
   useEffect(() => {
     if (restaurant) {
@@ -142,4 +195,4 @@ const RestaurantPage = ({ invitation }: InvitationPageProps) => {
   );
 };
 
-export default RestaurantPage;
+export default InvitationPage;

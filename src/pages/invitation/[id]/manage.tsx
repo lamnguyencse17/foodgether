@@ -1,5 +1,4 @@
 import { VStack } from "@chakra-ui/react";
-import { Restaurant } from "@prisma/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { get } from "radash";
@@ -7,14 +6,14 @@ import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import RestaurantHeader from "../../../components/managerInvitation/RestaurantHeader";
 import {
-  getAllInvitationIds,
-  getInvitation,
+  getAllRecentInvitationIds,
+  getInvitationForCreator,
 } from "../../../server/db/invitation";
 import { RestaurantWithPhotoAndPrice } from "../../../types/restaurant";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
 
 export async function getStaticPaths() {
-  const invitationIds = await getAllInvitationIds();
+  const invitationIds = await getAllRecentInvitationIds();
 
   return {
     paths: invitationIds.map((id) => ({ params: { id } })),
@@ -31,8 +30,7 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
 export const getStaticProps = async ({
   params: { id },
 }: GetRestaurantServerParams) => {
-  const date = new Date();
-  const invitation = await getInvitation(id);
+  const invitation = await getInvitationForCreator(id);
   return {
     props: {
       invitation,
@@ -40,7 +38,7 @@ export const getStaticProps = async ({
   };
 };
 type ManageInvitationPageProps = {
-  invitation: Awaited<ReturnType<typeof getInvitation>>;
+  invitation: Awaited<ReturnType<typeof getInvitationForCreator>>;
 };
 
 const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({

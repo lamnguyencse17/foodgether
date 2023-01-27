@@ -9,6 +9,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Skeleton,
+  SkeletonText,
   Text,
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
@@ -26,6 +28,7 @@ type ItemOptionModalProps = {
     items: OptionItem[];
   })[];
   dish: DishWithPriceAndPhoto;
+  isFetching: boolean;
 };
 
 const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
@@ -33,6 +36,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   onClose,
   options,
   dish,
+  isFetching,
 }) => {
   const { t } = useTranslation();
   return (
@@ -46,7 +50,14 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {!isEmpty(options) ? (
+          {isEmpty(options) && !isFetching && (
+            <Text>{t("restaurant_page.empty_option")}</Text>
+          )}
+          {isEmpty(options) && isFetching && (
+            <SkeletonText noOfLines={5} skeletonHeight={4} />
+          )}
+          {!isEmpty(options) &&
+            !isFetching &&
             (options || []).map((option) => {
               const optionConfig = option.isMandatory
                 ? t("restaurant_page.mandatory_choice", {
@@ -74,10 +85,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                   )}
                 </Box>
               );
-            })
-          ) : (
-            <Text>{t("restaurant_page.empty_option")}</Text>
-          )}
+            })}
         </ModalBody>
 
         <ModalFooter>

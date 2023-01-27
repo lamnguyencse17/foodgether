@@ -25,7 +25,6 @@ const revalidateInvitation = async (invitationId: string) => {
 export const createInvitation = protectedProcedure
   .input(createInvitationSchema)
   .mutation(async ({ ctx, input }) => {
-    console.log(input.restaurantId);
     const [restaurant, options] = await Promise.all([
       getAggregatedRestaurant(input.restaurantId),
       getAllOptions(input.restaurantId),

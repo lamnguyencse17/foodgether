@@ -24,6 +24,7 @@
     "@trpc/server": "^10.8.0",
     "axios": "^1.2.2",
     "camelcase-keys": "^8.0.2",
+    "date-fns": "^2.29.3",
     "framer-motion": "^8.0.2",
     "i18next": "^22.4.6",
     "immer": "^9.0.16",

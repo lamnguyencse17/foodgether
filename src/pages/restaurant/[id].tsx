@@ -16,15 +16,20 @@ import {
 } from "../../server/service/shopee";
 import { upsertRestaurant } from "../../server/db/restaurant";
 import { updateRestaurantMenu } from "../../server/handlers/restaurant";
-import { useEffect, useMemo } from "react";
-import useStore from "../../hooks/store";
+import { useMemo } from "react";
 import useSetOptionDict from "../../hooks/useSetOptionDict";
 import useSetDishDict from "../../hooks/useSetDishDict";
+import { formatISO, sub } from "date-fns";
 
 export async function getStaticPaths() {
   const idObjectList =
     (await prisma.restaurant.findMany({
       select: { id: true },
+      where: {
+        createdAt: {
+          gte: formatISO(sub(new Date(), { days: 1 })),
+        },
+      },
     })) || [];
 
   return {

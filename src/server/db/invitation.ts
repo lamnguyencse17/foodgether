@@ -4,6 +4,7 @@ import { errors } from "../common/constants";
 import { prisma } from "./client";
 import { getAggregatedRestaurant } from "./restaurant";
 import type { OptionDictDishData } from "../../hooks/store";
+import { formatISO, sub } from "date-fns";
 
 export const createDbInvitation = async (
   restaurantId: number,
@@ -30,7 +31,19 @@ export const getAllInvitationIds = async () => {
   return idObjectList.map((idObject) => idObject.id);
 };
 
-export const getInvitation = async (id: string) => {
+export const getAllRecentInvitationIds = async () => {
+  const idObjectList = await prisma.invitation.findMany({
+    select: { id: true },
+    where: {
+      createdAt: {
+        gte: formatISO(sub(new Date(), { days: 1 })),
+      },
+    },
+  });
+  return idObjectList.map((idObject) => idObject.id);
+};
+
+export const getInvitationForCreator = async (id: string) => {
   const [invitation, orders] = await Promise.all([
     prisma.invitation.findUnique({
       where: {
@@ -56,7 +69,7 @@ export const getInvitation = async (id: string) => {
   ]);
   if (!invitation) {
     throw new TRPCError({
-      message: errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
+      message: errors.invitation.ERROR_WHILE_GETTING_INVITATION,
       code: "INTERNAL_SERVER_ERROR",
     });
   }

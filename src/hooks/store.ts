@@ -37,6 +37,7 @@ type ToastStoreType = {
 type CartStoreType = {
   data: CartItem[];
   addToCart: (cart: CartItem) => void;
+  setCart: (cartItems: CartItem[]) => void;
 };
 
 export type OptionDictOptionData = {
@@ -142,6 +143,14 @@ const useStore = create<UseStoreType>()(
           }),
           false,
           "addToCart"
+        ),
+      setCart: (cartItems) =>
+        set(
+          produce((state) => {
+            state.cart.data = cartItems;
+          }),
+          false,
+          "setCart"
         ),
     },
     optionDict: {

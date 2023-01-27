@@ -11,6 +11,11 @@ export const createOrder = (order: CreateOrderParams, userId: string) => {
           id: order.invitationId,
         },
       },
+      User: {
+        connect: {
+          id: userId,
+        },
+      },
       orderDish: {
         create: order.items.map((item) => ({
           dishId: item.dishId,
