@@ -79,7 +79,6 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     onClose();
   };
 
-  if (!options) return null;
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -92,7 +91,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
         <ModalCloseButton />
         <ModalBody>
           {!isEmpty(options) ? (
-            options.map((option) => {
+            (options || []).map((option) => {
               const optionConfig = option.isMandatory
                 ? t("invitation_page.mandatory_choice", {
                     amount: option.maxQuantity,

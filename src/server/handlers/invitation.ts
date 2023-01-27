@@ -41,7 +41,6 @@ export const createInvitation = protectedProcedure
         })
       )
     );
-    console.log(optionDict);
     const dishDict = objectify(
       (restaurant.dishTypes || []).flatMap((dishType) => dishType.dishes),
       (item) => item.id

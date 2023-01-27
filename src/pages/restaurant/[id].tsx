@@ -120,7 +120,8 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const restaurantId = parseInt(restaurantIdString as unknown as string);
   const isValidRestaurantId = !isNaN(restaurantId as unknown as number);
 
-  const shouldFetchRestaurant = !isEmpty(restaurant) && isValidRestaurantId;
+  const shouldFetchRestaurant = isEmpty(restaurant) && isValidRestaurantId;
+
   const getRestaurantQuery = trpc.restaurant.fetchRestaurantFromId.useQuery(
     {
       id: restaurantId,

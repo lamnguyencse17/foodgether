@@ -61,9 +61,9 @@ export const updateRestaurantMenu = async (
   ]);
   await Promise.all([
     upsertOption(restaurantId, optionList),
-    upsertOptionItem(restaurantId, optionItems),
     upsertDishTypeAndDishes(restaurantId, menu),
   ]);
+  await upsertOptionItem(restaurantId, optionItems);
   return restaurantId;
 };
 
