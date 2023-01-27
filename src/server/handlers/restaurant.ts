@@ -64,7 +64,7 @@ export const updateRestaurantMenu = async (
     upsertOptionItem(restaurantId, optionItems),
     upsertDishTypeAndDishes(restaurantId, menu),
   ]);
-  return getAggregatedRestaurant(restaurantId);
+  return restaurantId;
 };
 
 export const doesRestaurantExistFromUrl = publicProcedure
@@ -126,11 +126,12 @@ export const fetchRestaurantFromUrl = publicProcedure
       });
     }
     try {
-      const [completedRestaurant] = await Promise.all([
+      await Promise.all([
+        revalidateRestaurant(restaurantId),
         updateRestaurantMenu(restaurantId, menu.reply.menu_infos),
-        // revalidateRestaurant(restaurantId),
       ]);
-      return { ...completedRestaurant };
+
+      return { id: restaurantId };
     } catch (err) {
       console.error(errors.menu.UPSERT_MENU, err);
       throw new TRPCError({
@@ -178,11 +179,12 @@ export const fetchRestaurantFromId = publicProcedure
       });
     }
     try {
-      const [completedRestaurant] = await Promise.all([
+      await Promise.all([
+        revalidateRestaurant(input.id),
         updateRestaurantMenu(input.id, menu.reply.menu_infos),
-        // revalidateRestaurant(input.id),
       ]);
-      return { ...completedRestaurant };
+      const restaurant = await getAggregatedRestaurant(input.id);
+      return { ...restaurant };
     } catch (err) {
       console.error(errors.menu.UPSERT_MENU, err);
       throw new TRPCError({

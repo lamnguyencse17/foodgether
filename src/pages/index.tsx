@@ -35,8 +35,24 @@ const Home: NextPage = () => {
     resolver: zodResolver(doesRestaurantExistFromUrlSchema),
   });
 
+  const doesRestaurantExistQuery =
+    trpc.restaurant.doesRestaurantExistFromUrl.useQuery(getValues(), {
+      enabled: findRestaurant,
+      onSettled: () => {
+        setFindRestaurant(false);
+      },
+      onSuccess: (payload) => {
+        if (payload) {
+          router.push(`/restaurant/${payload.id}`);
+        }
+      },
+    });
+
   trpc.restaurant.fetchRestaurantFromUrl.useQuery(getValues(), {
-    enabled: findRestaurant,
+    enabled:
+      findRestaurant &&
+      doesRestaurantExistQuery.isFetched &&
+      !doesRestaurantExistQuery.data,
     onSuccess: (payload) => {
       router.push(`/restaurant/${payload.id}`);
     },
@@ -48,26 +64,12 @@ const Home: NextPage = () => {
     },
   });
 
-  const doesRestaurantExistQuery =
-    trpc.restaurant.doesRestaurantExistFromUrl.useQuery(getValues(), {
-      enabled: findRestaurant,
-      onSettled: () => {
-        setFindRestaurant(false);
-      },
-    });
-
   const onSubmit = async () => {
     setFindRestaurant(true);
   };
 
   const doesRestaurantAvailable =
     doesRestaurantExistQuery.isFetched && !doesRestaurantExistQuery.data;
-
-  useEffect(() => {
-    if (!doesRestaurantAvailable) {
-      return;
-    }
-  }, [doesRestaurantAvailable]);
 
   return (
     <>
