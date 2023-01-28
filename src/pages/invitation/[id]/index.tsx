@@ -16,8 +16,6 @@ import { useEffect, useMemo } from "react";
 import { getAllRecentInvitationIds } from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
 import { trpc } from "../../../utils/trpc";
-import { CartItem } from "../../../server/schemas/order";
-import { nanoid } from "nanoid";
 
 export async function getStaticPaths() {
   const invitationIds = await getAllRecentInvitationIds();
@@ -64,11 +62,14 @@ type InvitationPageProps = {
 const InvitationPage = ({ invitation }: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { setOptionDict, setDishDict, setCart } = useStore((state) => ({
-    setOptionDict: state.optionDict.setOptionDict,
-    setDishDict: state.dishDict.setDishDict,
-    setCart: state.cart.setCart,
-  }));
+  const { setOptionDict, setDishDict, setCart, setRestaurant } = useStore(
+    (state) => ({
+      setOptionDict: state.optionDict.setOptionDict,
+      setDishDict: state.dishDict.setDishDict,
+      setCart: state.cart.setCart,
+      setRestaurant: state.restaurant.setRestaurant,
+    })
+  );
 
   const restaurant = invitation?.restaurant;
   const invitationId = (router.query.id ||
@@ -92,7 +93,6 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
   useEffect(() => {
     if (!isEmpty(cartQuery.data) && cartQuery.data) {
       setCart(cartQuery.data);
-      console.log(cartQuery.data);
     }
   }, [cartQuery.data]);
 
@@ -106,6 +106,7 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
         restaurantId: restaurant.id,
         dishes: invitation.dishDict,
       });
+      setRestaurant(restaurant);
     }
   }, [confirmedRestaurant.id]);
 
@@ -158,7 +159,10 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
             />
           </Stack>
         </VStack>
-        <FloatingCart />
+        <FloatingCart
+          invitationId={invitationId}
+          previousCart={cartQuery.data}
+        />
       </main>
     </>
   );

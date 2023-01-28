@@ -5,7 +5,11 @@ import {
 } from "../schemas/order";
 import { auditOrder } from "../service/audit";
 import { protectedProcedure } from "../trpc/trpc";
-import { createOrder as createDbOrder, getExistingOrder } from "../db/order";
+import {
+  createOrder as createDbOrder,
+  getExistingOrder,
+  updateOrder,
+} from "../db/order";
 import { get } from "radash";
 import { getOptionDictOfInvitation } from "../db/invitation";
 
@@ -14,6 +18,13 @@ export const createOrder = protectedProcedure
   .mutation(async ({ ctx, input }) => {
     await auditOrder(input);
     return createDbOrder(input, ctx.session.user.id);
+  });
+
+export const editOrder = protectedProcedure
+  .input(createOrderSchema)
+  .mutation(async ({ ctx, input }) => {
+    await auditOrder(input);
+    return updateOrder(input, ctx.session.user.id);
   });
 
 export const getMemberCurrentOrder = protectedProcedure

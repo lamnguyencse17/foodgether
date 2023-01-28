@@ -5,7 +5,10 @@ import { get } from "radash";
 import { ChangeEventHandler, FunctionComponent } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
-import { dishOptionValueSchema } from "../../../server/schemas/order";
+import {
+  dishOptionValueSchema,
+  OptionMandatoryValue,
+} from "../../../server/schemas/order";
 
 type SingleMandatoryOptionProps = {
   items: OptionItem[];
@@ -21,7 +24,7 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
   dishId,
 }) => {
   const {
-    currentDishOption: { setDishOption },
+    currentDishOption: { setDishOption, data: currentDishOption },
     optionDict: { data: optionDict },
   } = useStore(
     (state) => ({
@@ -31,7 +34,9 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
     shallow
   );
   const dict = optionDict?.options || {};
-
+  const currentOption = currentDishOption.find(
+    (option) => option.optionId === optionId
+  ) as OptionMandatoryValue;
   const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (
     e
   ) => {
@@ -55,7 +60,11 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
     setDishOption(dishOption);
   };
   return (
-    <Select placeholder={name} onChange={handleChangeOption}>
+    <Select
+      placeholder={name}
+      onChange={handleChangeOption}
+      value={currentOption?.value?.optionItemId}
+    >
       {items.map((item) => (
         <option key={item.id} value={item.id}>
           {item.name}

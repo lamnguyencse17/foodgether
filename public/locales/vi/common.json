@@ -36,7 +36,8 @@
       "unknown_dish": "Món không xác định",
       "unknown_option": "Tuỳ chọn không xác định",
       "unknown_option_item": "Thành phần tuỳ chọn không xác định",
-      "total_price": "Tổng giá"
+      "total_price": "Tổng giá",
+      "edit_this_dish": "Chỉnh sửa món ăn này"
     },
     "invitation_manage_page": {
       "cover_photo": "Ảnh bìa {{name}}",

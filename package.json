@@ -25,6 +25,7 @@
     "axios": "^1.2.2",
     "camelcase-keys": "^8.0.2",
     "date-fns": "^2.29.3",
+    "deep-equal": "^2.2.0",
     "framer-motion": "^8.0.2",
     "i18next": "^22.4.6",
     "immer": "^9.0.16",
@@ -46,6 +47,7 @@
     "zustand": "^4.3.2"
   },
   "devDependencies": {
+    "@types/deep-equal": "^1.0.1",
     "@types/ioredis": "^5.0.0",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.14",

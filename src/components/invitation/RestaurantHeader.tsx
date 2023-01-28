@@ -1,21 +1,10 @@
-import {
-  Box,
-  Button,
-  Heading,
-  HStack,
-  Skeleton,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Heading, HStack, Skeleton, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { Photo } from "../../types/shared";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { trpc } from "../../utils/trpc";
-import useStore from "../../hooks/store";
-import { createOrderSchema } from "../../server/schemas/order";
 
 type RestaurantHeaderProps = {
   photo?: Photo;
@@ -39,24 +28,9 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   priceRange,
   url = "",
   restaurantId = -1,
-  invitationId = "",
 }) => {
   const { t } = useTranslation();
-  const createOrder = trpc.order.createOrder.useMutation();
-  const { data: cart } = useStore((state) => state.cart);
 
-  const handleOrder = () => {
-    createOrderSchema.parse({
-      restaurantId,
-      invitationId,
-      items: cart,
-    });
-    createOrder.mutate({
-      restaurantId,
-      invitationId,
-      items: cart,
-    });
-  };
   return (
     <Box
       maxH="fit-content"
@@ -127,9 +101,6 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
         ) : (
           <Skeleton height="6" width="64" />
         )}
-        <Button onClick={handleOrder} disabled={restaurantId === -1}>
-          Order
-        </Button>
       </VStack>
     </Box>
   );

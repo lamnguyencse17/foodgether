@@ -6,6 +6,7 @@ import { replaceOrAppend } from "radash";
 import { CartItem, DishOptionValue } from "../server/schemas/order";
 import { Option, OptionItem } from "@prisma/client";
 import { DishWithPriceAndPhoto } from "../types/dish";
+import { AggregatedRestaurant } from "../types/restaurant";
 
 type SessionUser = Session["user"];
 export type ToastKeyParam = "info" | "warning" | "success" | "error";
@@ -38,6 +39,7 @@ type CartStoreType = {
   data: CartItem[];
   addToCart: (cart: CartItem) => void;
   setCart: (cartItems: CartItem[]) => void;
+  editCartItem: (cartItem: CartItem) => void;
 };
 
 export type OptionDictOptionData = {
@@ -70,6 +72,11 @@ type DishDictStore = {
   setDishDict: (value: DishDictStore["data"]) => void;
 };
 
+type RestaurantStoreType = {
+  data?: AggregatedRestaurant;
+  setRestaurant: (value: AggregatedRestaurant) => void;
+};
+
 export type UseStoreType = {
   user: UserStoreType;
   toast: ToastStoreType;
@@ -77,6 +84,7 @@ export type UseStoreType = {
   cart: CartStoreType;
   optionDict: OptionDictStore;
   dishDict: DishDictStore;
+  restaurant: RestaurantStoreType;
 };
 
 const useStore = create<UseStoreType>()(
@@ -144,6 +152,18 @@ const useStore = create<UseStoreType>()(
           false,
           "addToCart"
         ),
+      editCartItem: (cartItem) =>
+        set(
+          produce((state) => {
+            state.cart.data = replaceOrAppend(
+              state.cart.data,
+              cartItem,
+              (item) => item.id === cartItem.id
+            );
+          }),
+          false,
+          "editCartItem"
+        ),
       setCart: (cartItems) =>
         set(
           produce((state) => {
@@ -173,6 +193,17 @@ const useStore = create<UseStoreType>()(
           }),
           false,
           "setDishDict"
+        ),
+    },
+    restaurant: {
+      data: undefined,
+      setRestaurant: (restaurant) =>
+        set(
+          produce((state) => {
+            state.restaurant.data = restaurant;
+          }),
+          false,
+          "setRestaurant"
         ),
     },
   }))

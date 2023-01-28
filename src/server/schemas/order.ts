@@ -53,7 +53,10 @@ export const createOrderSchema = z.object({
   items: z.array(cartItemSchema),
 });
 
+export const editOrderSchema = createOrderSchema;
+
 export type CreateOrderParams = z.infer<typeof createOrderSchema>;
+export type EditOrderParams = z.infer<typeof editOrderSchema>;
 
 export const getMemberCurrentOrderSchema = z.object({
   invitationId: z.string().cuid(),

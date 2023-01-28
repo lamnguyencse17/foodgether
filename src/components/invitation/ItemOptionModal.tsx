@@ -31,7 +31,8 @@ type ItemOptionModalProps = {
     items: OptionItem[];
   })[];
   dish: DishWithPriceAndPhoto;
-  isFetching: boolean;
+  isFetching?: boolean;
+  cartItemId?: string;
 };
 
 const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
@@ -39,22 +40,25 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   onClose,
   options,
   dish,
-  isFetching,
+  isFetching = false,
+  cartItemId,
 }) => {
   const { t } = useTranslation();
   const {
     currentDishOption: { data: currentDishOption, resetDishOption },
-    optionDict: { data: optionDict },
     dishDict: { data: dishDict },
+    cart: { addToCart, editCartItem },
   } = useStore(
     (state) => ({
       currentDishOption: state.currentDishOption,
       optionDict: state.optionDict,
       dishDict: state.dishDict,
+      cart: state.cart,
     }),
     shallow
   );
-  const { addToCart } = useStore((state) => state.cart);
+
+  const isEditing = !!cartItemId;
 
   const onOrder = async () => {
     const dishPrice = get(
@@ -69,12 +73,12 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     const newCartItem = {
       options: currentDishOption,
       dishId: dish.id,
-      id: await nanoid(20),
+      id: isEditing ? cartItemId : await nanoid(20),
       dishPrice,
       totalPrice: dishPrice + totalOptionPrice,
     };
     cartItemSchema.parse(newCartItem);
-    addToCart(newCartItem);
+    isEditing ? editCartItem(newCartItem) : addToCart(newCartItem);
     onCloseModal();
   };
 
