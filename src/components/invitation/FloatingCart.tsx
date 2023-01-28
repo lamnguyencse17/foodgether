@@ -61,7 +61,7 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
       items: cart,
     };
 
-    if (!previousCart) {
+    if (isEmpty(previousCart)) {
       createOrderSchema.parse(orderPayload);
       createOrder.mutate(orderPayload);
       return;
