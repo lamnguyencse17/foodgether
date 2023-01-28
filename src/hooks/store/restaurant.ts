@@ -17,7 +17,7 @@ const restaurantStore: StateCreator<
   data: undefined,
   setRestaurant: (restaurant) =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.restaurant.data = restaurant;
       }),
       false,

@@ -51,6 +51,7 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
   const onSuccess = () => {
     onClose();
   };
+
   const createOrder = trpc.order.createOrder.useMutation({ onSuccess });
   const editOrder = trpc.order.editOrder.useMutation({ onSuccess });
 

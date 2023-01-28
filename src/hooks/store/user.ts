@@ -28,7 +28,7 @@ const userStore: StateCreator<
     ),
   resetUser: () =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.user.data = undefined;
       }),
       false,

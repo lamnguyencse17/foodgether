@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
 import { CartItem } from "../../../server/schemas/order";
-import { EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import OptionTable from "./OptionTable";
 import ItemOptionModal from "../ItemOptionModal";
 import { DishWithPriceAndPhoto } from "../../../types/dish";
@@ -25,13 +25,20 @@ type CartItemProps = {
 const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { dishDict, setDishOption, resetDishOption, optionDict } = useStore(
+  const {
+    dishDict,
+    setDishOption,
+    resetDishOption,
+    optionDict,
+    deleteCartItem,
+  } = useStore(
     (state) => ({
       dishDict: state.dishDict.data,
       setDishOption: state.currentDishOption.setDishOption,
       resetDishOption: state.currentDishOption.resetDishOption,
       restaurant: state.restaurant.data,
       optionDict: state.optionDict.data?.options,
+      deleteCartItem: state.cart.deleteCartItem,
     }),
     shallow
   );
@@ -56,6 +63,10 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
     onClose();
   };
 
+  const onDeleteItem = () => {
+    deleteCartItem(cartItem.id);
+  };
+
   return (
     <>
       <VStack
@@ -68,11 +79,18 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
           <Heading>
             {get(dish, "name", t("inivitation_page.unknown_dish"))}
           </Heading>
-          <IconButton
-            icon={<EditIcon />}
-            aria-label={t("invitation_page.edit_this_dish")}
-            onClick={onOpenEditModal}
-          />
+          <HStack gap={1}>
+            <IconButton
+              icon={<DeleteIcon />}
+              aria-label={t("invitation_page.delete_this_dish")}
+              onClick={onDeleteItem}
+            />
+            <IconButton
+              icon={<EditIcon />}
+              aria-label={t("invitation_page.edit_this_dish")}
+              onClick={onOpenEditModal}
+            />
+          </HStack>
         </HStack>
         {isEmpty(cartItem.options) ? null : <OptionTable cartItem={cartItem} />}
       </VStack>

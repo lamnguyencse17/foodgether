@@ -32,7 +32,7 @@ const optionDictStore: StateCreator<
   data: undefined,
   setOptionDict: (value) =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.optionDict.data = value;
       }),
       false,

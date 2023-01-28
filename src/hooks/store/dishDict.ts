@@ -22,7 +22,7 @@ const dishDictStore: StateCreator<
   data: undefined,
   setDishDict: (value) =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.dishDict.data = value;
       }),
       false,

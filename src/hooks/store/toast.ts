@@ -24,7 +24,7 @@ const toastStore: StateCreator<
 > = (set) => ({
   setToast: (key: ToastKeyParam, value?: ToastValueParams) =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.toast[key] = value;
       }),
       false,

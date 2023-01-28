@@ -9,6 +9,7 @@ export type CartStoreType = {
   addToCart: (cart: CartItem) => void;
   setCart: (cartItems: CartItem[]) => void;
   editCartItem: (cartItem: CartItem) => void;
+  deleteCartItem: (cartItemId: string) => void;
 };
 
 const cartStore: StateCreator<
@@ -20,7 +21,7 @@ const cartStore: StateCreator<
   data: [],
   addToCart: (cartItem) =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.cart.data = [...state.cart.data, cartItem];
       }),
       false,
@@ -28,7 +29,7 @@ const cartStore: StateCreator<
     ),
   editCartItem: (cartItem) =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.cart.data = replaceOrAppend(
           state.cart.data,
           cartItem,
@@ -40,11 +41,21 @@ const cartStore: StateCreator<
     ),
   setCart: (cartItems) =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.cart.data = cartItems;
       }),
       false,
       "setCart"
+    ),
+  deleteCartItem: (cartItemId) =>
+    set(
+      produce<UseStoreType>((state) => {
+        state.cart.data = state.cart.data.filter(
+          (item) => item.id !== cartItemId
+        );
+      }),
+      false,
+      "deleteCartItem"
     ),
 });
 

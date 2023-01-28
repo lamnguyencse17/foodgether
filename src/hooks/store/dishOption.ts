@@ -32,7 +32,7 @@ const dishOptionStore: StateCreator<
     ),
   resetDishOption: () =>
     set(
-      produce((state) => {
+      produce<UseStoreType>((state) => {
         state.currentDishOption.data = [];
       }),
       false,
