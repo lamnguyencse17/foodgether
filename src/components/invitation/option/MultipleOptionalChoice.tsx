@@ -50,7 +50,7 @@ const MultipleOptionalChoice: FunctionComponent<
         ) as number,
         optionItemId: item.id,
       },
-      (optionItem) => optionItem.id
+      (optionItem) => optionItem.optionItemId
     );
     const dishOption = {
       optionId,
