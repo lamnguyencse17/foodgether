@@ -1,5 +1,5 @@
 import { listify } from "radash";
-import { OptionDictOptionData } from "../hooks/store";
+import { OptionDictOptionData } from "../hooks/store/optionDict";
 
 export const listifyOptions = (options: OptionDictOptionData) => {
   return listify(options, (_, value) => {
