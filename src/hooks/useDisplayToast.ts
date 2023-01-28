@@ -2,7 +2,8 @@ import { useToast } from "@chakra-ui/react";
 import { shake } from "radash";
 import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
-import useStore, { ToastKeyParam } from "./store";
+import useStore from "./store";
+import { ToastKeyParam } from "./store/toast";
 
 export const useDisplayToast = () => {
   const toast = useToast();

@@ -1,5 +1,5 @@
 import { Invitation } from "@prisma/client";
-import { OptionDictDishData } from "../hooks/store";
+import { OptionDictDishData } from "../hooks/store/optionDict";
 import { DishWithPriceAndPhoto } from "./dish";
 import { AggregatedRestaurant } from "./restaurant";
 

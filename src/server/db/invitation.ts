@@ -3,8 +3,8 @@ import { TRPCError } from "@trpc/server";
 import { errors } from "../common/constants";
 import { prisma } from "./client";
 import { getAggregatedRestaurant } from "./restaurant";
-import type { OptionDictDishData } from "../../hooks/store";
 import { formatISO, sub } from "date-fns";
+import { OptionDictDishData } from "../../hooks/store/optionDict";
 
 export const createDbInvitation = async (
   restaurantId: number,
