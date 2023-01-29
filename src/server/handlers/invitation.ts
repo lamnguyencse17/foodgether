@@ -27,7 +27,7 @@ export const createInvitation = protectedProcedure
   .input(createInvitationSchema)
   .mutation(async ({ ctx, input }) => {
     const [restaurant, options] = await Promise.all([
-      getAggregatedRestaurant(input.restaurantId),
+      getAggregatedRestaurant(ctx.prisma, input.restaurantId),
       getAllOptions(input.restaurantId),
     ]);
     const groupedDict = group(options, (option) => option.dishId);

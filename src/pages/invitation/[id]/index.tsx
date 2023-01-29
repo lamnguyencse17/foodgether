@@ -47,12 +47,14 @@ export const getStaticProps = async ({
       props: {
         invitation: null,
       },
+      revalidate: 60,
     };
   }
   return {
     props: {
       invitation,
     },
+    revalidate: 60,
   };
 };
 

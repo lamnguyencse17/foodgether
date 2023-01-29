@@ -60,13 +60,13 @@ export const getStaticProps = async ({
     };
   }
   try {
-    const restaurant = await getAggregatedRestaurant(parseInt(id));
+    const restaurant = await getAggregatedRestaurant(prisma, parseInt(id));
 
     if (!restaurant) {
       const restaurantResponse = await fetchShopeeRestaurantFromId(
         parseInt(id)
       );
-      await upsertRestaurant(restaurantResponse.reply.delivery_detail);
+      await upsertRestaurant(prisma, restaurantResponse.reply.delivery_detail);
       const menu = await fetchShopeeMenu(
         restaurantResponse.reply.delivery_detail.delivery_id
       );
@@ -77,7 +77,10 @@ export const getStaticProps = async ({
       );
       return {
         props: {
-          restaurant: await getAggregatedRestaurant(completedRestaurant),
+          restaurant: await getAggregatedRestaurant(
+            prisma,
+            completedRestaurant
+          ),
         },
       };
     }
@@ -86,12 +89,14 @@ export const getStaticProps = async ({
       props: {
         restaurant,
       },
+      revalidate: 60,
     };
   } catch (err) {
     return {
       props: {
         restaurant: {},
       },
+      revalidate: 60,
     };
   }
 };
@@ -105,7 +110,6 @@ export const VirtuosoRefContext = createContext<null | Ref<VirtuosoHandle>>(
 );
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
-  console.log(restaurant);
   const { setRestaurant } = useStore((state) => ({
     setRestaurant: state.restaurant.setRestaurant,
   }));

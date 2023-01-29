@@ -35,6 +35,7 @@ export const getStaticProps = async ({
     props: {
       invitation,
     },
+    revalidate: 60,
   };
 };
 type ManageInvitationPageProps = {

@@ -1,14 +1,12 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { omit } from "radash";
 import { DishWithPriceAndPhoto } from "../../types/dish";
-import {
-  AggregatedRestaurant,
-  RestaurantWithPhotoAndPrice,
-} from "../../types/restaurant";
 import { ShopeeRestaurant } from "../../types/shopee";
-import { prisma } from "./client";
 
-export const upsertRestaurant = async (restaurant: ShopeeRestaurant) => {
+export const upsertRestaurant = async (
+  prisma: PrismaClient,
+  restaurant: ShopeeRestaurant
+) => {
   return prisma.$transaction([
     prisma.restaurant.deleteMany({
       where: {
@@ -38,7 +36,10 @@ export const upsertRestaurant = async (restaurant: ShopeeRestaurant) => {
   ]);
 };
 
-export const getAggregatedRestaurant = async (restaurantId: number) => {
+export const getAggregatedRestaurant = async (
+  prisma: PrismaClient,
+  restaurantId: number
+) => {
   const rawRestaurant = await prisma.restaurant.findUnique({
     where: {
       id: restaurantId,

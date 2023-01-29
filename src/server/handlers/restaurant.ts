@@ -110,7 +110,10 @@ export const fetchRestaurantFromUrl = publicProcedure
       });
     }
     try {
-      await upsertRestaurant(restaurantResponse.reply.delivery_detail);
+      await upsertRestaurant(
+        ctx.prisma,
+        restaurantResponse.reply.delivery_detail
+      );
     } catch (err) {
       console.error(err);
       throw new TRPCError({
@@ -128,10 +131,11 @@ export const fetchRestaurantFromUrl = publicProcedure
       });
     }
     try {
-      await Promise.all([
-        revalidateRestaurant(restaurantId),
-        updateRestaurantMenu(ctx.prisma, restaurantId, menu.reply.menu_infos),
-      ]);
+      await updateRestaurantMenu(
+        ctx.prisma,
+        restaurantId,
+        menu.reply.menu_infos
+      );
 
       return { id: restaurantId };
     } catch (err) {
@@ -161,7 +165,10 @@ export const fetchRestaurantFromId = publicProcedure
       });
     }
     try {
-      await upsertRestaurant(restaurantResponse.reply.delivery_detail);
+      await upsertRestaurant(
+        ctx.prisma,
+        restaurantResponse.reply.delivery_detail
+      );
     } catch (err) {
       console.error(err);
       throw new TRPCError({
@@ -181,11 +188,8 @@ export const fetchRestaurantFromId = publicProcedure
       });
     }
     try {
-      await Promise.all([
-        revalidateRestaurant(input.id),
-        updateRestaurantMenu(ctx.prisma, input.id, menu.reply.menu_infos),
-      ]);
-      const restaurant = await getAggregatedRestaurant(input.id);
+      await updateRestaurantMenu(ctx.prisma, input.id, menu.reply.menu_infos);
+      const restaurant = await getAggregatedRestaurant(ctx.prisma, input.id);
       return { ...restaurant };
     } catch (err) {
       console.error(errors.menu.UPSERT_MENU, err);
