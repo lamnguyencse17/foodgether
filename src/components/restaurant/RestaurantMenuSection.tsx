@@ -57,6 +57,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
                       router.push(`#${dishType.id}`);
                     }
                   }}
+                  //TODO: Hydration error can happen when url have hash
                   textColor={
                     !isNaN(idHash) && idHash === dishType.id
                       ? "blue.400"

@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
-import { get, isEmpty, uid } from "radash";
+import { get, isArray, isEmpty, listify, uid } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import { DishWithPriceAndPhoto } from "../../types/dish";
@@ -23,6 +23,7 @@ import useStore from "../../hooks/store";
 import { cartItemSchema } from "../../server/schemas/order";
 import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid/async";
+import { OptionDictOptionData } from "../../hooks/store/optionDict";
 
 type ItemOptionModalProps = {
   isOpen: boolean;
@@ -48,10 +49,11 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     currentDishOption: { data: currentDishOption, resetDishOption },
     dishDict: { data: dishDict },
     cart: { addToCart, editCartItem },
+    optionDict,
   } = useStore(
     (state) => ({
       currentDishOption: state.currentDishOption,
-      optionDict: state.optionDict,
+      optionDict: state.optionDict.data,
       dishDict: state.dishDict,
       cart: state.cart,
     }),
@@ -66,12 +68,33 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
       `dishes.${dish.id}.price.value`,
       0
     ) as number;
+
+    const dishOption = get(
+      optionDict,
+      `options.${dish.id}`,
+      {}
+    ) as OptionDictOptionData;
+    let haveAllMandatoryOption = true;
+    listify(dishOption, (_, value) => ({ ...value })).forEach((menuOption) => {
+      if (!menuOption.isMandatory || !haveAllMandatoryOption) {
+        return;
+      }
+      if (!get(currentDishOption, menuOption.id.toString())) {
+        haveAllMandatoryOption = false;
+      }
+    });
+
+    if (!haveAllMandatoryOption) {
+      //TODO: Notify user to fill all mandatory option
+      return;
+    }
+
     const totalOptionPrice = currentDishOption.reduce((acc, option) => {
       return acc + option.price;
     }, 0);
 
     const newCartItem = {
-      options: currentDishOption,
+      options: currentDishOption.filter((option) => !isEmpty(option.value)),
       dishId: dish.id,
       id: isEditing ? cartItemId : await nanoid(20),
       dishPrice,
