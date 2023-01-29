@@ -12,10 +12,11 @@ import RestaurantMenu from "../../../components/invitation/RestaurantMenu";
 import { AggregatedInvitation } from "../../../types/invitation";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../../components/invitation/FloatingCart";
-import { useEffect, useMemo } from "react";
+import { createContext, Ref, useEffect, useMemo, useRef } from "react";
 import { getAllRecentInvitationIds } from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
 import { trpc } from "../../../utils/trpc";
+import { VirtuosoHandle } from "react-virtuoso";
 
 export async function getStaticPaths() {
   const invitationIds = await getAllRecentInvitationIds();
@@ -59,6 +60,10 @@ type InvitationPageProps = {
   invitation: AggregatedInvitation | null;
 };
 
+export const VirtuosoRefContext = createContext<null | Ref<VirtuosoHandle>>(
+  null
+);
+
 const InvitationPage = ({ invitation }: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -70,6 +75,8 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
       setRestaurant: state.restaurant.setRestaurant,
     })
   );
+
+  const virtuosoRef = useRef(null);
 
   const restaurant = invitation?.restaurant;
   const invitationId = (router.query.id ||
@@ -152,11 +159,13 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
             paddingX={4}
             alignItems={["center", "center", "flex-start"]}
           >
-            <RestaurantMenuSection dishTypes={dishTypes} />
-            <RestaurantMenu
-              dishTypes={dishTypes}
-              restaurantId={confirmedRestaurant.id}
-            />
+            <VirtuosoRefContext.Provider value={virtuosoRef}>
+              <RestaurantMenuSection dishTypes={dishTypes} />
+              <RestaurantMenu
+                dishTypes={dishTypes}
+                restaurantId={confirmedRestaurant.id}
+              />
+            </VirtuosoRefContext.Provider>
           </Stack>
         </VStack>
         <FloatingCart

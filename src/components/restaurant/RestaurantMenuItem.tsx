@@ -30,7 +30,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   const { t } = useTranslation();
   const { data: optionDict } = useStore((state) => state.optionDict);
   const options = optionDict?.options || {};
-  const photo = dish.photos[0];
+  const photo = (dish.photos || [])[0];
   const { onOpen, onClose, isOpen } = useDisclosure();
   const trpcContext = trpc.useContext();
 
@@ -102,11 +102,11 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
             <VStack alignItems="flex-start" justifyContent="flex-start">
               {isEmpty(dish.discountPrice) ? (
                 <Text>
-                  {t("common.price_number", { val: dish.price.value })}
+                  {t("common.price_number", { val: dish.price?.value })}
                 </Text>
               ) : (
                 <Text as="s">
-                  {t("common.price_number", { val: dish.price.value })}
+                  {t("common.price_number", { val: dish.price?.value })}
                 </Text>
               )}
               {!isEmpty(dish.discountPrice) && (

@@ -1,6 +1,7 @@
 import axios from "axios";
-import { group, mapValues, objectify } from "radash";
+import { get, group, mapValues, objectify } from "radash";
 import { env } from "../../env/server.mjs";
+import { DishWithPriceAndPhoto } from "../../types/dish.js";
 import { createDbInvitation } from "../db/invitation";
 import { getAllOptions } from "../db/option";
 import { getAggregatedRestaurant } from "../db/restaurant";
@@ -40,8 +41,9 @@ export const createInvitation = protectedProcedure
         })
       )
     );
+    //TODO: should fetch restaurant on not existed
     const dishDict = objectify(
-      (restaurant.dishTypes || []).flatMap((dishType) => dishType.dishes),
+      get(restaurant, "dishes", []) as DishWithPriceAndPhoto[],
       (item) => item.id
     );
     const invitation = await createDbInvitation(

@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -8,13 +9,12 @@ import {
   Stack,
   StackDivider,
 } from "@chakra-ui/react";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext } from "react";
 import { AggregatedDishTypes } from "../../types/dishTypes";
 import { useTranslation } from "react-i18next";
-import NextLink from "next/link";
-import { Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { isEmpty } from "radash";
+import { VirtuosoRefContext } from "../../pages/restaurant/[id]";
 
 type RestaurantMenuSectionProps = {
   dishTypes: AggregatedDishTypes[];
@@ -25,7 +25,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
 }) => {
   const router = useRouter();
   const idHash = parseInt(router.asPath.split("#").pop() as string);
-
+  const virtuosoRef = useContext(VirtuosoRefContext);
   const { t } = useTranslation();
   return (
     <Box maxW={["100%", "100%", "3xs"]} overflowX="auto">
@@ -43,25 +43,28 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
           >
             {!isEmpty(dishTypes) ? (
               dishTypes.map((dishType) => (
-                <Box key={dishType.id}>
-                  <Link
-                    as={NextLink}
-                    href={`#${dishType.id}`}
-                    color={
-                      !isNaN(idHash) && idHash === dishType.id
-                        ? "blue.400"
-                        : undefined
+                <Button
+                  variant="link"
+                  key={dishType.id}
+                  whiteSpace="normal"
+                  textAlign="left"
+                  onClick={() => {
+                    if (virtuosoRef) {
+                      //TODO: Ref<VirtuosoHandle> does not give out any .current
+                      (virtuosoRef as any).current.scrollToIndex({
+                        index: dishType.id,
+                      });
+                      router.push(`#${dishType.id}`);
                     }
-                  >
-                    <Heading
-                      size="xs"
-                      textTransform="uppercase"
-                      fontWeight="normal"
-                    >
-                      {dishType.name}
-                    </Heading>
-                  </Link>
-                </Box>
+                  }}
+                  textColor={
+                    !isNaN(idHash) && idHash === dishType.id
+                      ? "blue.400"
+                      : undefined
+                  }
+                >
+                  {dishType.name}
+                </Button>
               ))
             ) : (
               <Skeleton height="6" width="36" />

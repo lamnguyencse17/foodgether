@@ -1,5 +1,10 @@
 import { Prisma } from "@prisma/client";
 import { omit } from "radash";
+import { DishWithPriceAndPhoto } from "../../types/dish";
+import {
+  AggregatedRestaurant,
+  RestaurantWithPhotoAndPrice,
+} from "../../types/restaurant";
 import { ShopeeRestaurant } from "../../types/shopee";
 import { prisma } from "./client";
 
@@ -39,24 +44,24 @@ export const getAggregatedRestaurant = async (restaurantId: number) => {
     include: {
       dishTypes: {
         include: {
-          dishTypeAndDishes: {
-            include: {
-              dish: true,
-            },
-          },
+          dishTypeAndDishes: true,
         },
         orderBy: {
           displayOrder: "asc",
         },
       },
+      dish: true,
     },
   });
-
+  if (!rawRestaurant) {
+    return null;
+  }
   return {
-    ...rawRestaurant,
+    ...omit(rawRestaurant, ["dish"]),
     dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
       ...omit(dishType, ["dishTypeAndDishes"]),
-      dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
+      dishList: dishType.dishTypeAndDishes.map((dish) => dish.dishId),
     })),
+    dishes: rawRestaurant.dish as DishWithPriceAndPhoto[],
   };
 };

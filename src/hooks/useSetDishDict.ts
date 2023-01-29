@@ -19,12 +19,7 @@ const useSetDishDict = (restaurant?: AggregatedRestaurant) => {
     if (setWhenEmptyDishDict || mismatchedRestaurant) {
       setDishDict({
         restaurantId: confirmedRestaurant.id,
-        dishes: objectify(
-          (confirmedRestaurant.dishTypes || []).flatMap(
-            (dishType) => dishType.dishes
-          ),
-          (item) => item.id
-        ),
+        dishes: objectify(confirmedRestaurant.dishes, (item) => item.id),
       });
     }
   }, [setWhenEmptyDishDict, mismatchedRestaurant]);

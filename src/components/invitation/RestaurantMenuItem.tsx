@@ -10,7 +10,7 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { isEmpty } from "radash";
+import { get, isEmpty } from "radash";
 import { FunctionComponent, useEffect } from "react";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import { trpc } from "../../utils/trpc";
@@ -19,6 +19,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import useStore from "../../hooks/store";
 import { listifyOptions } from "../../utils/transform";
 import { useTranslation } from "react-i18next";
+import { Photo } from "../../types/shared";
 
 type RestaurantMenuItemProps = {
   dish: DishWithPriceAndPhoto;
@@ -32,7 +33,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   const { t } = useTranslation();
   const { data: optionDict } = useStore((state) => state.optionDict);
   const options = optionDict?.options || {};
-  const photo = dish.photos[0];
+  const photo = get(dish, "photos[0]", {}) as Photo | undefined;
   const { onOpen, onClose, isOpen } = useDisclosure();
   const trpcContext = trpc.useContext();
 
@@ -77,7 +78,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
           {photo && (
             <Img
               boxSize="40"
-              src={photo.value}
+              src={photo?.value}
               alt={dish.name}
               style={{ objectFit: "scale-down" }}
               p={4}
@@ -103,11 +104,11 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
             <VStack alignItems="flex-start" justifyContent="flex-start">
               {isEmpty(dish.discountPrice) ? (
                 <Text>
-                  {t("common.price_number", { val: dish.price.value })}
+                  {t("common.price_number", { val: dish.price?.value })}
                 </Text>
               ) : (
                 <Text as="s">
-                  {t("common.price_number", { val: dish.price.value })}
+                  {t("common.price_number", { val: dish.price?.value })}
                 </Text>
               )}
               {!isEmpty(dish.discountPrice) && (

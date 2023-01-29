@@ -3,7 +3,7 @@ import { prisma } from "../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../types/shared";
 import { AggregatedRestaurant } from "../../types/restaurant";
 import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
-import { get, isEmpty, objectify } from "radash";
+import { get, isEmpty } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../components/restaurant/RestaurantHeader";
 import { trpc } from "../../utils/trpc";
@@ -14,12 +14,17 @@ import {
   fetchShopeeMenu,
   fetchShopeeRestaurantFromId,
 } from "../../server/service/shopee";
-import { upsertRestaurant } from "../../server/db/restaurant";
+import {
+  getAggregatedRestaurant,
+  upsertRestaurant,
+} from "../../server/db/restaurant";
 import { updateRestaurantMenu } from "../../server/handlers/restaurant";
-import { useMemo } from "react";
+import { createContext, Ref, useEffect, useMemo, useRef } from "react";
 import useSetOptionDict from "../../hooks/useSetOptionDict";
 import useSetDishDict from "../../hooks/useSetDishDict";
 import { formatISO, sub } from "date-fns";
+import useStore from "../../hooks/store";
+import { VirtuosoHandle } from "react-virtuoso";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -55,24 +60,9 @@ export const getStaticProps = async ({
     };
   }
   try {
-    const rawRestaurant = await prisma.restaurant.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-      include: {
-        dishTypes: {
-          include: {
-            dishTypeAndDishes: {
-              include: {
-                dish: true,
-              },
-            },
-          },
-        },
-      },
-    });
+    const restaurant = await getAggregatedRestaurant(parseInt(id));
 
-    if (!rawRestaurant) {
+    if (!restaurant) {
       const restaurantResponse = await fetchShopeeRestaurantFromId(
         parseInt(id)
       );
@@ -86,18 +76,10 @@ export const getStaticProps = async ({
       );
       return {
         props: {
-          restaurant: completedRestaurant,
+          restaurant: await getAggregatedRestaurant(completedRestaurant),
         },
       };
     }
-
-    const restaurant = {
-      ...rawRestaurant,
-      dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
-        ...dishType,
-        dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
-      })),
-    };
 
     return {
       props: {
@@ -117,11 +99,18 @@ type RestaurantPageProps = {
   restaurant: AggregatedRestaurant;
 };
 
+export const VirtuosoRefContext = createContext<null | Ref<VirtuosoHandle>>(
+  null
+);
+
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
+  const { setRestaurant } = useStore((state) => ({
+    setRestaurant: state.restaurant.setRestaurant,
+  }));
   const router = useRouter();
   const restaurantIdString =
     router.query.id || router.pathname.split("/").pop();
-
+  const virtuosoRef = useRef(null);
   const restaurantId = parseInt(restaurantIdString as unknown as string);
   const isValidRestaurantId = !isNaN(restaurantId as unknown as number);
 
@@ -155,6 +144,12 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   useSetDishDict(confirmedRestaurant);
 
   const { name, address, priceRange, isAvailable, url } = confirmedRestaurant;
+
+  useEffect(() => {
+    if (!isEmpty(confirmedRestaurant)) {
+      setRestaurant(confirmedRestaurant);
+    }
+  }, []);
 
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
   const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
@@ -191,11 +186,13 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
             paddingX={4}
             alignItems={["center", "center", "flex-start"]}
           >
-            <RestaurantMenuSection dishTypes={dishTypes} />
-            <RestaurantMenu
-              dishTypes={dishTypes}
-              restaurantId={confirmedRestaurant.id}
-            />
+            <VirtuosoRefContext.Provider value={virtuosoRef}>
+              <RestaurantMenuSection dishTypes={dishTypes} />
+              <RestaurantMenu
+                dishTypes={dishTypes}
+                restaurantId={confirmedRestaurant.id}
+              />
+            </VirtuosoRefContext.Provider>
           </Stack>
         </VStack>
       </main>

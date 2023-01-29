@@ -3594,6 +3594,11 @@ react-style-singleton@^2.2.1:
     invariant "^2.2.4"
     tslib "^2.0.0"
 
+react-virtuoso@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.npmjs.org/react-virtuoso/-/react-virtuoso-4.0.6.tgz#5ee8a72bf0b57d31063cef6343b26e6cde5529e3"
+  integrity sha512-TJ4fyTbre0uTpXE0AXaMG2BOX9PgKfDC7wLhnSmDvBU0WoEUrIAcNJACLJvqyWZMDAuEv3v+b4OyK6jiSkFL9Q==
+
 react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"

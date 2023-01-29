@@ -1,4 +1,5 @@
-import type { DishTypes, Restaurant } from "@prisma/client";
+import type { Dish, DishTypes, Restaurant } from "@prisma/client";
+import { DishWithPriceAndPhoto } from "./dish";
 import { Photo } from "./shared";
 
 export type AggregatedRestaurant =
@@ -10,8 +11,9 @@ export type AggregatedRestaurant =
       };
     } & {
       dishTypes: (DishTypes & {
-        dishes: DishTypes[];
+        dishList: number[];
       })[];
+      dishes: DishWithPriceAndPhoto[];
     })
   | null;
 
