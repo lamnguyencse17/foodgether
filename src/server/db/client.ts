@@ -21,24 +21,21 @@ if (env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
 
-const redis = new Redis(env.REDIS_URL, {
-  lazyConnect: true,
-});
+// const redis = new Redis(env.REDIS_URL);
 
-const cacheMiddleware = createPrismaRedisCache({
-  models: [{ model: "Restaurant", cacheTime: 180, cacheKey: "id" }],
-  storage: {
-    type: "redis",
-    options: {
-      client: redis,
-      invalidation: { referencesTTL: 300 },
-    } as unknown as RedisMemoryOptions,
-  },
-  excludeModels: ["Session"],
-  cacheTime: 300,
-  onError: (key) => {
-    console.log("error", key);
-  },
-});
+// const cacheMiddleware = createPrismaRedisCache({
+//   storage: {
+//     type: "redis",
+//     options: {
+//       client: redis,
+//       invalidation: { referencesTTL: 300 },
+//     } as unknown as RedisMemoryOptions,
+//   },
+//   excludeModels: ["Session"],
+//   cacheTime: 300,
+//   onError: (key) => {
+//     console.log("error", key);
+//   },
+// });
 
-prisma.$use(cacheMiddleware);
+// prisma.$use(cacheMiddleware);

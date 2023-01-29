@@ -1,11 +1,29 @@
+import { PrismaClient } from "@prisma/client";
 import { ShopeeMenu } from "../../types/shopee";
-import { prisma } from "./client";
 
-export const upsertDishTypes = async (
+export const upsertDishTypes = (
+  prisma: PrismaClient,
   restaurantId: number,
   menu: ShopeeMenu[]
 ) => {
-  await prisma.dishTypes.createMany({
+  // prisma.dishTypes.update({
+  //   where: {
+  //     id_restaurantId: {
+  //       id: 1,
+  //       restaurantId,
+  //     }
+  //   },
+  //   data: {
+  //     dishTypeAndDishes: {
+  //       deleteMany: {
+  //         dishTypeId: {
+  //           notIn: menu.map((dishType) => dishType.dish_type_id)
+  //         }
+  //       },
+  //     }
+  //   }
+  // })
+  return prisma.dishTypes.createMany({
     data: menu.map((dishType) => ({
       id: dishType.dish_type_id,
       name: dishType.dish_type_name,

@@ -1,11 +1,11 @@
 import { ShopeeOption } from "../../types/shopee";
 import { prisma } from "./client";
 
-export const upsertOption = async (
+export const upsertOption = (
   restaurantId: number,
   optionList: (ShopeeOption & { dishId: number })[]
 ) => {
-  await prisma.option.createMany({
+  return prisma.option.createMany({
     data: optionList.map((option) => ({
       id: option.id,
       name: option.name,

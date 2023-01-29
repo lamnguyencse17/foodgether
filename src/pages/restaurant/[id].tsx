@@ -71,6 +71,7 @@ export const getStaticProps = async ({
         restaurantResponse.reply.delivery_detail.delivery_id
       );
       const completedRestaurant = await updateRestaurantMenu(
+        prisma,
         parseInt(id),
         menu.reply.menu_infos
       );
@@ -104,6 +105,7 @@ export const VirtuosoRefContext = createContext<null | Ref<VirtuosoHandle>>(
 );
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
+  console.log(restaurant);
   const { setRestaurant } = useStore((state) => ({
     setRestaurant: state.restaurant.setRestaurant,
   }));

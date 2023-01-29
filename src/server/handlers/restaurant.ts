@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import axios from "axios";
 import camelcaseKeys from "camelcase-keys";
@@ -40,6 +41,7 @@ const revalidateRestaurant = async (restaurantId: number) => {
 };
 
 export const updateRestaurantMenu = async (
+  prisma: PrismaClient,
   restaurantId: number,
   menu: ShopeeMenu[]
 ) => {
@@ -55,15 +57,15 @@ export const updateRestaurantMenu = async (
       optionId: option.id,
     }))
   );
-  await Promise.all([
+
+  await prisma.$transaction([
     upsertDish(restaurantId, dishList),
-    upsertDishTypes(restaurantId, menu),
-  ]);
-  await Promise.all([
+    upsertDishTypes(prisma, restaurantId, menu),
     upsertOption(restaurantId, optionList),
     upsertDishTypeAndDishes(restaurantId, menu),
+    upsertOptionItem(restaurantId, optionItems),
   ]);
-  await upsertOptionItem(restaurantId, optionItems);
+
   return restaurantId;
 };
 
@@ -83,7 +85,7 @@ export const doesRestaurantExistFromUrl = publicProcedure
 
 export const fetchRestaurantFromUrl = publicProcedure
   .input(fetchRestaurantFromUrlSchema)
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
     const restaurantIdResponse = await fetchShopeeRestaurantId(input.url);
     if (restaurantIdResponse.result !== "success") {
       throw new TRPCError({
@@ -128,7 +130,7 @@ export const fetchRestaurantFromUrl = publicProcedure
     try {
       await Promise.all([
         revalidateRestaurant(restaurantId),
-        updateRestaurantMenu(restaurantId, menu.reply.menu_infos),
+        updateRestaurantMenu(ctx.prisma, restaurantId, menu.reply.menu_infos),
       ]);
 
       return { id: restaurantId };
@@ -143,7 +145,7 @@ export const fetchRestaurantFromUrl = publicProcedure
 
 export const fetchRestaurantFromId = publicProcedure
   .input(fetchRestaurantFromIdSchema)
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
     if (isNaN(input.id) || !input.id) {
       return {};
     }
@@ -181,7 +183,7 @@ export const fetchRestaurantFromId = publicProcedure
     try {
       await Promise.all([
         revalidateRestaurant(input.id),
-        updateRestaurantMenu(input.id, menu.reply.menu_infos),
+        updateRestaurantMenu(ctx.prisma, input.id, menu.reply.menu_infos),
       ]);
       const restaurant = await getAggregatedRestaurant(input.id);
       return { ...restaurant };

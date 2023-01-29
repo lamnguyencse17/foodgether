@@ -3,7 +3,7 @@ import { isEmpty } from "radash";
 import { ShopeeItem } from "../../types/shopee";
 import { prisma } from "./client";
 
-export const upsertOptionItem = async (
+export const upsertOptionItem = (
   restaurantId: number,
   optionItemList: (ShopeeItem & { optionId: number; dishId: number })[]
 ) => {
@@ -32,7 +32,7 @@ export const upsertOptionItem = async (
     optionId: optionItem.optionId,
     restaurantId,
   }));
-  await prisma.optionItem.createMany({
+  return prisma.optionItem.createMany({
     data: createData,
   });
 };
