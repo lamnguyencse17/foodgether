@@ -56,7 +56,8 @@
       "SP_02": "We are currently experiencing issues getting restaurant info.",
       "SP_03": "We are currently experiencing issues getting restaurant's menu.",
       "R_01": "We are currently experiencing issues processing restaurant data.",
-      "M_01": "We are currently experiencing issues processing menu data."
+      "M_01": "We are currently experiencing issues processing menu data.",
+      "C_01": "Please fill in all mandatory options"
     },
     "common": {
       "close": "Close",

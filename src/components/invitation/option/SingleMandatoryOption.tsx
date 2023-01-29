@@ -1,7 +1,7 @@
 import { Select } from "@chakra-ui/react";
 import { OptionItem } from "@prisma/client";
 import { nanoid } from "nanoid/async";
-import { get } from "radash";
+import { get, isEmpty } from "radash";
 import { ChangeEventHandler, FunctionComponent } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
@@ -40,6 +40,7 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
   const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (
     e
   ) => {
+    if (isEmpty(e.target.value)) return;
     const itemPrice = get(
       dict,
       `${dishId}.${optionId}.items.${e.target.value}.price.value`,
@@ -64,6 +65,7 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
       placeholder={name}
       onChange={handleChangeOption}
       value={currentOption?.value?.optionItemId}
+      required
     >
       {items.map((item) => (
         <option key={item.id} value={item.id}>

@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
 import { get, isArray, isEmpty, listify, uid } from "radash";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
@@ -50,12 +50,14 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     dishDict: { data: dishDict },
     cart: { addToCart, editCartItem },
     optionDict,
+    setToast,
   } = useStore(
     (state) => ({
       currentDishOption: state.currentDishOption,
       optionDict: state.optionDict.data,
       dishDict: state.dishDict,
       cart: state.cart,
+      setToast: state.toast.setToast,
     }),
     shallow
   );
@@ -85,7 +87,9 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     });
 
     if (!haveAllMandatoryOption) {
-      //TODO: Notify user to fill all mandatory option
+      setToast("error", {
+        title: t("error.C_01") as string,
+      });
       return;
     }
 
@@ -111,7 +115,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onCloseModal}>
       <ModalOverlay />
       <ModalContent maxW="600px">
         <ModalHeader>
@@ -141,6 +145,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                 <Box key={option.id} paddingY={3} width="100%">
                   <Heading size="sm" marginBottom={3}>
                     {option.name} {optionConfig}
+                    {option.isMandatory && "*"}
                   </Heading>
                   {option.isMandatory && option.maxQuantity === 1 ? (
                     <SingleMandatoryOption
