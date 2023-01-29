@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { omit } from "radash";
 import { ShopeeRestaurant } from "../../types/shopee";
 import { prisma } from "./client";
 
@@ -54,7 +55,7 @@ export const getAggregatedRestaurant = async (restaurantId: number) => {
   return {
     ...rawRestaurant,
     dishTypes: rawRestaurant?.dishTypes.map((dishType) => ({
-      ...dishType,
+      ...omit(dishType, ["dishTypeAndDishes"]),
       dishes: dishType.dishTypeAndDishes.map((dish) => dish.dish),
     })),
   };
