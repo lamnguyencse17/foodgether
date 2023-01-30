@@ -9,7 +9,6 @@ export const upsertOption = (
     data: optionList.map((option) => ({
       id: option.id,
       name: option.name,
-      dishId: option.dishId,
       ntop: option.ntop,
       isMandatory: option.mandatory,
       maxQuantity: option.option_items.max_select,
@@ -20,12 +19,16 @@ export const upsertOption = (
 };
 
 export const getAllOptions = (restaurantId: number) => {
-  return prisma.option.findMany({
+  return prisma.dishOption.findMany({
     where: {
-      restaurantId: restaurantId,
+      restaurantId,
     },
     include: {
-      items: true,
+      option: {
+        include: {
+          items: true,
+        },
+      },
     },
   });
 };

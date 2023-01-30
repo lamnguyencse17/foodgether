@@ -7,6 +7,7 @@ import { env } from "../../env/server.mjs";
 import { ShopeeMenu } from "../../types/shopee";
 import { errors } from "../common/constants";
 import { upsertDish } from "../db/dish";
+import { upsertDishOption } from "../db/dishOption";
 import { upsertDishTypeAndDishes } from "../db/dishTypeAndDishes";
 import { upsertDishTypes } from "../db/dishTypes";
 import { upsertOption } from "../db/option";
@@ -61,7 +62,11 @@ export const updateRestaurantMenu = async (
   await prisma.$transaction([
     upsertDish(restaurantId, dishList),
     upsertDishTypes(prisma, restaurantId, menu),
-    upsertOption(restaurantId, optionList),
+    upsertOption(
+      restaurantId,
+      unique(optionList, (option) => option.id)
+    ),
+    upsertDishOption(prisma, restaurantId, optionList),
     upsertDishTypeAndDishes(restaurantId, menu),
     upsertOptionItem(restaurantId, optionItems),
   ]);

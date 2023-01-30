@@ -30,14 +30,17 @@ export const createInvitation = protectedProcedure
       getAggregatedRestaurant(ctx.prisma, input.restaurantId),
       getAllOptions(input.restaurantId),
     ]);
-    const groupedDict = group(options, (option) => option.dishId);
+    const groupedDict = group(options || [], (option) => option.dishId);
     const optionDict = mapValues(groupedDict, (value) =>
       objectify(
         value || [],
-        (option) => option.id,
-        (option) => ({
-          ...option,
-          items: objectify(option.items, (optionItem) => optionItem.id),
+        (dishOption) => dishOption.optionId,
+        (dishOption) => ({
+          ...dishOption.option,
+          items: objectify(
+            dishOption.option.items,
+            (optionItem) => optionItem.id
+          ),
         })
       )
     );

@@ -130,12 +130,22 @@ model Dish {
   updatedAt         DateTime            @updatedAt
   dishTypeAndDishes DishTypeAndDishes[]
 
-  options Option[]
-
-  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant   Restaurant?  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int?
+  dishOption   DishOption[]
 
   @@unique([id, restaurantId])
+}
+
+model DishOption {
+  id           Int    @id @default(autoincrement())
+  dish         Dish   @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  dishId       Int
+  option       Option @relation(fields: [optionId, restaurantId], references: [id, restaurantId], onDelete: Cascade)
+  optionId     Int
+  restaurantId Int
+
+  @@unique([id, dishId, restaurantId])
 }
 
 model Option {
@@ -144,16 +154,15 @@ model Option {
   name         String
   ntop         String
   items        OptionItem[]
-  dish         Dish?        @relation(fields: [dishId], references: [id], onDelete: Cascade)
-  dishId       Int
   restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId Int
 
   minQuantity Int
   maxQuantity Int
+  dishOption  DishOption[]
 
-  @@id([id, dishId, restaurantId])
-  @@index([dishId, restaurantId])
+  @@id([id, restaurantId])
+  @@index([restaurantId])
 }
 
 model OptionItem {
@@ -167,7 +176,7 @@ model OptionItem {
   topOrder    Int     @default(0)
   dishId      Int
 
-  option       Option? @relation(fields: [optionId, dishId, restaurantId], references: [id, dishId, restaurantId], onDelete: Cascade)
+  option       Option? @relation(fields: [optionId, restaurantId], references: [id, restaurantId], onDelete: Cascade)
   optionId     Int?
   restaurantId Int
 
