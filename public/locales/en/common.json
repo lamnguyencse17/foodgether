@@ -44,7 +44,9 @@
       "cover_photo": "{{name}} cover photo",
       "is_closed": "Closed",
       "is_open": "Open",
-      "invitation_description": "Invitation to order at {{name}}"
+      "invitation_description": "Invitation to order at {{name}}",
+      "confirm_group_buy": "Confirm group buy",
+      "cancel_group_buy": "Cancel group buy"
     },
     "navbar": {
       "login": "Login",

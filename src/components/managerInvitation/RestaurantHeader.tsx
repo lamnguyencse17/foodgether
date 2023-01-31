@@ -127,9 +127,14 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
         ) : (
           <Skeleton height="6" width="64" />
         )}
-        <Button onClick={handleOrder} disabled={restaurantId === -1}>
-          Order
-        </Button>
+        <HStack>
+          <Button variant="ghost" colorScheme="blue">
+            {t("invitation_manage_page.confirm_group_buy")}
+          </Button>
+          <Button variant="link" colorScheme="red">
+            {t("invitation_manage_page.cancel_group_buy")}
+          </Button>
+        </HStack>
       </VStack>
     </Box>
   );

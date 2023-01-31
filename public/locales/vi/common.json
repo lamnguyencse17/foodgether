@@ -44,7 +44,9 @@
       "cover_photo": "Ảnh bìa {{name}}",
       "is_closed": "Đóng cửa",
       "is_open": "Mở cửa",
-      "invitation_description": "Lời mời đặt mua tại {{name}}"
+      "invitation_description": "Lời mời đặt mua tại {{name}}",
+      "confirm_group_buy": "Xác nhận đơn mua chung",
+      "cancel_group_buy": "Huỷ đơn mua chung"
     },
     "navbar": {
       "login": "Đăng nhập",

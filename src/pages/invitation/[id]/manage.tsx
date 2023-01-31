@@ -45,6 +45,7 @@ type ManageInvitationPageProps = {
 const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
   invitation,
 }) => {
+  console.log(invitation);
   const { t } = useTranslation();
   const router = useRouter();
   const invitationId = (router.query.id ||
