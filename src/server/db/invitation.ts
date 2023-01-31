@@ -5,6 +5,7 @@ import { prisma } from "./client";
 import { getAggregatedRestaurant } from "./restaurant";
 import { formatISO, sub } from "date-fns";
 import { OptionDictDishData } from "../../hooks/store/optionDict";
+import { objectify } from "radash";
 
 export const createDbInvitation = async (
   restaurantId: number,
@@ -73,7 +74,7 @@ export const getInvitationForCreator = async (id: string) => {
       code: "INTERNAL_SERVER_ERROR",
     });
   }
-  const [restaurant, creator] = await Promise.all([
+  const [restaurant, creator, members] = await Promise.all([
     prisma.restaurant.findUnique({
       where: {
         id: invitation.restaurantId,
@@ -88,8 +89,26 @@ export const getInvitationForCreator = async (id: string) => {
         name: true,
       },
     }),
+    prisma.user.findMany({
+      where: {
+        id: {
+          in: orders.map((order) => order.orderedById),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    }),
   ]);
-  return { ...invitation, orders, restaurant, creator };
+  return {
+    ...invitation,
+    orders,
+    restaurant,
+    creator,
+    members: objectify(members, (member) => member.id),
+  };
 };
 
 export const getOptionDictOfInvitation = async (

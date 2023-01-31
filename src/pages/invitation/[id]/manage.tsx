@@ -1,4 +1,15 @@
-import { VStack } from "@chakra-ui/react";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Divider,
+  HStack,
+  Stack,
+  VStack,
+} from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { get } from "radash";
@@ -68,7 +79,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
         <title>{description}</title>
         <meta name="description" content={description} />
       </Head>
-      <main style={{ width: "100%" }}>
+      <main style={{ width: "100%", height: "100%" }}>
         <VStack width="100%">
           <RestaurantHeader
             photo={restaurantHeaderImage}
@@ -80,6 +91,41 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
             restaurantId={restaurant.id}
             invitationId={invitationId}
           />
+          <Box width="full" mt={1} paddingX={4}>
+            <Divider orientation="horizontal" />
+          </Box>
+          <VStack
+            width="100%"
+            height="100%"
+            paddingX={4}
+            alignItems={["center", "center", "flex-start"]}
+            flex={1}
+          >
+            <Accordion allowToggle width="100%">
+              {invitation.orders.map((order) => (
+                <AccordionItem key={order.id} width="100%">
+                  <h2>
+                    <AccordionButton justifyContent="space-between">
+                      <Box>
+                        {get(
+                          invitation.members,
+                          `${order.orderedById}.name`,
+                          "Anonymous"
+                        )}
+                      </Box>
+                      <AccordionIcon />
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel pb={4}>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </VStack>
         </VStack>
       </main>
     </>
