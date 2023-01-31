@@ -1,8 +1,9 @@
-import { group, isEmpty, mapValues, objectify } from "radash";
+import { isEmpty } from "radash";
 import { useEffect } from "react";
 import { AggregatedRestaurant } from "../types/restaurant";
 import { trpc } from "../utils/trpc";
 import useStore from "./store";
+import { OptionDictDishData } from "./store/optionDict";
 
 const useSetOptionDict = (
   isFetchingRestaurant: boolean,
@@ -33,26 +34,9 @@ const useSetOptionDict = (
     );
   useEffect(() => {
     if (getOptionForAllDishesQuery.isFetched && !haveCorrectOptionDict) {
-      const groupedDict = group(
-        getOptionForAllDishesQuery.data || [],
-        (option) => option.dishId
-      );
-      const newOptionDict = mapValues(groupedDict, (value) =>
-        objectify(
-          value || [],
-          (dishOption) => dishOption.optionId,
-          (dishOption) => ({
-            ...dishOption.option,
-            items: objectify(
-              dishOption.option.items,
-              (optionItem) => optionItem.id
-            ),
-          })
-        )
-      );
       setOptionDict({
         restaurantId: restaurantId || -1,
-        options: newOptionDict,
+        options: (getOptionForAllDishesQuery.data || {}) as OptionDictDishData,
       });
     }
   }, [

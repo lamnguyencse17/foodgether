@@ -1,4 +1,4 @@
-import { getAllOptions } from "../db/option";
+import { group, mapValues, objectify } from "radash";
 import {
   getOptionForAllDishSchema,
   getOptionFromDishIdSchema,
@@ -20,6 +20,60 @@ export const getOptionFromDishId = publicProcedure
 
 export const getOptionForAllDishFromRestaurantId = publicProcedure
   .input(getOptionForAllDishSchema)
-  .query(({ input }) => {
-    return getAllOptions(input.restaurantId);
+  .query(async ({ ctx, input }) => {
+    const [dishOptions, options] = await Promise.all([
+      ctx.prisma.dishOption.findMany({
+        where: {
+          restaurantId: input.restaurantId,
+        },
+      }),
+      ctx.prisma.option.findMany({
+        where: {
+          restaurantId: input.restaurantId,
+        },
+        include: {
+          items: true,
+        },
+      }),
+    ]);
+    const dishGroups = group(dishOptions, (dishOption) => dishOption.dishId);
+    const optionItemDict = objectify(options, (option) => option.id);
+    const optionDict = mapValues(dishGroups, (value) =>
+      objectify(
+        value || [],
+        (dishOption) => dishOption.optionId,
+        (dishOption) => {
+          const option = optionItemDict[dishOption.optionId];
+          return {
+            ...option,
+            items: objectify(
+              optionItemDict[dishOption.optionId]?.items || [],
+              (item) => item.id
+            ),
+          };
+        }
+      )
+    );
+    return optionDict;
+  });
+
+export const getOptionDictFromRestaurantId = publicProcedure
+  .input(getOptionForAllDishSchema)
+  .query(async ({ ctx, input }) => {
+    const options = await Promise.all([
+      ctx.prisma.dishOption.findMany({
+        where: {
+          restaurantId: input.restaurantId,
+        },
+        include: {
+          option: true,
+        },
+      }),
+      ctx.prisma.option.findMany({
+        where: {
+          restaurantId: input.restaurantId,
+        },
+      }),
+    ]);
+    console.log(options);
   });

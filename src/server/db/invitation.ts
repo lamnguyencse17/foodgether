@@ -45,7 +45,7 @@ export const getAllRecentInvitationIds = async () => {
 };
 
 export const getInvitationForCreator = async (id: string) => {
-  const [invitation, orders] = await Promise.all([
+  const [invitation, orders = []] = await Promise.all([
     prisma.invitation.findUnique({
       where: {
         id,
@@ -74,7 +74,7 @@ export const getInvitationForCreator = async (id: string) => {
       code: "INTERNAL_SERVER_ERROR",
     });
   }
-  const [restaurant, creator, members] = await Promise.all([
+  const [restaurant, creator, members = []] = await Promise.all([
     prisma.restaurant.findUnique({
       where: {
         id: invitation.restaurantId,

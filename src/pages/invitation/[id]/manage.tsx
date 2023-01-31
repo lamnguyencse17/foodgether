@@ -6,8 +6,6 @@ import {
   AccordionPanel,
   Box,
   Divider,
-  HStack,
-  Stack,
   VStack,
 } from "@chakra-ui/react";
 import Head from "next/head";
@@ -56,13 +54,14 @@ type ManageInvitationPageProps = {
 const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
   invitation,
 }) => {
-  console.log(invitation);
   const { t } = useTranslation();
   const router = useRouter();
   const invitationId = (router.query.id ||
     router.pathname.split("/").pop()) as string;
   const restaurant = ((invitation || {}).restaurant ||
     {}) as RestaurantWithPhotoAndPrice;
+
+  const orders = (invitation || {}).orders || [];
 
   const { name, address, priceRange, isAvailable, url } = restaurant;
 
@@ -102,7 +101,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
             flex={1}
           >
             <Accordion allowToggle width="100%">
-              {invitation.orders.map((order) => (
+              {orders.map((order) => (
                 <AccordionItem key={order.id} width="100%">
                   <h2>
                     <AccordionButton justifyContent="space-between">
