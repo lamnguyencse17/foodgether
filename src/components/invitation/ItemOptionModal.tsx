@@ -13,14 +13,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
-import { get, isArray, isEmpty, listify, uid } from "radash";
-import { FunctionComponent, useEffect } from "react";
+import { get, isArray, isEmpty, listify, objectify, uid } from "radash";
+import { FunctionComponent, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 import useStore from "../../hooks/store";
-import { cartItemSchema } from "../../server/schemas/order";
+import { DishOptionValue, OptionMandatoryValue, cartItemSchema } from "../../server/schemas/order";
 import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid/async";
 import { OptionDictOptionData } from "../../hooks/store/optionDict";
@@ -62,6 +62,10 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     shallow
   );
 
+  const currentDishOptionMap = useMemo<Record<string, DishOptionValue>>(
+    () => objectify(currentDishOption, (currentDishOption) => currentDishOption.optionId)
+  , [currentDishOption]);
+
   const isEditing = !!cartItemId;
 
   const onOrder = async () => {
@@ -81,7 +85,14 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
       if (!menuOption.isMandatory || !haveAllMandatoryOption) {
         return;
       }
-      if (!get(currentDishOption, menuOption.id.toString())) {
+      let selectedOptionItems = currentDishOptionMap[menuOption.id]?.value;
+      let unifiedSelectedOptionItems = [selectedOptionItems || []].flatMap(_ => _) // unify
+      const { minQuantity, maxQuantity } = menuOption;
+      if (!(
+        unifiedSelectedOptionItems.length >= minQuantity 
+        && unifiedSelectedOptionItems.length <= maxQuantity
+        && unifiedSelectedOptionItems.every(({ optionItemId }) => !!get(menuOption.items, optionItemId.toString()))
+      )) {
         haveAllMandatoryOption = false;
       }
     });
