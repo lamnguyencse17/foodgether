@@ -31,6 +31,8 @@ jobs:
           cache: 'yarn'
       - run: yarn
       - run: yarn lint
+        env:
+          SKIP_ENV_VALIDATION: 'true'
   migrate:
     runs-on: ubuntu-latest
     needs: "lint"
