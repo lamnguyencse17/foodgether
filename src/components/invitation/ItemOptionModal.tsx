@@ -14,13 +14,13 @@ import {
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
 import { get, isArray, isEmpty, listify, uid } from "radash";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 import useStore from "../../hooks/store";
-import { cartItemSchema } from "../../server/schemas/order";
+import { DishOptionValue, cartItemSchema } from "../../server/schemas/order";
 import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid/async";
 import { OptionDictOptionData } from "../../hooks/store/optionDict";
@@ -62,6 +62,12 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     shallow
   );
 
+  const currentDishOptionMap = useMemo(() => currentDishOption.reduce((obj, detail) => {
+    obj[detail.optionId] = detail;
+    return obj;
+  }, {} as Record<string, DishOptionValue>)
+  , [currentDishOption]);
+
   const isEditing = !!cartItemId;
 
   const onOrder = async () => {
@@ -77,13 +83,27 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
       {}
     ) as OptionDictOptionData;
     let haveAllMandatoryOption = true;
-    listify(dishOption, (_, value) => ({ ...value })).forEach((menuOption) => {
+    listify(dishOption, (key, value) => ({ optionId: key, ...value })).forEach((menuOption) => {
       if (!menuOption.isMandatory || !haveAllMandatoryOption) {
         return;
       }
-      if (!get(currentDishOption, menuOption.id.toString())) {
-        haveAllMandatoryOption = false;
+      const selectedOptionItems = currentDishOptionMap[menuOption.optionId]?.value;
+      if (Array.isArray(selectedOptionItems)) { // choice
+        const { minQuantity, maxQuantity } = menuOption;
+        if (
+          selectedOptionItems.length >= minQuantity 
+          && selectedOptionItems.length <= maxQuantity
+          && selectedOptionItems.every(({ optionItemId }) => !!get(menuOption.items, optionItemId.toString()))
+        ) {
+          return;
+        }
+      } else if (
+        !!selectedOptionItems 
+        && get(menuOption.items, selectedOptionItems.optionItemId?.toString())
+      ) { // mandatory
+        return;
       }
+      haveAllMandatoryOption = false;
     });
 
     if (!haveAllMandatoryOption) {
