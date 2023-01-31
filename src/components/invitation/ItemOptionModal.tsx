@@ -13,14 +13,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Option, OptionItem } from "@prisma/client";
-import { get, isArray, isEmpty, listify, uid } from "radash";
+import { get, isArray, isEmpty, listify, objectify, uid } from "radash";
 import { FunctionComponent, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 import useStore from "../../hooks/store";
-import { DishOptionValue, cartItemSchema } from "../../server/schemas/order";
+import { DishOptionValue, OptionMandatoryValue, cartItemSchema } from "../../server/schemas/order";
 import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid/async";
 import { OptionDictOptionData } from "../../hooks/store/optionDict";
@@ -62,10 +62,8 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     shallow
   );
 
-  const currentDishOptionMap = useMemo(() => currentDishOption.reduce((obj, detail) => {
-    obj[detail.optionId] = detail;
-    return obj;
-  }, {} as Record<string, DishOptionValue>)
+  const currentDishOptionMap = useMemo<Record<string, DishOptionValue>>(
+    () => objectify(currentDishOption, (currentDishOption) => currentDishOption.optionId)
   , [currentDishOption]);
 
   const isEditing = !!cartItemId;
@@ -83,27 +81,20 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
       {}
     ) as OptionDictOptionData;
     let haveAllMandatoryOption = true;
-    listify(dishOption, (key, value) => ({ optionId: key, ...value })).forEach((menuOption) => {
+    listify(dishOption, (_, value) => ({ ...value })).forEach((menuOption) => {
       if (!menuOption.isMandatory || !haveAllMandatoryOption) {
         return;
       }
-      const selectedOptionItems = currentDishOptionMap[menuOption.optionId]?.value;
-      if (Array.isArray(selectedOptionItems)) { // choice
-        const { minQuantity, maxQuantity } = menuOption;
-        if (
-          selectedOptionItems.length >= minQuantity 
-          && selectedOptionItems.length <= maxQuantity
-          && selectedOptionItems.every(({ optionItemId }) => !!get(menuOption.items, optionItemId.toString()))
-        ) {
-          return;
-        }
-      } else if (
-        !!selectedOptionItems 
-        && get(menuOption.items, selectedOptionItems.optionItemId?.toString())
-      ) { // mandatory
-        return;
+      let selectedOptionItems = currentDishOptionMap[menuOption.id]?.value;
+      let unifiedSelectedOptionItems = [selectedOptionItems || []].flatMap(_ => _) // unify
+      const { minQuantity, maxQuantity } = menuOption;
+      if (!(
+        unifiedSelectedOptionItems.length >= minQuantity 
+        && unifiedSelectedOptionItems.length <= maxQuantity
+        && unifiedSelectedOptionItems.every(({ optionItemId }) => !!get(menuOption.items, optionItemId.toString()))
+      )) {
+        haveAllMandatoryOption = false;
       }
-      haveAllMandatoryOption = false;
     });
 
     if (!haveAllMandatoryOption) {
