@@ -1,4 +1,4 @@
-import { Box, Container, VStack } from "@chakra-ui/react";
+import { Container, VStack } from "@chakra-ui/react";
 import { NextComponentType, NextPageContext } from "next";
 import Head from "next/head";
 import { FunctionComponent } from "react";

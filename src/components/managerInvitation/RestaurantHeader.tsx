@@ -13,9 +13,6 @@ import { Photo } from "../../types/shared";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { trpc } from "../../utils/trpc";
-import useStore from "../../hooks/store";
-import { createOrderSchema } from "../../server/schemas/order";
 
 type RestaurantHeaderProps = {
   photo?: Photo;
@@ -38,25 +35,9 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   isAvailable = false,
   priceRange,
   url = "",
-  restaurantId = -1,
-  invitationId = "",
 }) => {
   const { t } = useTranslation();
-  const createOrder = trpc.order.createOrder.useMutation();
-  const { data: cart } = useStore((state) => state.cart);
 
-  const handleOrder = () => {
-    createOrderSchema.parse({
-      restaurantId,
-      invitationId,
-      items: cart,
-    });
-    createOrder.mutate({
-      restaurantId,
-      invitationId,
-      items: cart,
-    });
-  };
   return (
     <Box
       maxH="fit-content"

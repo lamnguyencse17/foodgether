@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   DoesRestaurantExistFromUrlParams,

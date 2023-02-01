@@ -9,7 +9,7 @@ import { createInvitationSchema } from "../schemas/invitation";
 import { protectedProcedure } from "../trpc/trpc";
 
 const revalidateInvitation = async (invitationId: string) => {
-  const response = await axios.post(
+  const _ = await axios.post(
     `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
     { url: `/invitation/${invitationId}/` },
     {

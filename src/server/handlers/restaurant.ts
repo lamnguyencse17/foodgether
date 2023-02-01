@@ -1,9 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import axios from "axios";
 import camelcaseKeys from "camelcase-keys";
 import { unique } from "radash";
-import { env } from "../../env/server.mjs";
 import { ShopeeMenu } from "../../types/shopee";
 import { errors } from "../common/constants";
 import { upsertDish } from "../db/dish";
@@ -25,21 +23,6 @@ import {
   fetchShopeeRestaurantId,
 } from "../service/shopee";
 import { publicProcedure } from "../trpc/trpc";
-
-const revalidateRestaurant = async (restaurantId: number) => {
-  const response = await axios.post(
-    `${env.REVALIDATE_URL}?secret=${env.REVALIDATION_TOKEN}`,
-    { url: `/restaurant/${restaurantId}/` },
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  if (response.status !== 200) {
-    console.log(errors.menu.UPSERT_MENU, response);
-  }
-};
 
 export const updateRestaurantMenu = async (
   prisma: PrismaClient,

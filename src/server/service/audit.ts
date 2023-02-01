@@ -19,16 +19,6 @@ type PriceDict = Record<
   }
 >;
 
-type PriceObject = {
-  id: number;
-  price: number;
-};
-
-type OptionalPriceObject = PriceObject & {
-  id: string;
-  price: number;
-};
-
 export const auditOrder = async (order: CreateOrderParams) => {
   const dishIds = order.items.map((item) => item.dishId);
   const optionFilter = order.items.flatMap((item) =>

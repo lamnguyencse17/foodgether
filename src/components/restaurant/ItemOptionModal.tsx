@@ -9,7 +9,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Skeleton,
   SkeletonText,
   Text,
 } from "@chakra-ui/react";

@@ -1,7 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { Redis } from "ioredis";
-import { createPrismaRedisCache } from "prisma-redis-middleware";
-import { RedisMemoryOptions } from "prisma-redis-middleware/dist/types.js";
+import { PrismaClient } from "@prisma/client";
 
 import { env } from "../../env/server.mjs";
 

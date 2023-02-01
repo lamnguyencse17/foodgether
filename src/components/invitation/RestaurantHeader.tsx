@@ -27,7 +27,6 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   isAvailable = false,
   priceRange,
   url = "",
-  restaurantId = -1,
 }) => {
   const { t } = useTranslation();
 
