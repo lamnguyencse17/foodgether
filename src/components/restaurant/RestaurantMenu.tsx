@@ -2,19 +2,16 @@ import {
   Box,
   Card,
   CardBody,
-  Heading,
   Skeleton,
   StackDivider,
   VStack,
 } from "@chakra-ui/react";
-import { get, isEmpty } from "radash";
+import { isEmpty } from "radash";
 import { FunctionComponent, useContext } from "react";
 import { Virtuoso } from "react-virtuoso";
-import useStore from "../../hooks/store";
 import { VirtuosoRefContext } from "../../pages/restaurant/[id]";
-import { DishWithPriceAndPhoto } from "../../types/dish";
 import { AggregatedDishTypes } from "../../types/dishTypes";
-import RestaurantMenuItem from "./RestaurantMenuItem";
+import RestaurantDishTypes from "./RestaurantDishTypes";
 
 type RestaurantMenuProps = {
   dishTypes: AggregatedDishTypes[];
@@ -25,10 +22,6 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
   dishTypes,
   restaurantId,
 }) => {
-  const { dishDict } = useStore((state) => ({
-    dishDict: state.dishDict.data,
-  }));
-
   const virtuosoRef = useContext(VirtuosoRefContext);
   return (
     <Box flex={[null, null, 1]} maxW="full" width="100%">
@@ -45,50 +38,13 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
                 data={dishTypes}
                 computeItemKey={(_, item) => item.id}
                 style={{ width: "100%" }}
-                itemContent={(id, dishType) => {
-                  return (
-                    <Box key={id} width="full" marginY="5">
-                      <Heading
-                        size="xs"
-                        textTransform="uppercase"
-                        mb="3"
-                        id={id.toString()}
-                      >
-                        {dishType.name}
-                      </Heading>
-                      <VStack
-                        divider={<StackDivider />}
-                        justifyContent={["center", "center", "flex-start"]}
-                        alignItems={["center", "center", "flex-start"]}
-                        width="full"
-                      >
-                        {dishType.dishList.map((dishId) => {
-                          const dish = get(dishDict, `dishes.${dishId}`);
-                          return (
-                            <Box width="100%" key={dishId} marginY="2">
-                              <Skeleton
-                                isLoaded={!!dish}
-                                height="40"
-                                fadeDuration={4}
-                              >
-                                <RestaurantMenuItem
-                                  dish={
-                                    get(
-                                      dishDict,
-                                      `dishes.${dishId}`,
-                                      {}
-                                    ) as DishWithPriceAndPhoto
-                                  }
-                                  restaurantId={restaurantId}
-                                />
-                              </Skeleton>
-                            </Box>
-                          );
-                        })}
-                      </VStack>
-                    </Box>
-                  );
-                }}
+                itemContent={(id, dishType) => (
+                  <RestaurantDishTypes
+                    dishType={dishType}
+                    dishTypeId={id}
+                    restaurantId={restaurantId}
+                  />
+                )}
               />
             </VStack>
           </CardBody>

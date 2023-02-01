@@ -4,22 +4,17 @@ import { AggregatedRestaurant } from "../types/restaurant";
 import useStore from "./store";
 
 const useSetDishDict = (restaurant?: AggregatedRestaurant) => {
-  const confirmedRestaurant = (restaurant ||
-    {}) as NonNullable<AggregatedRestaurant>;
   const { data: dishDict, setDishDict } = useStore((state) => state.dishDict);
   const mismatchedRestaurant =
-    confirmedRestaurant &&
-    isEmpty(dishDict) &&
-    dishDict?.restaurantId !== confirmedRestaurant.id;
+    restaurant && isEmpty(dishDict) && dishDict?.restaurantId !== restaurant.id;
 
-  const setWhenEmptyDishDict =
-    isEmpty(dishDict) && !isEmpty(confirmedRestaurant);
+  const setWhenEmptyDishDict = isEmpty(dishDict) && !isEmpty(restaurant);
 
   useEffect(() => {
-    if (setWhenEmptyDishDict || mismatchedRestaurant) {
+    if ((restaurant && setWhenEmptyDishDict) || mismatchedRestaurant) {
       setDishDict({
-        restaurantId: confirmedRestaurant.id,
-        dishes: objectify(confirmedRestaurant.dishes, (item) => item.id),
+        restaurantId: restaurant.id,
+        dishes: objectify(restaurant.dishes, (item) => item.id),
       });
     }
   }, [setWhenEmptyDishDict, mismatchedRestaurant]);

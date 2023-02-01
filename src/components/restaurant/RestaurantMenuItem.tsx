@@ -19,7 +19,7 @@ import { trpc } from "../../utils/trpc";
 import ItemOptionModal from "./ItemOptionModal";
 
 type RestaurantMenuItemProps = {
-  dish: DishWithPriceAndPhoto;
+  dish?: DishWithPriceAndPhoto;
   restaurantId: number;
 };
 
@@ -30,22 +30,23 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   const { t } = useTranslation();
   const { data: optionDict } = useStore((state) => state.optionDict);
   const options = optionDict?.options || {};
-  const photo = (dish.photos || [])[0];
+  const photo = dish?.photos[0];
   const { onOpen, onClose, isOpen } = useDisclosure();
   const trpcContext = trpc.useContext();
+  const dishId = dish?.id || -1;
 
   const dishOptionQuery = trpc.option.getOptionFromDishId.useQuery(
     {
-      dishId: dish.id,
+      dishId: dishId,
       restaurantId,
     },
     {
-      enabled: isOpen && !options[dish.id] && isEmpty(optionDict),
+      enabled: isOpen && !options[dishId] && isEmpty(optionDict),
       staleTime: 60 * 1000,
     }
   );
 
-  const option = options[dish.id];
+  const option = options[dishId];
   const currentOption =
     (option && listifyOptions(option)) || dishOptionQuery.data;
 
@@ -62,7 +63,9 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
     option,
     trpcContext.option.getOptionFromDishId,
   ]);
-
+  if (!dish) {
+    return null;
+  }
   return (
     <>
       <Card

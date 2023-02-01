@@ -19,7 +19,7 @@ import {
   upsertRestaurant,
 } from "../../server/db/restaurant";
 import { updateRestaurantMenu } from "../../server/handlers/restaurant";
-import { createContext, Ref, useEffect, useMemo, useRef } from "react";
+import { createContext, RefObject, useEffect, useMemo, useRef } from "react";
 import useSetOptionDict from "../../hooks/useSetOptionDict";
 import useSetDishDict from "../../hooks/useSetDishDict";
 import { formatISO, sub } from "date-fns";
@@ -105,9 +105,8 @@ type RestaurantPageProps = {
   restaurant: AggregatedRestaurant;
 };
 
-export const VirtuosoRefContext = createContext<null | Ref<VirtuosoHandle>>(
-  null
-);
+export const VirtuosoRefContext =
+  createContext<null | RefObject<VirtuosoHandle>>(null);
 
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const { setRestaurant } = useStore((state) => ({

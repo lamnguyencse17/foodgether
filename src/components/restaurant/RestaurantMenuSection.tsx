@@ -49,9 +49,8 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
                   whiteSpace="normal"
                   textAlign="left"
                   onClick={() => {
-                    if (virtuosoRef) {
-                      //TODO: Ref<VirtuosoHandle> does not give out any .current
-                      (virtuosoRef as any).current.scrollToIndex({
+                    if (virtuosoRef && virtuosoRef.current) {
+                      virtuosoRef.current.scrollToIndex({
                         index: dishType.id,
                       });
                       router.push(`#${dishType.id}`);

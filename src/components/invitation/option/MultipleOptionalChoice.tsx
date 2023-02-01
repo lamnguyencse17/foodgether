@@ -1,7 +1,7 @@
 import { Checkbox, CheckboxGroup, HStack, VStack } from "@chakra-ui/react";
 import { OptionItem } from "@prisma/client";
 import { nanoid } from "nanoid/async";
-import { cluster, get, toggle } from "radash";
+import { cluster, get, toggle, uid } from "radash";
 import { ChangeEvent, FunctionComponent } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
@@ -68,8 +68,8 @@ const MultipleOptionalChoice: FunctionComponent<
   return (
     <CheckboxGroup value={displayValues}>
       <HStack justifyContent="start" alignItems="start" width="100%">
-        {hItems.map((vItem, index) => (
-          <VStack key={index} justifyContent="start" alignItems="start">
+        {hItems.map((vItem) => (
+          <VStack key={uid(4)} justifyContent="start" alignItems="start">
             {vItem.map((item) => (
               <Checkbox
                 key={item.id}

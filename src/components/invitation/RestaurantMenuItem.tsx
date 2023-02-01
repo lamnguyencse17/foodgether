@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import { Photo } from "../../types/shared";
 
 type RestaurantMenuItemProps = {
-  dish: DishWithPriceAndPhoto;
+  dish?: DishWithPriceAndPhoto;
   restaurantId: number;
 };
 
@@ -36,18 +36,19 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   const photo = get(dish, "photos[0]", {}) as Photo | undefined;
   const { onOpen, onClose, isOpen } = useDisclosure();
   const trpcContext = trpc.useContext();
+  const dishId = dish?.id || -1;
 
   const dishOptionQuery = trpc.option.getOptionFromDishId.useQuery(
     {
-      dishId: dish.id,
+      dishId: dishId,
       restaurantId,
     },
     {
-      enabled: isOpen && !options[dish.id] && isEmpty(optionDict),
+      enabled: isOpen && !options[dishId] && isEmpty(optionDict),
       staleTime: 60 * 1000,
     }
   );
-  const option = options[dish.id];
+  const option = options[dishId];
   const currentOption =
     (option && listifyOptions(option)) || dishOptionQuery.data;
 
@@ -65,6 +66,9 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
     trpcContext.option.getOptionFromDishId,
   ]);
 
+  if (!dish) {
+    return null;
+  }
   return (
     <>
       <Card

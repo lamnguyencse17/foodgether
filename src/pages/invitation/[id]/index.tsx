@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { prisma } from "../../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
-import { AggregatedRestaurant } from "../../../types/restaurant";
 import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
 import { get, isEmpty } from "radash";
 import Head from "next/head";
@@ -12,7 +11,7 @@ import RestaurantMenu from "../../../components/invitation/RestaurantMenu";
 import { AggregatedInvitation } from "../../../types/invitation";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../../components/invitation/FloatingCart";
-import { createContext, Ref, useEffect, useMemo, useRef } from "react";
+import { createContext, RefObject, useEffect, useRef } from "react";
 import { getAllRecentInvitationIds } from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
 import { trpc } from "../../../utils/trpc";
@@ -62,9 +61,8 @@ type InvitationPageProps = {
   invitation: AggregatedInvitation | null;
 };
 
-export const VirtuosoRefContext = createContext<null | Ref<VirtuosoHandle>>(
-  null
-);
+export const VirtuosoRefContext =
+  createContext<null | RefObject<VirtuosoHandle>>(null);
 
 const InvitationPage = ({ invitation }: InvitationPageProps) => {
   const { t } = useTranslation();
@@ -81,17 +79,18 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
   const virtuosoRef = useRef(null);
 
   const restaurant = invitation?.restaurant;
+  const restaurantId = restaurant?.id || -1;
   const invitationId = (router.query.id ||
     router.pathname.split("/").pop()) as string;
 
-  const confirmedRestaurant = useMemo(() => {
-    return (restaurant || {}) as NonNullable<AggregatedRestaurant>;
-  }, [restaurant]);
+  // const confirmedRestaurant = useMemo(() => {
+  //   return (restaurant || {}) as NonNullable<AggregatedRestaurant>;
+  // }, [restaurant]);
 
   const cartQuery = trpc.order.getMemberCurrentOrder.useQuery(
     {
       invitationId,
-      restaurantId: confirmedRestaurant.id,
+      restaurantId,
     },
     {
       enabled: !isEmpty(restaurant),
@@ -117,23 +116,20 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
       });
       setRestaurant(restaurant);
     }
-  }, [confirmedRestaurant.id]);
+  }, [restaurant?.id]);
 
-  const { name, address, priceRange, isAvailable, url } =
-    confirmedRestaurant || {};
-
-  const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
+  const restaurantPhotos = get(restaurant, "photos", []) as Photo[];
   const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
 
-  const dishTypes = get(
-    confirmedRestaurant,
-    "dishTypes",
-    []
-  ) as AggregatedDishTypes[];
+  const dishTypes = get(restaurant, "dishTypes", []) as AggregatedDishTypes[];
   const description = t("invitation_page.invitation_description", {
-    name,
+    name: restaurant?.name,
   }) as string;
 
+  if (!restaurant) {
+    return null;
+  }
+  const { name, address, priceRange, isAvailable, url } = restaurant;
   return (
     <>
       <Head>
@@ -149,7 +145,7 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
             priceRange={priceRange}
             isAvailable={isAvailable}
             url={url}
-            restaurantId={confirmedRestaurant.id}
+            restaurantId={restaurantId}
             invitationId={invitationId}
           />
           <Box width="full" mt={1} paddingX={4}>
@@ -165,7 +161,7 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
               <RestaurantMenuSection dishTypes={dishTypes} />
               <RestaurantMenu
                 dishTypes={dishTypes}
-                restaurantId={confirmedRestaurant.id}
+                restaurantId={restaurantId}
               />
             </VirtuosoRefContext.Provider>
           </Stack>
