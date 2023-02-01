@@ -1,8 +1,8 @@
 # Foodgether
 
-[Deployment URL](https://lamprojects.me/foodgether)
+[Deployment URL](https://foodgether.vercel.app/)
 
-**Best lunch ordering web app for Kobiers**
+**The right tool to manager your Shopeefood group buy orders**
 
 ## Vision
 
@@ -13,7 +13,9 @@ A simple way to order lunch together:
 
 ## Getting started
 
+- `yarn install`
 - Fill in required environment at: [/src/env/schema.mjs](https://github.com/lamnguyencse17/foodgether/blob/main/src/env/schema.mjs)
+- `yarn prisma migrate deploy`
 - Run `yarn dev` and you are good to go 🚀
 
 ## Techstack
@@ -26,6 +28,9 @@ A simple way to order lunch together:
 
 ## Author
 **Nguyen Quang Lam** - [lamnguyencse17](https://github.com/lamnguyencse17)
+
+**Doan Ngoc Thinh** - [nngthinh](https://github.com/nngthinh)
+
 
 See also the list of [contributors](https://github.com/Foodgether/foodgether/graphs/contributors) who participated in this project.
 
