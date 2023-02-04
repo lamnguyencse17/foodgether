@@ -97,7 +97,7 @@ model DishTypes {
 
   @@id([id, restaurantId])
   @@unique([id, restaurantId])
-  @@index(displayOrder, name: "displayOrder")
+  @@index(displayOrder, name: "dishTypesDisplayOrder")
 }
 
 model DishTypeAndDishes {
@@ -184,68 +184,81 @@ model OptionItem {
 }
 
 model Invitation {
-  id           String           @id @default(cuid())
-  restaurantId Int
-  createdById  String
-  status       InvitationStatus @default(ACTIVE)
+  id String @id @default(cuid())
+
+  status InvitationStatus @default(ACTIVE)
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   restaurant Json
   optionDict Json
   dishDict   Json
-  order      Order[]
-  User       User?    @relation(fields: [userId], references: [id])
-  userId     String?
+
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
+
+  invitationRestaurant  InvitationRestaurant?
+  invitationOptions     InvitationOption[]
+  invitationOptionItems InvitationOptionItem[]
+  orders                Order[]
 }
 
 model Order {
-  id           Int @id @default(autoincrement())
-  restaurantId Int
+  id Int @id @default(autoincrement())
 
   invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   invitationId String
 
-  orderedById String
+  invitationRestaurant   InvitationRestaurant @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  orderDish OrderDish[]
-  User      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userId    String?
+  orderedBy   User?   @relation(fields: [orderedById], references: [id], onDelete: SetNull)
+  orderedById String?
 
-  @@unique([orderedById, restaurantId, invitationId])
-  @@index([restaurantId, invitationId, createdAt(sort: Desc)])
+  orderDishes OrderDish[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderedById, invitationRestaurantId, invitationId])
+  @@index([invitationRestaurantId, invitationId, createdAt(sort: Desc)])
 }
 
 model OrderDish {
-  id           String @id
-  order        Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId      Int
-  dishId       Int
-  restaurantId Int
+  id      String @id
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int
+
+  invitationRestaurant   InvitationRestaurant? @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int?
+
+  invitationDish   InvitationDish @relation(fields: [invitationDishId], references: [id], onDelete: Cascade)
+  invitationDishId Int
 
   dishPrice  Int
   totalPrice Int
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  orderDishOption OrderDishOption[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  orderDishOptions OrderDishOption[]
 }
 
 model OrderDishOption {
   id String @id
 
-  orderDish    OrderDish @relation(fields: [orderDishId], references: [id], onDelete: Cascade)
-  orderDishId  String
-  optionId     Int
-  dishId       Int
-  restaurantId Int
-  price        Int
+  orderDish   OrderDish @relation(fields: [orderDishId], references: [id], onDelete: Cascade)
+  orderDishId String
 
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  orderDishOptionItem OrderDishOptionItem[]
+  invitationOption   InvitationOption @relation(fields: [invitationOptionId, invitationRestaurantId], references: [id, invitationRestaurantId])
+  invitationOptionId Int
+
+  invitationRestaurant   InvitationRestaurant @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int
+  price                  Int
+
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  orderDishOptionItems OrderDishOptionItem[]
 }
 
 model OrderDishOptionItem {
@@ -253,10 +266,10 @@ model OrderDishOptionItem {
   orderDishOption   OrderDishOption @relation(fields: [orderDishOptionId], references: [id], onDelete: Cascade)
   orderDishOptionId String
 
-  optionItemId Int
-  dishId       Int
-  restaurantId Int
-  price        Int
+  invitationOptionItem       InvitationOptionItem @relation(fields: [invitationOptionItemId, invitationOptionItemDishId, invitationRestaurantId], references: [id, dishId, invitationRestaurantId])
+  invitationOptionItemId     Int
+  invitationOptionItemDishId Int
+  invitationRestaurantId     Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -276,4 +289,144 @@ enum InvitationStatus {
   COMFIRMED
   COMPLETED
   EXPIRED
+}
+
+model InvitationRestaurant {
+  id                Int     @id @default(autoincrement())
+  restaurantId      Int     @default(autoincrement())
+  deliveryId        Int
+  name              String
+  address           String  @db.Text
+  url               String
+  isQualityMerchant Boolean @default(false)
+  isAvailable       Boolean @default(false)
+  position          Json
+  priceRange        Json
+
+  photos Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invitation            Invitation             @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  invitationId          String                 @unique
+  invitationDishes      InvitationDish[]
+  invitationOptions     InvitationOption[]
+  invitationDishTypes   InvitationDishTypes[]
+  orderDishes           OrderDish[]
+  orderDishOptions      OrderDishOption[]
+  orders                Order[]
+  invitationOptionItems InvitationOptionItem[]
+}
+
+model InvitationDishTypes {
+  id                     Int
+  name                   String
+  restaurant             InvitationRestaurant @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int
+  displayOrder           Int                  @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invitationDishTypeAndDishes InvitationDishTypeAndDishes[]
+
+  @@id([id, invitationRestaurantId])
+  @@unique([id, invitationRestaurantId])
+  @@index(displayOrder, name: "invitataionDishTypesDisplayOrder")
+}
+
+model InvitationDishTypeAndDishes {
+  id Int @id @default(autoincrement())
+
+  dish   InvitationDish @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  dishId Int
+
+  dishtype               InvitationDishTypes @relation(fields: [dishTypeId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
+  dishTypeId             Int
+  invitationRestaurantId Int
+
+  @@unique([id, dishId])
+}
+
+model InvitationDish {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.Text
+  description String  @db.Text
+  isAvailable Boolean @default(true)
+  isActive    Boolean @default(true)
+
+  price Json
+
+  discountPrice Json
+
+  photos Json
+
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+  invitationDishTypeAndDishes InvitationDishTypeAndDishes[]
+
+  invitationRestaurant   InvitationRestaurant   @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int
+  invitationDishOptions  InvitationDishOption[]
+  orderDishes            OrderDish[]
+
+  @@unique([id, invitationRestaurantId])
+}
+
+model InvitationDishOption {
+  id                     Int              @id @default(autoincrement())
+  invitationDish         InvitationDish   @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  dishId                 Int
+  invitationOption       InvitationOption @relation(fields: [optionId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
+  optionId               Int
+  invitationRestaurantId Int
+
+  @@unique([id, dishId, invitationRestaurantId])
+}
+
+model InvitationOption {
+  id                    Int                    @default(autoincrement())
+  isMandatory           Boolean                @default(false)
+  name                  String
+  ntop                  String
+  invitationOptionItems InvitationOptionItem[]
+
+  restaurant             InvitationRestaurant @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int
+
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  invitationId String
+
+  minQuantity           Int
+  maxQuantity           Int
+  invitationDishOptions InvitationDishOption[]
+  orderDishOptions      OrderDishOption[]
+
+  @@id([id, invitationRestaurantId])
+  @@index([invitationRestaurantId])
+}
+
+model InvitationOptionItem {
+  id          Int     @default(autoincrement())
+  name        String
+  weight      Int?
+  price       Json
+  ntopPrice   Json
+  isDefault   Boolean @default(false)
+  maxQuantity Int?
+  topOrder    Int     @default(0)
+  dishId      Int
+
+  option             InvitationOption? @relation(fields: [invitationOptionId, invitationRestaurantId], references: [id, invitationRestaurantId])
+  invitationOptionId Int?
+
+  invitationRestaurant   InvitationRestaurant @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int
+
+  invitation           Invitation            @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  invitationId         String
+  orderDishOptionItems OrderDishOptionItem[]
+
+  @@id([id, dishId, invitationRestaurantId])
 }

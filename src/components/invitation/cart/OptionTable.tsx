@@ -21,11 +21,9 @@ type OptionTableProps = {
 
 const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
   const { t } = useTranslation();
-  const {
-    optionDict: { data: optionDict },
-  } = useStore(
+  const { optionDict } = useStore(
     (state) => ({
-      optionDict: state.optionDict,
+      optionDict: state.optionDict.dataV2.invitationPage,
     }),
     shallow
   );
@@ -43,7 +41,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
         </Thead>
         <Tbody width={5}>
           {cartItem.options.map((option) => (
-            <Tr key={option.optionId}>
+            <Tr key={option.id}>
               <Th>
                 {get(
                   options,
@@ -56,7 +54,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                   <Text>
                     {get(
                       options,
-                      `${cartItem.dishId}.${option.optionId}.items.${option.value.optionItemId}.name`,
+                      `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${option.value.optionItemId}.name`,
                       t("inivitation_page.unknown_item")
                     )}
                   </Text>
@@ -66,7 +64,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                       <Text key={item.id}>
                         {get(
                           options,
-                          `${cartItem.dishId}.${option.optionId}.items.${item.optionItemId}.name`,
+                          `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${item.optionItemId}.name`,
                           t("inivitation_page.unknown_item")
                         )}{" "}
                       </Text>

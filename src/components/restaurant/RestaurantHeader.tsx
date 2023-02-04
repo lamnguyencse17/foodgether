@@ -40,11 +40,12 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const createInvitationMutate = trpc.invitation.createInvitation.useMutation();
+  const createInvitationMutate =
+    trpc.invitation.createNewInvitation.useMutation();
 
   useEffect(() => {
     if (!createInvitationMutate.data) return;
-    router.push(`/invitation/${createInvitationMutate.data.id}`);
+    router.push(`/invitation/${createInvitationMutate.data}`);
   }, [createInvitationMutate.data, router]);
   return (
     <Box

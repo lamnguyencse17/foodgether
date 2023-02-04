@@ -12,17 +12,17 @@ import {
 } from "@chakra-ui/react";
 import { get, isEmpty } from "radash";
 import { FunctionComponent, useEffect } from "react";
-import { DishWithPriceAndPhoto } from "../../types/dish";
+import { InvitationDishWithPriceAndPhoto } from "../../types/dish";
 import { trpc } from "../../utils/trpc";
 import ItemOptionModal from "./ItemOptionModal";
 import { AddIcon } from "@chakra-ui/icons";
 import useStore from "../../hooks/store";
-import { listifyOptions } from "../../utils/transform";
+import { listifyInvitationOptions } from "../../utils/transform";
 import { useTranslation } from "react-i18next";
 import { Photo } from "../../types/shared";
 
 type RestaurantMenuItemProps = {
-  dish?: DishWithPriceAndPhoto;
+  dish?: InvitationDishWithPriceAndPhoto;
   restaurantId: number;
 };
 
@@ -31,16 +31,18 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   restaurantId,
 }) => {
   const { t } = useTranslation();
-  const { data: optionDict } = useStore((state) => state.optionDict);
+  const optionDict = useStore(
+    (state) => state.optionDict.dataV2.invitationPage
+  );
   const options = optionDict?.options || {};
   const photo = get(dish, "photos[0]", {}) as Photo | undefined;
   const { onOpen, onClose, isOpen } = useDisclosure();
   const trpcContext = trpc.useContext();
   const dishId = dish?.id || -1;
 
-  const dishOptionQuery = trpc.option.getOptionFromDishId.useQuery(
+  const dishOptionQuery = trpc.option.getInvitationOptionFromDishId.useQuery(
     {
-      dishId: dishId,
+      invitationDishId: dishId,
       restaurantId,
     },
     {
@@ -50,7 +52,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   );
   const option = options[dishId];
   const currentOption =
-    (option && listifyOptions(option)) || dishOptionQuery.data;
+    (option && listifyInvitationOptions(option)) || dishOptionQuery.data;
 
   const showOption = () => {
     onOpen();
@@ -131,13 +133,15 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
         </CardBody>
       </Card>
 
-      <ItemOptionModal
-        isOpen={isOpen}
-        onClose={onClose}
-        dish={dish}
-        options={currentOption}
-        isFetching={dishOptionQuery.isFetching}
-      />
+      {isOpen && (
+        <ItemOptionModal
+          isOpen={isOpen}
+          onClose={onClose}
+          dish={dish}
+          options={currentOption}
+          isFetching={dishOptionQuery.isFetching}
+        />
+      )}
     </>
   );
 };

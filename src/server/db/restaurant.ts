@@ -68,3 +68,30 @@ export const getAggregatedRestaurant = async (
     dishes: rawRestaurant.dish as DishWithPriceAndPhoto[],
   };
 };
+
+export const getRestaurantForInvitationCreation = (
+  prisma: PrismaClient,
+  restaurantId: number
+) => {
+  return prisma.restaurant.findUnique({
+    where: { id: restaurantId },
+    include: {
+      dish: {
+        include: {
+          dishOption: true,
+          dishTypeAndDishes: true,
+        },
+      },
+      dishTypes: true,
+      option: {
+        include: {
+          items: true,
+        },
+      },
+    },
+  });
+};
+
+export type CreateInvitationRestaurantInput = NonNullable<
+  Awaited<ReturnType<typeof getRestaurantForInvitationCreation>>
+>;

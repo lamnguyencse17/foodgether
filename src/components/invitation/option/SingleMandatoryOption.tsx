@@ -1,5 +1,5 @@
 import { Select } from "@chakra-ui/react";
-import { OptionItem } from "@prisma/client";
+import { InvitationOptionItem } from "@prisma/client";
 import { nanoid } from "nanoid/async";
 import { get, isEmpty } from "radash";
 import { ChangeEventHandler, FunctionComponent } from "react";
@@ -11,7 +11,7 @@ import {
 } from "../../../server/schemas/order";
 
 type SingleMandatoryOptionProps = {
-  items: OptionItem[];
+  items: InvitationOptionItem[];
   optionId: number;
   name: string;
   dishId: number;

@@ -1,6 +1,6 @@
 import { Checkbox, CheckboxGroup, HStack, VStack } from "@chakra-ui/react";
 import { OptionItem } from "@prisma/client";
-import { cluster } from "radash";
+import { cluster, uid } from "radash";
 import { FunctionComponent, useState } from "react";
 
 const MultipleOptionalChoice: FunctionComponent<{ items: OptionItem[] }> = ({
@@ -11,8 +11,8 @@ const MultipleOptionalChoice: FunctionComponent<{ items: OptionItem[] }> = ({
   return (
     <CheckboxGroup value={value}>
       <HStack justifyContent="start" alignItems="start">
-        {hItems.map((vItem, index) => (
-          <VStack key={index} justifyContent="start" alignItems="start">
+        {hItems.map((vItem) => (
+          <VStack key={uid(4)} justifyContent="start" alignItems="start">
             {vItem.map((item) => (
               <Checkbox
                 key={item.id}

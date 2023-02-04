@@ -1,8 +1,8 @@
-import { createInvitation } from "../../handlers/invitation";
+import { createNewInvitation } from "../../handlers/invitation";
 import { router } from "../trpc";
 
 const invitationRouter = router({
-  createInvitation,
+  createNewInvitation,
 });
 
 export default invitationRouter;

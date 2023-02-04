@@ -15,8 +15,8 @@ import { CartItem } from "../../../server/schemas/order";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import OptionTable from "./OptionTable";
 import ItemOptionModal from "../ItemOptionModal";
-import { DishWithPriceAndPhoto } from "../../../types/dish";
-import { listifyOptions } from "../../../utils/transform";
+import { InvitationDishWithPriceAndPhoto } from "../../../types/dish";
+import { listifyInvitationOptions } from "../../../utils/transform";
 
 type CartItemProps = {
   cartItem: CartItem;
@@ -33,11 +33,11 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
     deleteCartItem,
   } = useStore(
     (state) => ({
-      dishDict: state.dishDict.data,
+      dishDict: state.dishDict.dataV2.invitationPage?.dishes,
       setDishOption: state.currentDishOption.setDishOption,
       resetDishOption: state.currentDishOption.resetDishOption,
-      restaurant: state.restaurant.data,
-      optionDict: state.optionDict.data?.options,
+      restaurant: state.restaurant.dataV2.invitationPage,
+      optionDict: state.optionDict.dataV2.invitationPage?.options,
       deleteCartItem: state.cart.deleteCartItem,
     }),
     shallow
@@ -45,11 +45,11 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
 
   const dish = get(
     dishDict,
-    `dishes.${cartItem.dishId}`
-  ) as DishWithPriceAndPhoto;
+    cartItem.dishId.toString()
+  ) as InvitationDishWithPriceAndPhoto;
 
   const option = (optionDict || {})[dish.id];
-  const currentOptions = (option && listifyOptions(option)) || [];
+  const currentOptions = (option && listifyInvitationOptions(option)) || [];
 
   const onOpenEditModal = () => {
     cartItem.options.forEach((option) => {

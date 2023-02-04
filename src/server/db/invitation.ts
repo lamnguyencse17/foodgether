@@ -1,26 +1,14 @@
-import { Dish, PrismaClient } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
-import { errors } from "../common/constants";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { prisma } from "./client";
-import { getAggregatedRestaurant } from "./restaurant";
 import { formatISO, sub } from "date-fns";
-import { OptionDictDishData } from "../../hooks/store/optionDict";
-import { objectify } from "radash";
 
-export const createDbInvitation = async (
-  restaurantId: number,
-  userId: string,
-  restaurant: Awaited<ReturnType<typeof getAggregatedRestaurant>>,
-  dishDict: Record<number, Dish>,
-  optionDict: OptionDictDishData
-) => {
+export const createInvitationTx = (prisma: PrismaClient, userId: string) => {
   return prisma.invitation.create({
     data: {
-      restaurantId,
-      createdById: userId,
-      restaurant: JSON.parse(JSON.stringify(restaurant)),
-      optionDict: JSON.parse(JSON.stringify(optionDict)),
-      dishDict: JSON.parse(JSON.stringify(dishDict)),
+      createdBy: { connect: { id: userId } },
+      restaurant: Prisma.JsonNull,
+      optionDict: Prisma.JsonNull,
+      dishDict: Prisma.JsonNull,
     },
   });
 };
@@ -45,70 +33,69 @@ export const getAllRecentInvitationIds = async () => {
 };
 
 export const getInvitationForCreator = async (id: string) => {
-  const [invitation, orders = []] = await Promise.all([
-    prisma.invitation.findUnique({
-      where: {
-        id,
-      },
-    }),
-    prisma.order.findMany({
-      where: {
-        invitationId: id,
-      },
-      include: {
-        orderDish: {
-          include: {
-            orderDishOption: {
-              include: {
-                orderDishOptionItem: true,
+  return prisma.invitation.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      invitationRestaurant: true,
+      orders: {
+        include: {
+          orderedBy: {
+            select: {
+              name: true,
+              email: true,
+              id: true,
+            },
+          },
+          orderDishes: {
+            include: {
+              orderDishOptions: {
+                include: {
+                  orderDishOptionItems: true,
+                },
               },
             },
           },
         },
       },
-    }),
-  ]);
-  if (!invitation) {
-    throw new TRPCError({
-      message: errors.invitation.ERROR_WHILE_GETTING_INVITATION,
-      code: "INTERNAL_SERVER_ERROR",
-    });
-  }
-  const [restaurant, creator, members = []] = await Promise.all([
-    prisma.restaurant.findUnique({
-      where: {
-        id: invitation.restaurantId,
-      },
-    }),
-    prisma.user.findUnique({
-      where: {
-        id: invitation.createdById,
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    }),
-    prisma.user.findMany({
-      where: {
-        id: {
-          in: orders.map((order) => order.orderedById),
+    },
+  });
+};
+
+export const getInvitationForMember = async (invitationId: string) => {
+  return prisma.invitation.findUnique({
+    where: {
+      id: invitationId,
+    },
+    include: {
+      invitationRestaurant: {
+        include: {
+          invitationOptions: {
+            include: {
+              invitationOptionItems: true,
+            },
+          },
+          invitationDishTypes: {
+            include: {
+              invitationDishTypeAndDishes: true,
+            },
+          },
+          invitationDishes: {
+            include: {
+              invitationDishOptions: true,
+            },
+          },
         },
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
+      createdBy: {
+        select: {
+          name: true,
+          id: true,
+        },
       },
-    }),
-  ]);
-  return {
-    ...invitation,
-    orders,
-    restaurant,
-    creator,
-    members: objectify(members, (member) => member.id),
-  };
+    },
+  });
 };
 
 export const getOptionDictOfInvitation = async (

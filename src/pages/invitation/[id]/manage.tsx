@@ -1,9 +1,9 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
+  // Accordion,
+  // AccordionButton,
+  // AccordionIcon,
+  // AccordionItem,
+  // AccordionPanel,
   Box,
   Divider,
   VStack,
@@ -58,7 +58,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
   const router = useRouter();
   const invitationId = (router.query.id ||
     router.pathname.split("/").pop()) as string;
-  const restaurant = ((invitation || {}).restaurant ||
+  const restaurant = ((invitation || {}).invitationRestaurant ||
     {}) as RestaurantWithPhotoAndPrice;
 
   const orders = (invitation || {}).orders || [];
@@ -100,7 +100,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
             alignItems={["center", "center", "flex-start"]}
             flex={1}
           >
-            <Accordion allowToggle width="100%">
+            {/* <Accordion allowToggle width="100%">
               {orders.map((order) => (
                 <AccordionItem key={order.id} width="100%">
                   <h2>
@@ -123,7 +123,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
                   </AccordionPanel>
                 </AccordionItem>
               ))}
-            </Accordion>
+            </Accordion> */}
           </VStack>
         </VStack>
       </main>

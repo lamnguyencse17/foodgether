@@ -43,38 +43,44 @@ export const getMemberCurrentOrder = protectedProcedure
       return [] as CartItem[];
     }
     const parsedCartData: CartItem[] = await Promise.all(
-      order.orderDish.map(async (orderDish) => ({
+      order.orderDishes.map(async (orderDish) => ({
         id: orderDish.id,
-        dishId: orderDish.dishId,
+        dishId: orderDish.invitationDishId,
         dishPrice: orderDish.dishPrice,
         totalPrice: orderDish.totalPrice,
-        options: orderDish.orderDishOption.map((option) => {
+        options: orderDish.orderDishOptions.map((option) => {
           const mandatory = get(
             invitation.optionDict,
-            `${orderDish.dishId}.${option.optionId}.isMandatory`,
+            `${orderDish.invitationDishId}.${option.invitationOptionId}.isMandatory`,
             false
           );
           return mandatory
             ? {
                 id: option.id,
-                optionId: option.optionId,
+                optionId: option.invitationOptionId,
                 price: option.price,
                 mandatory: true,
                 value: {
-                  id: option.orderDishOptionItem[0]!.id,
-                  price: option.orderDishOptionItem[0]!.price,
-                  optionItemId: option.orderDishOptionItem[0]!.optionItemId,
+                  id: option.orderDishOptionItems[0]!.id,
+                  // TODO: Fix missing price in this
+                  // price: option.orderDishOptionItems[0]!.,
+                  price: 0,
+                  optionItemId:
+                    option.orderDishOptionItems[0]!.invitationOptionItemId,
                 },
               }
             : {
                 id: option.id,
-                optionId: option.optionId,
+                optionId: option.invitationOptionId,
                 price: option.price,
                 mandatory: false,
-                value: option.orderDishOptionItem.map((item) => ({
+                value: option.orderDishOptionItems.map((item) => ({
                   id: item.id,
-                  price: item.price,
-                  optionItemId: item.optionItemId,
+                  // TODO: Fix missing price in this
+                  // price: item.price,
+                  price: 0,
+
+                  optionItemId: item.invitationOptionItemId,
                 })),
               };
         }),

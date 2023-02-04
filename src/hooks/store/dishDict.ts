@@ -1,7 +1,10 @@
 import produce from "immer";
 import { StateCreator } from "zustand";
 import { UseStoreType } from ".";
-import { DishWithPriceAndPhoto } from "../../types/dish";
+import {
+  DishWithPriceAndPhoto,
+  InvitationDishWithPriceAndPhoto,
+} from "../../types/dish";
 
 export type DishDictStoreType = {
   data?: {
@@ -10,7 +13,27 @@ export type DishDictStoreType = {
       [dishId: string]: DishWithPriceAndPhoto;
     };
   };
+  dataV2: {
+    restaurantPage?: {
+      restaurantId: number;
+      dishes: {
+        [dishId: string]: DishWithPriceAndPhoto;
+      };
+    };
+    invitationPage?: {
+      restaurantId: number;
+      dishes: {
+        [dishId: string]: InvitationDishWithPriceAndPhoto;
+      };
+    };
+  };
   setDishDict: (value: DishDictStoreType["data"]) => void;
+  setDishDictForInvitationPage: (
+    restaurantId: number,
+    value: {
+      [dishId: string]: InvitationDishWithPriceAndPhoto;
+    }
+  ) => void;
 };
 
 const dishDictStore: StateCreator<
@@ -20,6 +43,10 @@ const dishDictStore: StateCreator<
   DishDictStoreType
 > = (set) => ({
   data: undefined,
+  dataV2: {
+    invitationPage: undefined,
+    restaurantPage: undefined,
+  },
   setDishDict: (value) =>
     set(
       produce<UseStoreType>((state) => {
@@ -27,6 +54,14 @@ const dishDictStore: StateCreator<
       }),
       false,
       "setDishDict"
+    ),
+  setDishDictForInvitationPage: (restaurantId, value) =>
+    set(
+      produce<UseStoreType>((state) => {
+        state.dishDict.dataV2.invitationPage = { restaurantId, dishes: value };
+      }),
+      false,
+      "setDishDictForInvitationPage"
     ),
 });
 

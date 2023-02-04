@@ -1,11 +1,14 @@
 import { Box, Heading, StackDivider, VStack } from "@chakra-ui/react";
+import { InvitationDishTypes } from "@prisma/client";
 import { FunctionComponent } from "react";
-import { AggregatedDishTypes } from "../../types/dishTypes";
 import RestaurantDishWrapper from "./RestaurantDishWrapper";
 
 type RestaurantDishTypesProps = {
   dishTypeId: number;
-  dishType: AggregatedDishTypes;
+  dishType: InvitationDishTypes;
+  dishList: {
+    [dishTypeId: string]: number[];
+  };
   restaurantId: number;
 };
 
@@ -13,7 +16,10 @@ const RestaurantDishTypes: FunctionComponent<RestaurantDishTypesProps> = ({
   dishTypeId,
   dishType,
   restaurantId,
+  dishList,
 }) => {
+  const dishInDishTypes = dishList[dishTypeId];
+  if (!dishInDishTypes) return null;
   return (
     <Box key={dishTypeId} width="full" marginY="5">
       <Heading
@@ -30,7 +36,7 @@ const RestaurantDishTypes: FunctionComponent<RestaurantDishTypesProps> = ({
         alignItems={["center", "center", "flex-start"]}
         width="full"
       >
-        {dishType.dishList.map((dishId) => (
+        {dishInDishTypes.map((dishId) => (
           <RestaurantDishWrapper
             dishId={dishId}
             restaurantId={restaurantId}

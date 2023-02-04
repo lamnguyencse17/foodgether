@@ -1,43 +1,73 @@
-import { get, group, mapValues, objectify } from "radash";
-import { DishWithPriceAndPhoto } from "../../types/dish.js";
-import { createDbInvitation } from "../db/invitation";
-import { getAllOptions } from "../db/option";
-import { getAggregatedRestaurant } from "../db/restaurant";
+import { Prisma } from "@prisma/client";
+import { createInvitationTx } from "../db/invitation";
+import { createInvitationDishOption } from "../db/invitationDishOption";
+import { createInvitationDishTypes } from "../db/invitationDishTypes";
+import { createInvitationDishTypesAndDishes } from "../db/invitationDishTypesAndDishes";
+import { createInvitationOptionItem } from "../db/invitationOptionItem";
+import { createInvitationRestaurantTx } from "../db/invitationRestaurant";
+import { getRestaurantForInvitationCreation } from "../db/restaurant";
 import { createInvitationSchema } from "../schemas/invitation";
 import { protectedProcedure } from "../trpc/trpc";
 
-export const createInvitation = protectedProcedure
+export const createNewInvitation = protectedProcedure
   .input(createInvitationSchema)
   .mutation(async ({ ctx, input }) => {
-    const [restaurant, options] = await Promise.all([
-      getAggregatedRestaurant(ctx.prisma, input.restaurantId),
-      getAllOptions(input.restaurantId),
-    ]);
-    const groupedDict = group(options || [], (option) => option.dishId);
-    const optionDict = mapValues(groupedDict, (value) =>
-      objectify(
-        value || [],
-        (dishOption) => dishOption.optionId,
-        (dishOption) => ({
-          ...dishOption.option,
-          items: objectify(
-            dishOption.option.items,
-            (optionItem) => optionItem.id
-          ),
-        })
-      )
+    const restaurant = await getRestaurantForInvitationCreation(
+      ctx.prisma,
+      input.restaurantId
     );
-    //TODO: should fetch restaurant on not existed
-    const dishDict = objectify(
-      get(restaurant, "dishes", []) as DishWithPriceAndPhoto[],
-      (item) => item.id
+    if (!restaurant) {
+      return null;
+    }
+
+    const invitationDishes = restaurant.dish.map((dish) => ({
+      id: dish.id,
+      name: dish.name,
+      price: !dish.price
+        ? Prisma.JsonNull
+        : JSON.parse(JSON.stringify(dish.price)),
+      photos: !dish.photos
+        ? Prisma.JsonNull
+        : JSON.parse(JSON.stringify(dish.photos)),
+      description: dish.description,
+      discountPrice: !dish.discountPrice
+        ? Prisma.JsonNull
+        : JSON.parse(JSON.stringify(dish.discountPrice)),
+      isAvailable: dish.isAvailable,
+      isActive: dish.isActive,
+    }));
+    const invitation = await createInvitationTx(
+      ctx.prisma,
+      ctx.session.user.id
     );
-    const invitation = await createDbInvitation(
-      input.restaurantId,
-      ctx.session.user.id,
-      restaurant,
-      dishDict,
-      optionDict
-    );
-    return invitation;
+    return ctx.prisma.$transaction(async (tx) => {
+      const invitationOptions = restaurant.option.map((option) => ({
+        id: option.id,
+        name: option.name,
+        ntop: option.ntop,
+        invitationId: invitation.id,
+        minQuantity: option.minQuantity,
+        maxQuantity: option.maxQuantity,
+      }));
+
+      const invitationRestaurant = await createInvitationRestaurantTx(
+        tx,
+        invitation.id,
+        { restaurant, invitationDishes, invitationOptions }
+      );
+      await createInvitationDishTypes(tx, invitationRestaurant.id, restaurant);
+      await createInvitationDishTypesAndDishes(
+        tx,
+        invitationRestaurant.id,
+        restaurant
+      );
+      await createInvitationDishOption(tx, invitationRestaurant.id, restaurant);
+      await createInvitationOptionItem(
+        tx,
+        invitationRestaurant.id,
+        invitation.id,
+        restaurant
+      );
+      return invitation.id;
+    });
   });

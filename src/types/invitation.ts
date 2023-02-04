@@ -1,13 +1,11 @@
 import { Invitation } from "@prisma/client";
-import { OptionDictDishData } from "../hooks/store/optionDict";
-import { DishWithPriceAndPhoto } from "./dish";
-import { AggregatedRestaurant } from "./restaurant";
+import { AggregatedInvitationRestaurant } from "./restaurant";
 
 export type AggregatedInvitation = Omit<
   Invitation,
-  "restaurant" | "dishDict" | "optionDict"
+  "invitationRestaurant" | "dishDict" | "optionDict"
 > & {
-  restaurant: AggregatedRestaurant;
-  dishDict: Record<number, DishWithPriceAndPhoto>;
-  optionDict: OptionDictDishData;
+  invitationRestaurant: AggregatedInvitationRestaurant;
+  // dishDict: Record<number, DishWithPriceAndPhoto>;
+  // optionDict: OptionDictDishData;
 };

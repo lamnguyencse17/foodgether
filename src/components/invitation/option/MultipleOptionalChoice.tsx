@@ -1,5 +1,5 @@
 import { Checkbox, CheckboxGroup, HStack, VStack } from "@chakra-ui/react";
-import { OptionItem } from "@prisma/client";
+import { InvitationOptionItem } from "@prisma/client";
 import { nanoid } from "nanoid/async";
 import { cluster, get, toggle, uid } from "radash";
 import { ChangeEvent, FunctionComponent } from "react";
@@ -11,7 +11,7 @@ import {
 } from "../../../server/schemas/order";
 
 type MultipleOptionalChoiceProps = {
-  items: OptionItem[];
+  items: InvitationOptionItem[];
   optionId: number;
   maxQuantity: number;
   dishId: number;
@@ -22,11 +22,11 @@ const MultipleOptionalChoice: FunctionComponent<
 > = ({ items, optionId, maxQuantity, dishId }) => {
   const {
     currentDishOption: { setDishOption, data },
-    optionDict: { data: optionDict },
+    optionDict,
   } = useStore(
     (state) => ({
       currentDishOption: state.currentDishOption,
-      optionDict: state.optionDict,
+      optionDict: state.optionDict.dataV2.invitationPage,
     }),
     shallow
   );
@@ -37,7 +37,7 @@ const MultipleOptionalChoice: FunctionComponent<
 
   const handleChange = async (
     e: ChangeEvent<HTMLInputElement>,
-    item: OptionItem
+    item: InvitationOptionItem
   ) => {
     const newValue = toggle(
       value,
@@ -45,7 +45,7 @@ const MultipleOptionalChoice: FunctionComponent<
         id: await nanoid(20),
         price: get(
           dict,
-          `${dishId}.${optionId}.items.${item.id}.price.value`,
+          `${dishId}.${optionId}.invitationOptionItems.${item.id}.price.value`,
           0
         ) as number,
         optionItemId: item.id,

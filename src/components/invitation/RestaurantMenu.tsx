@@ -6,21 +6,25 @@ import {
   StackDivider,
   VStack,
 } from "@chakra-ui/react";
+import { InvitationDishTypes } from "@prisma/client";
 import { isEmpty } from "radash";
 import { FunctionComponent, useContext } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { VirtuosoRefContext } from "../../pages/invitation/[id]";
-import { AggregatedDishTypes } from "../../types/dishTypes";
 import RestaurantDishTypes from "./RestaurantDishTypes";
 
 type RestaurantMenuProps = {
-  dishTypes: AggregatedDishTypes[];
+  dishTypes: InvitationDishTypes[];
   restaurantId: number;
+  dishList: {
+    [dishTypeId: string]: number[];
+  };
 };
 
 const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
   dishTypes,
   restaurantId,
+  dishList,
 }) => {
   const virtuosoRef = useContext(VirtuosoRefContext);
   return (
@@ -36,15 +40,17 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
                 initialItemCount={2}
                 useWindowScroll
                 data={dishTypes}
-                computeItemKey={(_, item) => item.id}
                 style={{ width: "100%" }}
-                itemContent={(id, dishType) => (
-                  <RestaurantDishTypes
-                    dishType={dishType}
-                    dishTypeId={id}
-                    restaurantId={restaurantId}
-                  />
-                )}
+                itemContent={(_, dishType) => {
+                  return (
+                    <RestaurantDishTypes
+                      dishType={dishType}
+                      dishTypeId={dishType.id}
+                      restaurantId={restaurantId}
+                      dishList={dishList}
+                    />
+                  );
+                }}
               />
             </VStack>
           </CardBody>

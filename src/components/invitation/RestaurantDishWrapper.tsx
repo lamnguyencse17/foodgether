@@ -2,7 +2,7 @@ import { Box, Skeleton } from "@chakra-ui/react";
 import { get } from "radash";
 import { FunctionComponent } from "react";
 import useStore from "../../hooks/store";
-import { DishWithPriceAndPhoto } from "../../types/dish";
+import { InvitationDishWithPriceAndPhoto } from "../../types/dish";
 import RestaurantMenuItem from "./RestaurantMenuItem";
 
 type RestaurantDishWrapperProps = {
@@ -15,14 +15,14 @@ const RestaurantDishWrapper: FunctionComponent<RestaurantDishWrapperProps> = ({
   restaurantId,
 }) => {
   const { dishDict } = useStore((state) => ({
-    dishDict: state.dishDict.data,
+    dishDict: state.dishDict.dataV2.invitationPage,
   }));
   const dish = get(dishDict, `dishes.${dishId}`);
   return (
     <Box width="100%" marginY="2">
       <Skeleton isLoaded={!!dish} height="40" fadeDuration={4}>
         <RestaurantMenuItem
-          dish={dish as DishWithPriceAndPhoto}
+          dish={dish as InvitationDishWithPriceAndPhoto}
           restaurantId={restaurantId}
         />
       </Skeleton>

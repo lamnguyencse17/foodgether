@@ -1,5 +1,6 @@
 import { group, mapValues, objectify } from "radash";
 import {
+  getInvitationOptionFromDishIdSchema,
   getOptionForAllDishSchema,
   getOptionFromDishIdSchema,
 } from "../schemas/option";
@@ -14,6 +15,20 @@ export const getOptionFromDishId = publicProcedure
       },
       include: {
         items: true,
+      },
+    });
+  });
+
+export const getInvitationOptionFromDishId = publicProcedure
+  .input(getInvitationOptionFromDishIdSchema)
+  .query(({ ctx, input }) => {
+    return ctx.prisma.invitationOption.findMany({
+      where: {
+        invitationRestaurantId: input.restaurantId,
+        id: input.invitationDishId,
+      },
+      include: {
+        invitationOptionItems: true,
       },
     });
   });

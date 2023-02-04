@@ -5,9 +5,9 @@ import { prisma } from "./client";
 export const updateOrder = async (order: CreateOrderParams, userId: string) => {
   await prisma.order.delete({
     where: {
-      orderedById_restaurantId_invitationId: {
+      orderedById_invitationRestaurantId_invitationId: {
         orderedById: userId,
-        restaurantId: order.restaurantId,
+        invitationRestaurantId: order.restaurantId,
         invitationId: order.invitationId,
       },
     },
@@ -18,30 +18,49 @@ export const updateOrder = async (order: CreateOrderParams, userId: string) => {
 export const createOrder = (order: CreateOrderParams, userId: string) => {
   return prisma.order.create({
     data: {
-      restaurantId: order.restaurantId,
-      orderedById: userId,
       invitation: {
         connect: {
           id: order.invitationId,
         },
       },
-      User: {
+      orderedBy: {
         connect: {
           id: userId,
         },
       },
-      orderDish: {
+      orderDishes: {
         create: order.items.map((item) => ({
           id: item.id,
-          dishId: item.dishId,
-          restaurantId: order.restaurantId,
-          orderDishOption: {
+          invitationDish: {
+            connect: {
+              id_invitationRestaurantId: {
+                id: item.dishId,
+                invitationRestaurantId: order.restaurantId,
+              },
+            },
+          },
+          invitationRestaurant: {
+            connect: {
+              id: order.restaurantId,
+            },
+          },
+          orderDishOptions: {
             create: item.options.map((option) => ({
               id: option.id,
-              optionId: option.optionId,
-              dishId: item.dishId,
-              restaurantId: order.restaurantId,
-              orderDishOptionItem: {
+              invitationOption: {
+                connect: {
+                  id_invitationRestaurantId: {
+                    id: option.optionId,
+                    invitationRestaurantId: order.restaurantId,
+                  },
+                },
+              },
+              invitationRestaurant: {
+                connect: {
+                  id: order.restaurantId,
+                },
+              },
+              orderDishOptionItems: {
                 create: option.mandatory
                   ? {
                       optionItemId: option.value.optionItemId,
@@ -49,11 +68,26 @@ export const createOrder = (order: CreateOrderParams, userId: string) => {
                       restaurantId: order.restaurantId,
                       price: option.value.price,
                       id: option.value.id,
+                      invitationOptionItem: {
+                        connect: {
+                          id_dishId_invitationRestaurantId: {
+                            id: option.value.optionItemId,
+                            dishId: item.dishId,
+                            invitationRestaurantId: order.restaurantId,
+                          },
+                        },
+                      },
                     }
                   : option.value.map((optionItem) => ({
-                      optionItemId: optionItem.optionItemId,
-                      dishId: item.dishId,
-                      restaurantId: order.restaurantId,
+                      invitationOptionItem: {
+                        connect: {
+                          id_dishId_invitationRestaurantId: {
+                            id: optionItem.optionItemId,
+                            dishId: item.dishId,
+                            invitationRestaurantId: order.restaurantId,
+                          },
+                        },
+                      },
                       price: optionItem.price,
                       id: optionItem.id,
                     })),
@@ -64,6 +98,11 @@ export const createOrder = (order: CreateOrderParams, userId: string) => {
           dishPrice: item.dishPrice,
           totalPrice: item.totalPrice,
         })),
+      },
+      invitationRestaurant: {
+        connect: {
+          id: order.restaurantId,
+        },
       },
     },
   });
@@ -77,18 +116,18 @@ export const getExistingOrder = async (
 ) => {
   return prisma.order.findUnique({
     where: {
-      orderedById_restaurantId_invitationId: {
+      orderedById_invitationRestaurantId_invitationId: {
         orderedById: userId,
-        restaurantId,
+        invitationRestaurantId: restaurantId,
         invitationId,
       },
     },
     include: {
-      orderDish: {
+      orderDishes: {
         include: {
-          orderDishOption: {
+          orderDishOptions: {
             include: {
-              orderDishOptionItem: true,
+              orderDishOptionItems: true,
             },
           },
         },

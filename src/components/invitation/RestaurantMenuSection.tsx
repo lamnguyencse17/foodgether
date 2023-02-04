@@ -10,14 +10,14 @@ import {
   StackDivider,
 } from "@chakra-ui/react";
 import { FunctionComponent, useContext } from "react";
-import { AggregatedDishTypes } from "../../types/dishTypes";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import { isEmpty } from "radash";
 import { VirtuosoRefContext } from "../../pages/invitation/[id]";
+import { InvitationDishTypes } from "@prisma/client";
 
 type RestaurantMenuSectionProps = {
-  dishTypes: AggregatedDishTypes[];
+  dishTypes: InvitationDishTypes[];
 };
 
 const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({

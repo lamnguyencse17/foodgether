@@ -12,11 +12,11 @@ import {
   SkeletonText,
   Text,
 } from "@chakra-ui/react";
-import { Option, OptionItem } from "@prisma/client";
+import { InvitationOption, InvitationOptionItem } from "@prisma/client";
 import { get, isEmpty, listify, objectify } from "radash";
 import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { DishWithPriceAndPhoto } from "../../types/dish";
+import { InvitationDishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 import useStore from "../../hooks/store";
@@ -28,10 +28,10 @@ import { OptionDictOptionData } from "../../hooks/store/optionDict";
 type ItemOptionModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  options?: (Option & {
-    items: OptionItem[];
+  options?: (InvitationOption & {
+    invitationOptionItems: InvitationOptionItem[];
   })[];
-  dish: DishWithPriceAndPhoto;
+  dish: InvitationDishWithPriceAndPhoto;
   isFetching?: boolean;
   cartItemId?: string;
 };
@@ -47,7 +47,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   const { t } = useTranslation();
   const {
     currentDishOption: { data: currentDishOption, resetDishOption },
-    dishDict: { data: dishDict },
+    dishDict,
     cart: { addToCart, editCartItem },
     optionDict,
     setToast,
@@ -55,7 +55,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     (state) => ({
       currentDishOption: state.currentDishOption,
       optionDict: state.optionDict.data,
-      dishDict: state.dishDict,
+      dishDict: state.dishDict.dataV2.invitationPage?.dishes,
       cart: state.cart,
       setToast: state.toast.setToast,
     }),
@@ -91,9 +91,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
         return;
       }
       let selectedOptionItems = currentDishOptionMap[menuOption.id]?.value;
-      let unifiedSelectedOptionItems = [selectedOptionItems || []].flatMap(
-        (_) => _
-      ); // unify
+      let unifiedSelectedOptionItems = [selectedOptionItems || []].flat();
       const { minQuantity, maxQuantity } = menuOption;
       if (
         !(
@@ -172,7 +170,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                   </Heading>
                   {option.isMandatory && option.maxQuantity === 1 ? (
                     <SingleMandatoryOption
-                      items={option.items}
+                      items={option.invitationOptionItems}
                       name={option.name}
                       key={option.id}
                       optionId={option.id}
@@ -180,7 +178,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                     />
                   ) : (
                     <MultipleOptionalChoice
-                      items={option.items}
+                      items={option.invitationOptionItems}
                       key={option.id}
                       optionId={option.id}
                       maxQuantity={option.maxQuantity}

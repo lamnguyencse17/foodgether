@@ -1,21 +1,25 @@
 import { useRouter } from "next/router";
-import { prisma } from "../../../server/db/client";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
 import { Box, Divider, Stack, VStack } from "@chakra-ui/react";
-import { get, isEmpty } from "radash";
+import { get, group, isEmpty, mapValues, objectify } from "radash";
 import Head from "next/head";
 import RestaurantHeader from "../../../components/invitation/RestaurantHeader";
-import { AggregatedDishTypes } from "../../../types/dishTypes";
 import RestaurantMenuSection from "../../../components/invitation/RestaurantMenuSection";
 import RestaurantMenu from "../../../components/invitation/RestaurantMenu";
-import { AggregatedInvitation } from "../../../types/invitation";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../../components/invitation/FloatingCart";
 import { createContext, RefObject, useEffect, useRef } from "react";
-import { getAllRecentInvitationIds } from "../../../server/db/invitation";
+import {
+  getAllRecentInvitationIds,
+  getInvitationForMember,
+} from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
 import { trpc } from "../../../utils/trpc";
 import { VirtuosoHandle } from "react-virtuoso";
+import { InvitationOptionDictDishData } from "../../../hooks/store/optionDict";
+import { InvitationDishWithPriceAndPhoto } from "../../../types/dish";
+import { RestaurantInInvitation } from "../../../types/restaurant";
+import { GetStaticPropsResult } from "next";
 
 export async function getStaticPaths() {
   const invitationIds = await getAllRecentInvitationIds();
@@ -34,51 +38,104 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
 
 export const getStaticProps = async ({
   params: { id },
-}: GetRestaurantServerParams) => {
-  const invitation = await prisma.invitation.findUnique({
-    where: {
-      id,
-    },
-  });
+}: GetRestaurantServerParams): Promise<
+  GetStaticPropsResult<InvitationPageProps>
+> => {
+  const invitation = await getInvitationForMember(id);
 
   if (!invitation) {
     return {
       props: {
-        invitation: null,
+        // invitation: null,
       },
       revalidate: 60,
     };
   }
+  const restaurant = invitation.invitationRestaurant;
+  const dishOptions = restaurant?.invitationDishes.flatMap(
+    (dish) => dish.invitationDishOptions
+  );
+
+  const dishDict = objectify(
+    restaurant?.invitationDishes || [],
+    (dish) => dish.id
+  ) as {
+    [dishId: string]: InvitationDishWithPriceAndPhoto;
+  };
+  const optionDict = objectify(
+    restaurant?.invitationOptions || [],
+    (option) => option.id
+  );
+  const groupedDict = group(dishOptions || [], (option) => option.dishId);
+  const dishOptionDict: InvitationOptionDictDishData = mapValues(
+    groupedDict,
+    (options) =>
+      objectify(
+        options || [],
+        (option) => option.optionId,
+        (option) => ({
+          ...optionDict[option.optionId]!,
+          invitationOptionItems: objectify(
+            optionDict[option.optionId]!.invitationOptionItems,
+            (item) => item.id
+          ),
+        })
+      )
+  );
+  const invitationRestaurant = invitation.invitationRestaurant!;
   return {
     props: {
       invitation,
+      optionDict: dishOptionDict,
+      dishDict,
+      dishList: objectify(
+        invitationRestaurant.invitationDishTypes,
+        (dishType) => dishType.id,
+        (dishType) =>
+          dishType.invitationDishTypeAndDishes.map((dish) => dish.dishId)
+      ),
     },
     revalidate: 60,
   };
 };
 
 type InvitationPageProps = {
-  invitation: AggregatedInvitation | null;
+  invitation?: Awaited<ReturnType<typeof getInvitationForMember>>;
+  optionDict?: InvitationOptionDictDishData;
+  dishDict?: {
+    [dishId: string]: InvitationDishWithPriceAndPhoto;
+  };
+  dishList?: {
+    [dishTypeId: string]: number[];
+  };
 };
 
 export const VirtuosoRefContext =
   createContext<null | RefObject<VirtuosoHandle>>(null);
 
-const InvitationPage = ({ invitation }: InvitationPageProps) => {
+const InvitationPage = ({
+  invitation,
+  optionDict,
+  dishDict,
+  dishList,
+}: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { setOptionDict, setDishDict, setCart, setRestaurant } = useStore(
     (state) => ({
-      setOptionDict: state.optionDict.setOptionDict,
-      setDishDict: state.dishDict.setDishDict,
+      setOptionDict: state.optionDict.setOptionDictForInvitationPage,
+      setDishDict: state.dishDict.setDishDictForInvitationPage,
       setCart: state.cart.setCart,
-      setRestaurant: state.restaurant.setRestaurant,
+      setRestaurant: state.restaurant.setRestaurantForInvitationPage,
     })
   );
 
   const virtuosoRef = useRef(null);
 
-  const restaurant = invitation?.restaurant;
+  const restaurant = invitation?.invitationRestaurant as
+    | RestaurantInInvitation
+    | undefined
+    | null;
   const restaurantId = restaurant?.id || -1;
   const invitationId = (router.query.id ||
     router.pathname.split("/").pop()) as string;
@@ -105,15 +162,9 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
   }, [cartQuery.data]);
 
   useEffect(() => {
-    if (restaurant) {
-      setOptionDict({
-        restaurantId: restaurant.id,
-        options: invitation.optionDict,
-      });
-      setDishDict({
-        restaurantId: restaurant.id,
-        dishes: invitation.dishDict,
-      });
+    if (restaurant && optionDict && dishDict) {
+      setOptionDict(restaurant.id, optionDict);
+      setDishDict(restaurant.id, dishDict);
       setRestaurant(restaurant);
     }
   }, [restaurant?.id]);
@@ -121,12 +172,11 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
   const restaurantPhotos = get(restaurant, "photos", []) as Photo[];
   const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
 
-  const dishTypes = get(restaurant, "dishTypes", []) as AggregatedDishTypes[];
   const description = t("invitation_page.invitation_description", {
     name: restaurant?.name,
   }) as string;
 
-  if (!restaurant) {
+  if (!restaurant || !dishList || !optionDict || !dishDict) {
     return null;
   }
   const { name, address, priceRange, isAvailable, url } = restaurant;
@@ -158,10 +208,13 @@ const InvitationPage = ({ invitation }: InvitationPageProps) => {
             alignItems={["center", "center", "flex-start"]}
           >
             <VirtuosoRefContext.Provider value={virtuosoRef}>
-              <RestaurantMenuSection dishTypes={dishTypes} />
+              <RestaurantMenuSection
+                dishTypes={restaurant.invitationDishTypes}
+              />
               <RestaurantMenu
-                dishTypes={dishTypes}
+                dishTypes={restaurant.invitationDishTypes}
                 restaurantId={restaurantId}
+                dishList={dishList || {}}
               />
             </VirtuosoRefContext.Provider>
           </Stack>
