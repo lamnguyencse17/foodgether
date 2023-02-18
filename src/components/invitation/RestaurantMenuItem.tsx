@@ -7,66 +7,31 @@ import {
   Img,
   Stack,
   Text,
-  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { get, isEmpty } from "radash";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useContext } from "react";
 import { InvitationDishWithPriceAndPhoto } from "../../types/dish";
-import { trpc } from "../../utils/trpc";
-import ItemOptionModal from "./ItemOptionModal";
 import { AddIcon } from "@chakra-ui/icons";
-import useStore from "../../hooks/store";
-import { listifyInvitationOptions } from "../../utils/transform";
 import { useTranslation } from "react-i18next";
 import { Photo } from "../../types/shared";
+import { CurrentOptionModalContext } from "./RestaurantMenu";
 
 type RestaurantMenuItemProps = {
   dish?: InvitationDishWithPriceAndPhoto;
-  restaurantId: number;
 };
 
 const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
   dish,
-  restaurantId,
 }) => {
   const { t } = useTranslation();
-  const optionDict = useStore(
-    (state) => state.optionDict.dataV2.invitationPage
-  );
-  const options = optionDict?.options || {};
+  const { setCurrentOptionModal } = useContext(CurrentOptionModalContext);
   const photo = get(dish, "photos[0]", {}) as Photo | undefined;
-  const { onOpen, onClose, isOpen } = useDisclosure();
-  const trpcContext = trpc.useContext();
   const dishId = dish?.id || -1;
 
-  const dishOptionQuery = trpc.option.getInvitationOptionFromDishId.useQuery(
-    {
-      invitationDishId: dishId,
-      restaurantId,
-    },
-    {
-      enabled: isOpen && !options[dishId] && isEmpty(optionDict),
-      staleTime: 60 * 1000,
-    }
-  );
-  const option = options[dishId];
-  const currentOption =
-    (option && listifyInvitationOptions(option)) || dishOptionQuery.data;
-
   const showOption = () => {
-    onOpen();
+    setCurrentOptionModal(dishId);
   };
-
-  useEffect(() => {
-    if (dishOptionQuery.isFetching && option) {
-      trpcContext.option.getOptionFromDishId.cancel();
-    }
-  }, [
-    dishOptionQuery.isFetching,
-    option,
-    trpcContext.option.getOptionFromDishId,
-  ]);
 
   if (!dish) {
     return null;
@@ -132,16 +97,6 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
           </Stack>
         </CardBody>
       </Card>
-
-      {isOpen && (
-        <ItemOptionModal
-          isOpen={isOpen}
-          onClose={onClose}
-          dish={dish}
-          options={currentOption}
-          isFetching={dishOptionQuery.isFetching}
-        />
-      )}
     </>
   );
 };

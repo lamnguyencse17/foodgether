@@ -15,10 +15,13 @@ export const listifyOptions = (options: OptionDictOptionData) => {
 };
 
 export const listifyInvitationOptions = (
-  options: InvitationOptionDictOptionData
+  options?: InvitationOptionDictOptionData
 ): (InvitationOption & {
   invitationOptionItems: InvitationOptionItem[];
 })[] => {
+  if (!options) {
+    return [];
+  }
   return listify(options, (_, value) => {
     return {
       ...value,

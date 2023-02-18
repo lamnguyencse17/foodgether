@@ -9,13 +9,11 @@ type RestaurantDishTypesProps = {
   dishList: {
     [dishTypeId: string]: number[];
   };
-  restaurantId: number;
 };
 
 const RestaurantDishTypes: FunctionComponent<RestaurantDishTypesProps> = ({
   dishTypeId,
   dishType,
-  restaurantId,
   dishList,
 }) => {
   const dishInDishTypes = dishList[dishTypeId];
@@ -37,11 +35,7 @@ const RestaurantDishTypes: FunctionComponent<RestaurantDishTypesProps> = ({
         width="full"
       >
         {dishInDishTypes.map((dishId) => (
-          <RestaurantDishWrapper
-            dishId={dishId}
-            restaurantId={restaurantId}
-            key={dishId}
-          />
+          <RestaurantDishWrapper dishId={dishId} key={dishId} />
         ))}
       </VStack>
     </Box>

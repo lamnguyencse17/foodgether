@@ -140,10 +140,6 @@ const InvitationPage = ({
   const invitationId = (router.query.id ||
     router.pathname.split("/").pop()) as string;
 
-  // const confirmedRestaurant = useMemo(() => {
-  //   return (restaurant || {}) as NonNullable<AggregatedRestaurant>;
-  // }, [restaurant]);
-
   const cartQuery = trpc.order.getMemberCurrentOrder.useQuery(
     {
       invitationId,
@@ -213,7 +209,6 @@ const InvitationPage = ({
               />
               <RestaurantMenu
                 dishTypes={restaurant.invitationDishTypes}
-                restaurantId={restaurantId}
                 dishList={dishList || {}}
               />
             </VirtuosoRefContext.Provider>

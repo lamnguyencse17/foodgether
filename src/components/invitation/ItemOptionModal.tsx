@@ -13,14 +13,14 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { InvitationOption, InvitationOptionItem } from "@prisma/client";
-import { get, isEmpty, listify, objectify } from "radash";
-import { FunctionComponent, useMemo } from "react";
+import { get, isEmpty, listify } from "radash";
+import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import { InvitationDishWithPriceAndPhoto } from "../../types/dish";
 import SingleMandatoryOption from "./option/SingleMandatoryOption";
 import MultipleOptionalChoice from "./option/MultipleOptionalChoice";
 import useStore from "../../hooks/store";
-import { DishOptionValue, cartItemSchema } from "../../server/schemas/order";
+import { cartItemSchema } from "../../server/schemas/order";
 import { shallow } from "zustand/shallow";
 import { nanoid } from "nanoid/async";
 import { OptionDictOptionData } from "../../hooks/store/optionDict";
@@ -62,15 +62,6 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     shallow
   );
 
-  // const currentDishOptionMap = useMemo<Record<string, DishOptionValue>>(
-  //   () =>
-  //     objectify(
-  //       currentDishOption,
-  //       (currentDishOption) => currentDishOption.optionId
-  //     ),
-  //   [currentDishOption]
-  // );
-
   const isEditing = !!cartItemId;
 
   const onOrder = async () => {
@@ -90,7 +81,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
       if (!menuOption.isMandatory || !haveAllMandatoryOption) {
         return;
       }
-      let selectedOptionItems = currentDishOptionMap[menuOption.id]?.value;
+      let selectedOptionItems = currentDishOption[menuOption.id]?.value;
       let unifiedSelectedOptionItems = [selectedOptionItems || []].flat();
       const { minQuantity, maxQuantity } = menuOption;
       if (
@@ -113,13 +104,13 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
       });
       return;
     }
-
-    const totalOptionPrice = currentDishOption.reduce((acc, option) => {
+    const currentOptionList = listify(currentDishOption, (_, value) => value);
+    const totalOptionPrice = currentOptionList.reduce((acc, option) => {
       return acc + option.price;
     }, 0);
 
     const newCartItem = {
-      options: currentDishOption.filter((option) => !isEmpty(option.value)),
+      options: currentOptionList.filter((option) => !isEmpty(option.value)),
       dishId: dish.id,
       id: isEditing ? cartItemId : await nanoid(20),
       dishPrice,
