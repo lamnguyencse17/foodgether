@@ -24,19 +24,23 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
   dishId,
 }) => {
   const {
-    currentDishOption: { setDishOption, data: currentDishOption },
+    currentOption,
+    setDishOption,
     optionDict: { data: optionDict },
   } = useStore(
     (state) => ({
-      currentDishOption: state.currentDishOption,
+      currentOption: state.currentDishOption.data[
+        optionId as unknown as keyof typeof state.currentDishOption.data
+      ] as OptionMandatoryValue | undefined,
+      setDishOption: state.currentDishOption.setDishOption,
       optionDict: state.optionDict,
     }),
     shallow
   );
   const dict = optionDict?.options || {};
-  const currentOption = currentDishOption.find(
-    (option) => option.optionId === optionId
-  ) as OptionMandatoryValue;
+  // const currentOption = currentDishOption.find(
+  //   (option) => option.optionId === optionId
+  // ) as OptionMandatoryValue;
   const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (
     e
   ) => {

@@ -62,14 +62,14 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
     shallow
   );
 
-  const currentDishOptionMap = useMemo<Record<string, DishOptionValue>>(
-    () =>
-      objectify(
-        currentDishOption,
-        (currentDishOption) => currentDishOption.optionId
-      ),
-    [currentDishOption]
-  );
+  // const currentDishOptionMap = useMemo<Record<string, DishOptionValue>>(
+  //   () =>
+  //     objectify(
+  //       currentDishOption,
+  //       (currentDishOption) => currentDishOption.optionId
+  //     ),
+  //   [currentDishOption]
+  // );
 
   const isEditing = !!cartItemId;
 

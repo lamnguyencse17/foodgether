@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { InvitationDishTypes } from "@prisma/client";
 import { isEmpty } from "radash";
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent, useCallback, useContext } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { VirtuosoRefContext } from "../../pages/invitation/[id]";
 import RestaurantDishTypes from "./RestaurantDishTypes";
@@ -27,6 +27,17 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
   dishList,
 }) => {
   const virtuosoRef = useContext(VirtuosoRefContext);
+  const itemRenderer = useCallback(
+    (id: number, dishType: InvitationDishTypes) => (
+      <RestaurantDishTypes
+        dishType={dishType}
+        dishTypeId={dishType.id}
+        restaurantId={restaurantId}
+        dishList={dishList}
+      />
+    ),
+    [dishTypes.length]
+  );
   return (
     <Box flex={[null, null, 1]} maxW="full" width="100%">
       {isEmpty(dishTypes) ? (
@@ -41,16 +52,7 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
                 useWindowScroll
                 data={dishTypes}
                 style={{ width: "100%" }}
-                itemContent={(_, dishType) => {
-                  return (
-                    <RestaurantDishTypes
-                      dishType={dishType}
-                      dishTypeId={dishType.id}
-                      restaurantId={restaurantId}
-                      dishList={dishList}
-                    />
-                  );
-                }}
+                itemContent={itemRenderer}
               />
             </VStack>
           </CardBody>
