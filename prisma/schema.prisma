@@ -229,10 +229,10 @@ model OrderDish {
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId Int
 
-  invitationRestaurant   InvitationRestaurant? @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
-  invitationRestaurantId Int?
+  invitationRestaurant   InvitationRestaurant @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
+  invitationRestaurantId Int
 
-  invitationDish   InvitationDish @relation(fields: [invitationDishId], references: [id], onDelete: Cascade)
+  invitationDish   InvitationDish @relation(fields: [invitationDishId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
   invitationDishId Int
 
   dishPrice  Int
@@ -339,7 +339,7 @@ model InvitationDishTypes {
 model InvitationDishTypeAndDishes {
   id Int @id @default(autoincrement())
 
-  dish   InvitationDish @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  dish   InvitationDish @relation(fields: [dishId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
   dishId Int
 
   dishtype               InvitationDishTypes @relation(fields: [dishTypeId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
@@ -350,7 +350,7 @@ model InvitationDishTypeAndDishes {
 }
 
 model InvitationDish {
-  id          Int     @id @default(autoincrement())
+  id          Int     @default(autoincrement())
   name        String  @db.Text
   description String  @db.Text
   isAvailable Boolean @default(true)
@@ -371,18 +371,18 @@ model InvitationDish {
   invitationDishOptions  InvitationDishOption[]
   orderDishes            OrderDish[]
 
-  @@unique([id, invitationRestaurantId])
+  @@id([id, invitationRestaurantId])
 }
 
 model InvitationDishOption {
-  id                     Int              @id @default(autoincrement())
-  invitationDish         InvitationDish   @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  id                     Int              @default(autoincrement())
+  invitationDish         InvitationDish   @relation(fields: [dishId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
   dishId                 Int
   invitationOption       InvitationOption @relation(fields: [optionId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
   optionId               Int
   invitationRestaurantId Int
 
-  @@unique([id, dishId, invitationRestaurantId])
+  @@id([id, invitationRestaurantId])
 }
 
 model InvitationOption {
