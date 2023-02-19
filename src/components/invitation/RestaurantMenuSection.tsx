@@ -9,11 +9,10 @@ import {
   Stack,
   StackDivider,
 } from "@chakra-ui/react";
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import { isEmpty } from "radash";
-import { VirtuosoRefContext } from "../../pages/invitation/[id]";
 import { InvitationDishTypes } from "@prisma/client";
 
 type RestaurantMenuSectionProps = {
@@ -25,7 +24,6 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
 }) => {
   const router = useRouter();
   const idHash = parseInt(router.asPath.split("#").pop() as string);
-  const virtuosoRef = useContext(VirtuosoRefContext);
 
   const { t } = useTranslation();
   return (
@@ -51,12 +49,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
                   whiteSpace="normal"
                   textAlign="left"
                   onClick={() => {
-                    if (virtuosoRef && virtuosoRef.current) {
-                      virtuosoRef.current.scrollToIndex({
-                        index: dishType.id,
-                      });
-                      router.push(`#${dishType.id}`);
-                    }
+                    router.push(`#${dishType.id}`);
                   }}
                   //TODO: Hydration error can happen when url have hash
                   textColor={

@@ -45,7 +45,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
   );
 
   const handleChange = useCallback(
-    async (_: ChangeEvent<HTMLInputElement>) => {
+    (_: ChangeEvent<HTMLInputElement>) => {
       const newOption = toggle(
         currentOptionItems,
         {
@@ -77,7 +77,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
 
   return (
     <Checkbox
-      key={item.id}
+      // key={item.id}
       disabled={disabled}
       onChange={handleChange}
       isChecked={isIncluded}
@@ -109,15 +109,25 @@ const MultipleOptionalChoice: FunctionComponent<
     }),
     shallow
   );
-  const optionItems = optionItemIdList.reduce((acc, cur) => {
-    const optionItem = optionItemDict[cur];
-    if (optionItem) {
-      acc.push(optionItem);
-    }
-    return acc;
-  }, [] as InvitationOptionItem[]);
-  const currentOptionItems = [currentOption?.value || []].flat();
-  const hItems = cluster(optionItems, Math.ceil(optionItems.length / 2));
+  const optionItems = useMemo(
+    () =>
+      optionItemIdList.reduce((acc, cur) => {
+        const optionItem = optionItemDict[cur];
+        if (optionItem) {
+          acc.push(optionItem);
+        }
+        return acc;
+      }, [] as InvitationOptionItem[]),
+    []
+  );
+  const currentOptionItems = useMemo(
+    () => [currentOption?.value || []].flat(),
+    [currentOption]
+  );
+  const hItems = useMemo(
+    () => cluster(optionItems, Math.ceil(optionItems.length / 2)),
+    [optionItems.length]
+  );
   const idMap = useMemo(() => {
     return objectify(
       optionItemIdList,
@@ -130,7 +140,6 @@ const MultipleOptionalChoice: FunctionComponent<
   console.log(displayValues);
 
   return (
-    // <CheckboxGroup value={displayValues}>
     <HStack justifyContent="start" alignItems="start" width="100%">
       {hItems.map((vItem) => (
         <VStack key={uid(3)} justifyContent="start" alignItems="start">
@@ -147,7 +156,6 @@ const MultipleOptionalChoice: FunctionComponent<
         </VStack>
       ))}
     </HStack>
-    // </CheckboxGroup>
   );
 };
 

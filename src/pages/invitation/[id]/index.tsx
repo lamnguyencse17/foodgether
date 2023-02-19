@@ -8,14 +8,13 @@ import RestaurantMenuSection from "../../../components/invitation/RestaurantMenu
 import RestaurantMenu from "../../../components/invitation/RestaurantMenu";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../../components/invitation/FloatingCart";
-import { createContext, RefObject, useEffect, useRef } from "react";
+import { useEffect } from "react";
 import {
   getAllRecentInvitationIds,
   getInvitationForMember,
 } from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
 import { trpc } from "../../../utils/trpc";
-import { VirtuosoHandle } from "react-virtuoso";
 import { InvitationOptionDictDishData } from "../../../hooks/store/optionDict";
 import { InvitationDishWithPriceAndPhoto } from "../../../types/dish";
 import { RestaurantInInvitation } from "../../../types/restaurant";
@@ -123,9 +122,6 @@ type InvitationPageProps = {
   optionItemDict?: OptionItemDictOptionData["optionItems"];
 };
 
-export const VirtuosoRefContext =
-  createContext<null | RefObject<VirtuosoHandle>>(null);
-
 const InvitationPage = ({
   invitation,
   optionDict,
@@ -148,8 +144,6 @@ const InvitationPage = ({
     setRestaurant: state.restaurant.setRestaurantForInvitationPage,
     setOptionItemDict: state.optionItemDict.setOptionItemDictForInvitationPage,
   }));
-
-  const virtuosoRef = useRef(null);
 
   const restaurant = invitation?.invitationRestaurant as
     | RestaurantInInvitation
@@ -223,15 +217,11 @@ const InvitationPage = ({
             paddingX={4}
             alignItems={["center", "center", "flex-start"]}
           >
-            <VirtuosoRefContext.Provider value={virtuosoRef}>
-              <RestaurantMenuSection
-                dishTypes={restaurant.invitationDishTypes}
-              />
-              <RestaurantMenu
-                dishTypes={restaurant.invitationDishTypes}
-                dishList={dishList || {}}
-              />
-            </VirtuosoRefContext.Provider>
+            <RestaurantMenuSection dishTypes={restaurant.invitationDishTypes} />
+            <RestaurantMenu
+              dishTypes={restaurant.invitationDishTypes}
+              dishList={dishList || {}}
+            />
           </Stack>
         </VStack>
         <FloatingCart

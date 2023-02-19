@@ -9,18 +9,9 @@ import {
 } from "@chakra-ui/react";
 import { InvitationDishTypes } from "@prisma/client";
 import { isEmpty } from "radash";
-import {
-  createContext,
-  FunctionComponent,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
-import { Virtuoso } from "react-virtuoso";
+import { createContext, FunctionComponent, useMemo, useState } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../hooks/store";
-import { VirtuosoRefContext } from "../../pages/invitation/[id]";
 import { listifyInvitationOptions } from "../../utils/transform";
 import ItemOptionModal from "./ItemOptionModal";
 import RestaurantDishTypes from "./RestaurantDishTypes";
@@ -52,17 +43,6 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
     null
   );
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const virtuosoRef = useContext(VirtuosoRefContext);
-  const itemRenderer = useCallback(
-    (id: number, dishType: InvitationDishTypes) => (
-      <RestaurantDishTypes
-        dishType={dishType}
-        dishTypeId={dishType.id}
-        dishList={dishList}
-      />
-    ),
-    [dishTypes.length]
-  );
   const modalDish = useMemo(() => {
     if (!currentOptionModal) {
       return undefined;
@@ -86,6 +66,7 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
     setCurrentOptionModal(null);
     onClose();
   };
+  console.log(isEmpty(dishTypes));
   return (
     <CurrentOptionModalContext.Provider
       value={{
@@ -100,14 +81,14 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
           <Card width="full">
             <CardBody width="full">
               <VStack divider={<StackDivider />}>
-                <Virtuoso
-                  ref={virtuosoRef}
-                  initialItemCount={2}
-                  useWindowScroll
-                  data={dishTypes}
-                  style={{ width: "100%" }}
-                  itemContent={itemRenderer}
-                />
+                {dishTypes.map((dishType) => (
+                  <RestaurantDishTypes
+                    dishType={dishType}
+                    dishTypeId={dishType.id}
+                    dishList={dishList}
+                    key={dishType.id}
+                  />
+                ))}
               </VStack>
             </CardBody>
           </Card>

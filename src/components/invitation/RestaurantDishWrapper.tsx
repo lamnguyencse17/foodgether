@@ -19,10 +19,13 @@ const RestaurantDishWrapper: FunctionComponent<RestaurantDishWrapperProps> = ({
     }),
     shallow
   );
-  const dish = useMemo(() => get(dishDict, `dishes.${dishId}`), [dishId]);
+  const dish = useMemo(
+    () => get(dishDict, `dishes.${dishId}`),
+    [dishDict, dishId]
+  );
   return (
     <Box width="100%" marginY="2">
-      <Skeleton isLoaded={!!dish} height="40" fadeDuration={4}>
+      <Skeleton isLoaded={!!dish} height="40" fadeDuration={0.5}>
         <RestaurantMenuItem dish={dish as InvitationDishWithPriceAndPhoto} />
       </Skeleton>
     </Box>
