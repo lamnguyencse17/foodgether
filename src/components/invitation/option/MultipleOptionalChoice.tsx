@@ -1,7 +1,7 @@
-import { Checkbox, CheckboxGroup, HStack, VStack } from "@chakra-ui/react";
+import { Checkbox, HStack, VStack } from "@chakra-ui/react";
 import { InvitationOptionItem } from "@prisma/client";
 import { nanoid } from "nanoid";
-import { cluster, get, mapValues, toggle, uid } from "radash";
+import { cluster, get, objectify, toggle, uid } from "radash";
 import { ChangeEvent, FunctionComponent, useCallback, useMemo } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
@@ -22,7 +22,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
   optionId,
   maxQuantity,
 }) => {
-  const { currentOptionItems, setDishOption, optionDict } = useStore(
+  const { currentOptionItems, setDishOption, optionItemDict } = useStore(
     (state) => ({
       currentOptionItems: [
         state.currentDishOption.data[
@@ -30,29 +30,30 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         ]?.value || [],
       ].flat(),
       setDishOption: state.currentDishOption.setDishOption,
-      optionDict: state.optionDict.dataV2.invitationPage,
+      optionItemDict:
+        state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
     shallow
   );
 
-  const isIncluded = currentOptionItems.some(
-    (optionItem) => optionItem.optionItemId === item.id
+  const isIncluded = useMemo(
+    () =>
+      currentOptionItems.some(
+        (optionItem) => optionItem.optionItemId === item.invitationOptionId
+      ),
+    [currentOptionItems.length]
   );
 
   const handleChange = useCallback(
-    async (_: ChangeEvent<HTMLInputElement>, item: InvitationOptionItem) => {
+    async (_: ChangeEvent<HTMLInputElement>) => {
       const newOption = toggle(
         currentOptionItems,
         {
           id: generatedId,
-          price: get(
-            optionDict,
-            `${dishId}.${optionId}.invitationOptionItems.${item.id}.price.value`,
-            0
-          ) as number,
-          optionItemId: item.id,
+          price: get(optionItemDict, `${item.id}.price.value`, 0) as number,
+          optionItemId: item.invitationOptionId!,
         },
-        (optionItem) => optionItem.id
+        (optionItem) => optionItem.optionItemId
       );
       const dishOption = {
         optionId,
@@ -61,6 +62,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         price: newOption.reduce((acc, v) => acc + v.price, 0),
         id: nanoid(20),
       };
+      console.log(dishOption);
       dishOptionValueSchema.parse(dishOption);
       setDishOption(dishOption);
     },
@@ -71,12 +73,14 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
     return currentOptionItems.length === maxQuantity && !isIncluded;
   }, [currentOptionItems.length]);
 
+  console.log(item.invitationOptionId, isIncluded);
+
   return (
     <Checkbox
       key={item.id}
-      value={item.id}
       disabled={disabled}
-      onChange={(e) => handleChange(e, item)}
+      onChange={handleChange}
+      isChecked={isIncluded}
     >
       {item.name}
     </Checkbox>
@@ -84,7 +88,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
 };
 
 type MultipleOptionalChoiceProps = {
-  items: InvitationOptionItem[];
+  optionItemIdList: number[];
   optionId: number;
   maxQuantity: number;
   dishId: number;
@@ -92,49 +96,58 @@ type MultipleOptionalChoiceProps = {
 
 const MultipleOptionalChoice: FunctionComponent<
   MultipleOptionalChoiceProps
-> = ({ items, optionId, maxQuantity, dishId }) => {
-  const { currentOption, optionDict } = useStore(
+> = ({ optionItemIdList, optionId, maxQuantity, dishId }) => {
+  const { currentOption, optionDict, optionItemDict } = useStore(
     (state) => ({
       currentOption:
         state.currentDishOption.data[
           optionId as unknown as keyof typeof state.currentDishOption.data
         ],
-      optionDict: state.optionDict.dataV2.invitationPage,
+      optionDict: state.optionDict.dataV2.invitationPage?.options || {},
+      optionItemDict:
+        state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
     shallow
   );
-
-  const dict = optionDict?.options || {};
-  const optionItems = [currentOption?.value || []].flat();
-  const hItems = cluster(items, Math.ceil(items.length / 2));
+  const optionItems = optionItemIdList.reduce((acc, cur) => {
+    const optionItem = optionItemDict[cur];
+    if (optionItem) {
+      acc.push(optionItem);
+    }
+    return acc;
+  }, [] as InvitationOptionItem[]);
+  const currentOptionItems = [currentOption?.value || []].flat();
+  const hItems = cluster(optionItems, Math.ceil(optionItems.length / 2));
   const idMap = useMemo(() => {
-    return mapValues(
-      get(dict, `${dishId}.${optionId}.invitationOptionItems`, {}) || {},
+    return objectify(
+      optionItemIdList,
+      (item) => item,
       () => nanoid(20)
     );
-  }, [dict]);
+  }, [optionDict]);
 
-  const displayValues = optionItems.map((v) => v.optionItemId);
+  const displayValues = currentOptionItems.map((v) => v.optionItemId);
+  console.log(displayValues);
 
   return (
-    <CheckboxGroup value={displayValues}>
-      <HStack justifyContent="start" alignItems="start" width="100%">
-        {hItems.map((vItem) => (
-          <VStack key={uid(3)} justifyContent="start" alignItems="start">
-            {vItem.map((item) => (
-              <MultipleChoice
-                key={item.id}
-                dishId={dishId}
-                generatedId={idMap[item.id as unknown as keyof typeof idMap]}
-                item={item}
-                optionId={optionId}
-                maxQuantity={maxQuantity}
-              />
-            ))}
-          </VStack>
-        ))}
-      </HStack>
-    </CheckboxGroup>
+    // <CheckboxGroup value={displayValues}>
+    <HStack justifyContent="start" alignItems="start" width="100%">
+      {hItems.map((vItem) => (
+        <VStack key={uid(3)} justifyContent="start" alignItems="start">
+          {vItem.map((item) => (
+            <MultipleChoice
+              key={item.id}
+              dishId={dishId}
+              generatedId={idMap[item.id as unknown as keyof typeof idMap]!}
+              item={item}
+              optionId={optionId}
+              maxQuantity={maxQuantity}
+            />
+          ))}
+        </VStack>
+      ))}
+    </HStack>
+    // </CheckboxGroup>
   );
 };
 

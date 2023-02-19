@@ -29,7 +29,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <ChakraProvider>
-      <SessionProvider session={session}>
+      <SessionProvider session={session} refetchOnWindowFocus={false}>
         <InnerApp Component={Component} pageProps={pageProps} />
       </SessionProvider>
     </ChakraProvider>

@@ -44,3 +44,5 @@ yarn-error.log*
 scraper/dist/
 
 dump.rdb
+
+.idea/

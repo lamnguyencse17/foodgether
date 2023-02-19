@@ -1,12 +1,7 @@
-import {
-  InvitationOption,
-  InvitationOptionItem,
-  Option,
-  OptionItem,
-} from "@prisma/client";
+import {InvitationOption, InvitationOptionItem, Option, OptionItem,} from "@prisma/client";
 import produce from "immer";
-import { StateCreator } from "zustand";
-import { UseStoreType } from ".";
+import {StateCreator} from "zustand";
+import {UseStoreType} from ".";
 
 export type OptionDictOptionData = {
   [optionId: string]: Option & {
@@ -21,7 +16,7 @@ export type InvitationOptionDictOptionItems = {
 };
 
 export type InvitationOptionDictOptions = InvitationOption & {
-  invitationOptionItems: InvitationOptionDictOptionItems;
+  invitationOptionItems: number[];
 };
 
 export type InvitationOptionDictOptionData = {

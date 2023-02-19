@@ -7,6 +7,7 @@ import cartStore, { CartStoreType } from "./cart";
 import optionDictStore, { OptionDictStoreType } from "./optionDict";
 import dishDictStore, { DishDictStoreType } from "./dishDict";
 import restaurantStore, { RestaurantStoreType } from "./restaurant";
+import optionItemDictStore, { OptionItemDictStoreType } from "./optionItemDict";
 
 export type UseStoreType = {
   user: UserStoreType;
@@ -16,6 +17,7 @@ export type UseStoreType = {
   optionDict: OptionDictStoreType;
   dishDict: DishDictStoreType;
   restaurant: RestaurantStoreType;
+  optionItemDict: OptionItemDictStoreType;
 };
 
 const useStore = create<UseStoreType>()(
@@ -27,6 +29,7 @@ const useStore = create<UseStoreType>()(
     optionDict: optionDictStore(...methods),
     dishDict: dishDictStore(...methods),
     restaurant: restaurantStore(...methods),
+    optionItemDict: optionItemDictStore(...methods),
   }))
 );
 

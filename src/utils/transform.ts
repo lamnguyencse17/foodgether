@@ -1,4 +1,4 @@
-import { InvitationOption, InvitationOptionItem, Prisma } from "@prisma/client";
+import { InvitationOption, Prisma } from "@prisma/client";
 import { listify } from "radash";
 import {
   InvitationOptionDictOptionData,
@@ -17,20 +17,12 @@ export const listifyOptions = (options: OptionDictOptionData) => {
 export const listifyInvitationOptions = (
   options?: InvitationOptionDictOptionData
 ): (InvitationOption & {
-  invitationOptionItems: InvitationOptionItem[];
+  invitationOptionItems: number[];
 })[] => {
   if (!options) {
     return [];
   }
-  return listify(options, (_, value) => {
-    return {
-      ...value,
-      invitationOptionItems: listify(
-        value.invitationOptionItems,
-        (_, value) => ({ ...value })
-      ),
-    };
-  });
+  return listify(options, (_, value) => value);
 };
 
 export const complyWithJson = (data: any): Prisma.InputJsonValue => {

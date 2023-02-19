@@ -12,7 +12,7 @@ import {
   SkeletonText,
   Text,
 } from "@chakra-ui/react";
-import { InvitationOption, InvitationOptionItem } from "@prisma/client";
+import { InvitationOption } from "@prisma/client";
 import { get, isEmpty, listify } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,7 +29,7 @@ type ItemOptionModalProps = {
   isOpen: boolean;
   onClose: () => void;
   options?: (InvitationOption & {
-    invitationOptionItems: InvitationOptionItem[];
+    invitationOptionItems: number[];
   })[];
   dish: InvitationDishWithPriceAndPhoto;
   isFetching?: boolean;
@@ -169,7 +169,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                     />
                   ) : (
                     <MultipleOptionalChoice
-                      items={option.invitationOptionItems}
+                      optionItemIdList={option.invitationOptionItems}
                       key={option.id}
                       optionId={option.id}
                       maxQuantity={option.maxQuantity}

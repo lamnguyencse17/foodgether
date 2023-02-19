@@ -1,5 +1,4 @@
 import { Select } from "@chakra-ui/react";
-import { InvitationOptionItem } from "@prisma/client";
 import { nanoid } from "nanoid/async";
 import { get, isEmpty } from "radash";
 import { ChangeEventHandler, FunctionComponent } from "react";
@@ -11,7 +10,7 @@ import {
 } from "../../../server/schemas/order";
 
 type SingleMandatoryOptionProps = {
-  items: InvitationOptionItem[];
+  items: number[];
   optionId: number;
   name: string;
   dishId: number;
@@ -23,24 +22,21 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
   optionId,
   dishId,
 }) => {
-  const {
-    currentOption,
-    setDishOption,
-    optionDict: { data: optionDict },
-  } = useStore(
+  const { currentOption, setDishOption, optionDict, optionItemDict } = useStore(
     (state) => ({
       currentOption: state.currentDishOption.data[
         optionId as unknown as keyof typeof state.currentDishOption.data
       ] as OptionMandatoryValue | undefined,
       setDishOption: state.currentDishOption.setDishOption,
-      optionDict: state.optionDict,
+      optionDict: state.optionDict.data,
+      optionItemDict:
+        state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
     shallow
   );
   const dict = optionDict?.options || {};
-  // const currentOption = currentDishOption.find(
-  //   (option) => option.optionId === optionId
-  // ) as OptionMandatoryValue;
+  const optionItems = items.map((id) => optionItemDict[id]!);
+
   const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (
     e
   ) => {
@@ -71,7 +67,7 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
       value={currentOption?.value?.optionItemId}
       required
     >
-      {items.map((item) => (
+      {optionItems.map((item) => (
         <option key={item.id} value={item.id}>
           {item.name}
         </option>
