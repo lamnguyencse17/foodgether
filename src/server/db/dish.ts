@@ -1,9 +1,13 @@
 import { isEmpty } from "radash";
 import { ShopeeDish } from "../../types/shopee";
 import { prisma } from "./client";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
-export const upsertDish = (restaurantId: number, dishList: ShopeeDish[]) => {
+export const upsertDish = (
+  prisma: Prisma.TransactionClient | PrismaClient,
+  restaurantId: number,
+  dishList: ShopeeDish[]
+) => {
   return prisma.dish.createMany({
     data: dishList.map((dish) => ({
       id: dish.id,

@@ -1,9 +1,10 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { isEmpty } from "radash";
 import { ShopeeItem } from "../../types/shopee";
 import { prisma } from "./client";
 
 export const upsertOptionItem = (
+  prisma: Prisma.TransactionClient | PrismaClient,
   restaurantId: number,
   optionItemList: (ShopeeItem & { optionId: number; dishId: number })[]
 ) => {

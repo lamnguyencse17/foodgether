@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import camelcaseKeys from "camelcase-keys";
 import { unique } from "radash";
@@ -25,7 +25,7 @@ import {
 import { publicProcedure } from "../trpc/trpc";
 
 export const updateRestaurantMenu = async (
-  prisma: PrismaClient,
+  prisma: PrismaClient | Prisma.TransactionClient,
   restaurantId: number,
   menu: ShopeeMenu[]
 ) => {
@@ -42,17 +42,18 @@ export const updateRestaurantMenu = async (
     }))
   );
 
-  await prisma.$transaction([
-    upsertDish(restaurantId, dishList),
-    upsertDishTypes(prisma, restaurantId, menu),
-    upsertOption(
-      restaurantId,
-      unique(optionList, (option) => option.id)
-    ),
-    upsertDishOption(prisma, restaurantId, optionList),
-    upsertDishTypeAndDishes(restaurantId, menu),
-    upsertOptionItem(restaurantId, optionItems),
-  ]);
+  // await prisma.$transaction([
+  await upsertDish(prisma, restaurantId, dishList);
+  await upsertDishTypes(prisma, restaurantId, menu);
+  await upsertOption(
+    prisma,
+    restaurantId,
+    unique(optionList, (option) => option.id)
+  );
+  await upsertDishOption(prisma, restaurantId, optionList);
+  await upsertDishTypeAndDishes(prisma, restaurantId, menu);
+  await upsertOptionItem(prisma, restaurantId, optionItems);
+  // ]);
 
   return restaurantId;
 };
@@ -97,42 +98,42 @@ export const fetchRestaurantFromUrl = publicProcedure
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-    try {
-      await upsertRestaurant(
-        ctx.prisma,
-        restaurantResponse.reply.delivery_detail
-      );
-    } catch (err) {
-      console.error(err);
-      throw new TRPCError({
-        message: errors.restaurant.UPSERT_RESTAURANT,
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
+    return ctx.prisma.$transaction(
+      async (tx) => {
+        try {
+          await upsertRestaurant(tx, restaurantResponse.reply.delivery_detail);
+        } catch (err) {
+          console.error(err);
+          throw new TRPCError({
+            message: errors.restaurant.UPSERT_RESTAURANT,
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
 
-    const menu = await fetchShopeeMenu(deliveryId);
-    if (menu.result !== "success") {
-      console.log(errors.shopee.SHOPEE_MENU_FETCH_FAILED, menu);
-      throw new TRPCError({
-        message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
-    try {
-      await updateRestaurantMenu(
-        ctx.prisma,
-        restaurantId,
-        menu.reply.menu_infos
-      );
+        const menu = await fetchShopeeMenu(deliveryId);
+        if (menu.result !== "success") {
+          console.log(errors.shopee.SHOPEE_MENU_FETCH_FAILED, menu);
+          throw new TRPCError({
+            message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+        try {
+          await updateRestaurantMenu(tx, restaurantId, menu.reply.menu_infos);
 
-      return { id: restaurantId };
-    } catch (err) {
-      console.error(errors.menu.UPSERT_MENU, err);
-      throw new TRPCError({
-        message: errors.menu.UPSERT_MENU,
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
+          return { id: restaurantId };
+        } catch (err) {
+          console.error(errors.menu.UPSERT_MENU, err);
+          throw new TRPCError({
+            message: errors.menu.UPSERT_MENU,
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+      },
+      {
+        timeout: 9000,
+      }
+    );
   });
 
 export const fetchRestaurantFromId = publicProcedure
@@ -152,38 +153,42 @@ export const fetchRestaurantFromId = publicProcedure
         code: "INTERNAL_SERVER_ERROR",
       });
     }
-    try {
-      await upsertRestaurant(
-        ctx.prisma,
-        restaurantResponse.reply.delivery_detail
-      );
-    } catch (err) {
-      console.error(err);
-      throw new TRPCError({
-        message: errors.restaurant.UPSERT_RESTAURANT,
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
+    return ctx.prisma.$transaction(
+      async (tx) => {
+        try {
+          await upsertRestaurant(tx, restaurantResponse.reply.delivery_detail);
+        } catch (err) {
+          console.error(err);
+          throw new TRPCError({
+            message: errors.restaurant.UPSERT_RESTAURANT,
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
 
-    const menu = await fetchShopeeMenu(
-      restaurantResponse.reply.delivery_detail.delivery_id
+        const menu = await fetchShopeeMenu(
+          restaurantResponse.reply.delivery_detail.delivery_id
+        );
+        if (menu.result !== "success") {
+          console.log(errors.shopee.SHOPEE_MENU_FETCH_FAILED, menu);
+          throw new TRPCError({
+            message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+        try {
+          await updateRestaurantMenu(tx, input.id, menu.reply.menu_infos);
+          const restaurant = await getAggregatedRestaurant(tx, input.id);
+          return { ...restaurant };
+        } catch (err) {
+          console.error(errors.menu.UPSERT_MENU, err);
+          throw new TRPCError({
+            message: errors.menu.UPSERT_MENU,
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+      },
+      {
+        timeout: 9000,
+      }
     );
-    if (menu.result !== "success") {
-      console.log(errors.shopee.SHOPEE_MENU_FETCH_FAILED, menu);
-      throw new TRPCError({
-        message: errors.shopee.SHOPEE_MENU_FETCH_FAILED,
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
-    try {
-      await updateRestaurantMenu(ctx.prisma, input.id, menu.reply.menu_infos);
-      const restaurant = await getAggregatedRestaurant(ctx.prisma, input.id);
-      return { ...restaurant };
-    } catch (err) {
-      console.error(errors.menu.UPSERT_MENU, err);
-      throw new TRPCError({
-        message: errors.menu.UPSERT_MENU,
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
   });

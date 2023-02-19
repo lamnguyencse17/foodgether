@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { ShopeeMenu } from "../../types/shopee";
 
 export const upsertDishTypes = (
-  prisma: PrismaClient,
+  prisma: Prisma.TransactionClient | PrismaClient,
   restaurantId: number,
   menu: ShopeeMenu[]
 ) => {
