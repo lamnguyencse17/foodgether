@@ -2,7 +2,10 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { prisma } from "./client";
 import { formatISO, sub } from "date-fns";
 
-export const createInvitationTx = (prisma: PrismaClient, userId: string) => {
+export const createInvitationTx = (
+  prisma: Prisma.TransactionClient,
+  userId: string
+) => {
   return prisma.invitation.create({
     data: {
       createdBy: { connect: { id: userId } },

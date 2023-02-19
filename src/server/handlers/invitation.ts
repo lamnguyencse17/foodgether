@@ -36,38 +36,49 @@ export const createNewInvitation = protectedProcedure
       isAvailable: dish.isAvailable,
       isActive: dish.isActive,
     }));
-    const invitation = await createInvitationTx(
-      ctx.prisma,
-      ctx.session.user.id
-    );
-    return ctx.prisma.$transaction(async (tx) => {
-      const invitationOptions = restaurant.option.map((option) => ({
-        id: option.id,
-        name: option.name,
-        ntop: option.ntop,
-        invitationId: invitation.id,
-        minQuantity: option.minQuantity,
-        maxQuantity: option.maxQuantity,
-      }));
 
-      const invitationRestaurant = await createInvitationRestaurantTx(
-        tx,
-        invitation.id,
-        { restaurant, invitationDishes, invitationOptions }
-      );
-      await createInvitationDishTypes(tx, invitationRestaurant.id, restaurant);
-      await createInvitationDishTypesAndDishes(
-        tx,
-        invitationRestaurant.id,
-        restaurant
-      );
-      await createInvitationDishOption(tx, invitationRestaurant.id, restaurant);
-      await createInvitationOptionItem(
-        tx,
-        invitationRestaurant.id,
-        invitation.id,
-        restaurant
-      );
-      return invitation.id;
-    });
+    return ctx.prisma.$transaction(
+      async (tx) => {
+        const invitation = await createInvitationTx(tx, ctx.session.user.id);
+        const invitationOptions = restaurant.option.map((option) => ({
+          id: option.id,
+          name: option.name,
+          ntop: option.ntop,
+          invitationId: invitation.id,
+          minQuantity: option.minQuantity,
+          maxQuantity: option.maxQuantity,
+        }));
+        const invitationRestaurant = await createInvitationRestaurantTx(
+          tx,
+          invitation.id,
+          { restaurant, invitationDishes, invitationOptions }
+        );
+        await createInvitationDishTypes(
+          tx,
+          invitationRestaurant.id,
+          restaurant
+        );
+        await createInvitationDishTypesAndDishes(
+          tx,
+          invitationRestaurant.id,
+          restaurant
+        );
+        await createInvitationDishOption(
+          tx,
+          invitationRestaurant.id,
+          restaurant
+        );
+        await createInvitationOptionItem(
+          tx,
+          invitationRestaurant.id,
+          invitation.id,
+          restaurant
+        );
+        return invitation.id;
+      },
+      {
+        timeout: 9000,
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      }
+    );
   });
