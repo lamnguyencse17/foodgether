@@ -2,11 +2,14 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { omit } from "radash";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import { ShopeeRestaurant } from "../../types/shopee";
-
+import {getRequiredPhotos} from '../utils/getRequiredPhotos'
 export const upsertRestaurant = async (
   prisma: PrismaClient | Prisma.TransactionClient,
   restaurant: ShopeeRestaurant
 ) => {
+
+
+
   await prisma.restaurant.deleteMany({
     where: {
       id: restaurant.restaurant_id,
@@ -28,7 +31,7 @@ export const upsertRestaurant = async (
         maxPrice: restaurant.price_range.max_price,
       },
       isQualityMerchant: restaurant.is_quality_merchant,
-      photos: restaurant.photos as unknown as Prisma.JsonArray,
+      photos: getRequiredPhotos(restaurant.photos) as unknown as Prisma.JsonArray,
       isAvailable: restaurant.asap_is_available,
     },
   });

@@ -2,6 +2,7 @@ import { isEmpty } from "radash";
 import { ShopeeDish } from "../../types/shopee";
 import { prisma } from "./client";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { getRequiredPhotos } from "../utils/getRequiredPhotos";
 
 export const upsertDish = (
   prisma: Prisma.TransactionClient | PrismaClient,
@@ -20,11 +21,7 @@ export const upsertDish = (
         value: dish.price.value,
         unit: dish.price.unit,
       },
-      photos: dish.photos.map((photo) => ({
-        height: photo.height,
-        width: photo.width,
-        value: photo.value,
-      })),
+      photos: getRequiredPhotos(dish.photos),
       discountPrice: isEmpty(dish.discount_price)
         ? Prisma.JsonNull
         : {
