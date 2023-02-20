@@ -116,9 +116,13 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   );
 
   const confirmedRestaurant = useMemo(() => {
-    return (
-      getRestaurantQuery.data ? getRestaurantQuery.data : restaurant ? restaurant : {}
-    ) as NonNullable<AggregatedRestaurant>;
+    if (getRestaurantQuery.data) {
+      return getRestaurantQuery.data as NonNullable<AggregatedRestaurant>;
+    }
+    if (restaurant) {
+      return restaurant as NonNullable<AggregatedRestaurant>;
+    }
+    return {} as NonNullable<AggregatedRestaurant>;
   }, [getRestaurantQuery.data, restaurant]);
 
   useSetOptionDict(
