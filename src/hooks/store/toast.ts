@@ -16,19 +16,16 @@ export type ToastStoreType = {
   setToast: (key: ToastKeyParam, value?: ToastValueParams) => void;
 };
 
-const toastStore: StateCreator<
-  UseStoreType,
-  [["zustand/devtools", never]],
-  [],
-  ToastStoreType
-> = (set) => ({
+const toastStore: StateCreator<UseStoreType, [["zustand/devtools", never]], [], ToastStoreType> = (
+  set,
+) => ({
   setToast: (key: ToastKeyParam, value?: ToastValueParams) =>
     set(
       produce<UseStoreType>((state) => {
         state.toast[key] = value;
       }),
       false,
-      "setToast"
+      "setToast",
     ),
 });
 

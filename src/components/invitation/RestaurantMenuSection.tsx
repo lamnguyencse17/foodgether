@@ -19,9 +19,7 @@ type RestaurantMenuSectionProps = {
   dishTypes: InvitationDishTypes[];
 };
 
-const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
-  dishTypes,
-}) => {
+const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({ dishTypes }) => {
   const router = useRouter();
   const idHash = parseInt(router.asPath.split("#").pop() as string);
 
@@ -52,11 +50,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
                     router.push(`#${dishType.id}`);
                   }}
                   //TODO: Hydration error can happen when url have hash
-                  textColor={
-                    !isNaN(idHash) && idHash === dishType.id
-                      ? "blue.400"
-                      : undefined
-                  }
+                  textColor={!isNaN(idHash) && idHash === dishType.id ? "blue.400" : undefined}
                 >
                   {dishType.name}
                 </Button>

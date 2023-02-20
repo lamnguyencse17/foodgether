@@ -23,10 +23,7 @@ type RestaurantMenuItemProps = {
   restaurantId: number;
 };
 
-const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
-  dish,
-  restaurantId,
-}) => {
+const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({ dish, restaurantId }) => {
   const { t } = useTranslation();
   const { data: optionDict } = useStore((state) => state.optionDict);
   const options = optionDict?.options || {};
@@ -43,12 +40,11 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
     {
       enabled: isOpen && !options[dishId] && isEmpty(optionDict),
       staleTime: 60 * 1000,
-    }
+    },
   );
 
   const option = options[dishId];
-  const currentOption =
-    (option && listifyOptions(option)) || dishOptionQuery.data;
+  const currentOption = (option && listifyOptions(option)) || dishOptionQuery.data;
 
   const showOption = () => {
     onOpen();
@@ -58,11 +54,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
     if (dishOptionQuery.isFetching && option) {
       trpcContext.option.getOptionFromDishId.cancel();
     }
-  }, [
-    dishOptionQuery.isFetching,
-    option,
-    trpcContext.option.getOptionFromDishId,
-  ]);
+  }, [dishOptionQuery.isFetching, option, trpcContext.option.getOptionFromDishId]);
   if (!dish) {
     return null;
   }
@@ -104,13 +96,9 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
             </Box>
             <VStack alignItems="flex-start" justifyContent="flex-start">
               {isEmpty(dish.discountPrice) ? (
-                <Text>
-                  {t("common.price_number", { val: dish.price?.value })}
-                </Text>
+                <Text>{t("common.price_number", { val: dish.price?.value })}</Text>
               ) : (
-                <Text as="s">
-                  {t("common.price_number", { val: dish.price?.value })}
-                </Text>
+                <Text as="s">{t("common.price_number", { val: dish.price?.value })}</Text>
               )}
               {!isEmpty(dish.discountPrice) && (
                 <Text textColor="blue.400" fontWeight="bold">

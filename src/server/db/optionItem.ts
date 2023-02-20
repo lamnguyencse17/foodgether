@@ -6,7 +6,7 @@ import { prisma } from "./client";
 export const upsertOptionItem = (
   prisma: Prisma.TransactionClient | PrismaClient,
   restaurantId: number,
-  optionItemList: (ShopeeItem & { optionId: number; dishId: number })[]
+  optionItemList: (ShopeeItem & { optionId: number; dishId: number })[],
 ) => {
   const createData = optionItemList.map((optionItem) => ({
     id: optionItem.id,
@@ -39,7 +39,7 @@ export const upsertOptionItem = (
 };
 
 export const getOptionItemPrice = (
-  filterList: { id: number; restaurantId: number; dishId: number }[]
+  filterList: { id: number; restaurantId: number; dishId: number }[],
 ) => {
   return prisma.optionItem.findMany({
     where: {

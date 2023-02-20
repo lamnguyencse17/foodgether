@@ -1,10 +1,7 @@
 import produce from "immer";
 import { StateCreator } from "zustand";
 import { UseStoreType } from ".";
-import {
-  AggregatedInvitationRestaurant,
-  AggregatedRestaurant,
-} from "../../types/restaurant";
+import { AggregatedInvitationRestaurant, AggregatedRestaurant } from "../../types/restaurant";
 
 export type RestaurantStoreType = {
   data?: AggregatedRestaurant;
@@ -13,9 +10,7 @@ export type RestaurantStoreType = {
     invitationPage?: AggregatedInvitationRestaurant;
   };
   setRestaurant: (value: AggregatedRestaurant) => void;
-  setRestaurantForInvitationPage: (
-    value: AggregatedInvitationRestaurant
-  ) => void;
+  setRestaurantForInvitationPage: (value: AggregatedInvitationRestaurant) => void;
 };
 
 const restaurantStore: StateCreator<
@@ -35,7 +30,7 @@ const restaurantStore: StateCreator<
         state.restaurant.data = restaurant;
       }),
       false,
-      "setRestaurant"
+      "setRestaurant",
     ),
   setRestaurantForInvitationPage: (restaurant) =>
     set(
@@ -43,7 +38,7 @@ const restaurantStore: StateCreator<
         state.restaurant.dataV2.invitationPage = restaurant;
       }),
       false,
-      "setRestaurantForInvitationPage"
+      "setRestaurantForInvitationPage",
     ),
 });
 

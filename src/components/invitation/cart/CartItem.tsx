@@ -1,11 +1,4 @@
-import {
-  Heading,
-  HStack,
-  IconButton,
-  StackDivider,
-  useDisclosure,
-  VStack,
-} from "@chakra-ui/react";
+import { Heading, HStack, IconButton, StackDivider, useDisclosure, VStack } from "@chakra-ui/react";
 import { get, isEmpty } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,13 +18,7 @@ type CartItemProps = {
 const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    dishDict,
-    setDishOption,
-    resetDishOption,
-    optionDict,
-    deleteCartItem,
-  } = useStore(
+  const { dishDict, setDishOption, resetDishOption, optionDict, deleteCartItem } = useStore(
     (state) => ({
       dishDict: state.dishDict.dataV2.invitationPage?.dishes,
       setDishOption: state.currentDishOption.setDishOption,
@@ -40,13 +27,10 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
       optionDict: state.optionDict.dataV2.invitationPage?.options,
       deleteCartItem: state.cart.deleteCartItem,
     }),
-    shallow
+    shallow,
   );
 
-  const dish = get(
-    dishDict,
-    cartItem.dishId.toString()
-  ) as InvitationDishWithPriceAndPhoto;
+  const dish = get(dishDict, cartItem.dishId.toString()) as InvitationDishWithPriceAndPhoto;
 
   const option = (optionDict || {})[dish.id];
   const currentOptions = (option && listifyInvitationOptions(option)) || [];
@@ -76,9 +60,7 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
         alignItems="flex-start"
       >
         <HStack justifyContent="space-between" width="100%" alignItems="center">
-          <Heading>
-            {get(dish, "name", t("inivitation_page.unknown_dish"))}
-          </Heading>
+          <Heading>{get(dish, "name", t("inivitation_page.unknown_dish"))}</Heading>
           <HStack gap={1}>
             <IconButton
               icon={<DeleteIcon />}

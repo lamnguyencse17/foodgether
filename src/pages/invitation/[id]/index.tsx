@@ -9,10 +9,7 @@ import RestaurantMenu from "../../../components/invitation/RestaurantMenu";
 import { useTranslation } from "react-i18next";
 import FloatingCart from "../../../components/invitation/FloatingCart";
 import { useEffect } from "react";
-import {
-  getAllRecentInvitationIds,
-  getInvitationForMember,
-} from "../../../server/db/invitation";
+import { getAllRecentInvitationIds, getInvitationForMember } from "../../../server/db/invitation";
 import useStore from "../../../hooks/store";
 import { trpc } from "../../../utils/trpc";
 import { InvitationOptionDictDishData } from "../../../hooks/store/optionDict";
@@ -38,9 +35,7 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
 
 export const getStaticProps = async ({
   params: { id },
-}: GetRestaurantServerParams): Promise<
-  GetStaticPropsResult<InvitationPageProps>
-> => {
+}: GetRestaurantServerParams): Promise<GetStaticPropsResult<InvitationPageProps>> => {
   const invitation = await getInvitationForMember(id);
 
   if (!invitation) {
@@ -52,45 +47,33 @@ export const getStaticProps = async ({
     };
   }
   const restaurant = invitation.invitationRestaurant;
-  const dishOptions = restaurant?.invitationDishes.flatMap(
-    (dish) => dish.invitationDishOptions
-  );
+  const dishOptions = restaurant?.invitationDishes.flatMap((dish) => dish.invitationDishOptions);
 
-  const dishDict = objectify(
-    restaurant?.invitationDishes || [],
-    (dish) => dish.id
-  ) as {
+  const dishDict = objectify(restaurant?.invitationDishes || [], (dish) => dish.id) as {
     [dishId: string]: InvitationDishWithPriceAndPhoto;
   };
-  const optionDict = objectify(
-    restaurant?.invitationOptions || [],
-    (option) => option.id
-  );
+  const optionDict = objectify(restaurant?.invitationOptions || [], (option) => option.id);
   const groupedDict = group(dishOptions || [], (option) => option.dishId);
-  const dishOptionDict: InvitationOptionDictDishData = mapValues(
-    groupedDict,
-    (options) =>
-      objectify(
-        options || [],
-        (option) => option.optionId,
-        (option) => {
-          return {
-            ...optionDict[option.optionId]!,
-            invitationOptionItems: optionDict[
-              option.optionId
-            ]!.invitationOptionItems.map((item) => item.id!),
-          };
-        }
-      )
+  const dishOptionDict: InvitationOptionDictDishData = mapValues(groupedDict, (options) =>
+    objectify(
+      options || [],
+      (option) => option.optionId,
+      (option) => {
+        return {
+          ...optionDict[option.optionId]!,
+          invitationOptionItems: optionDict[option.optionId]!.invitationOptionItems.map(
+            (item) => item.id!,
+          ),
+        };
+      },
+    ),
   );
   const optionItemDict = objectify(
     unique(
-      restaurant?.invitationOptions.flatMap(
-        (option) => option.invitationOptionItems
-      ) || [],
-      (item) => item.id
+      restaurant?.invitationOptions.flatMap((option) => option.invitationOptionItems) || [],
+      (item) => item.id,
     ),
-    (item) => item.id
+    (item) => item.id,
   );
   const invitationRestaurant = invitation.invitationRestaurant!;
   return {
@@ -101,8 +84,7 @@ export const getStaticProps = async ({
       dishList: objectify(
         invitationRestaurant.invitationDishTypes,
         (dishType) => dishType.id,
-        (dishType) =>
-          dishType.invitationDishTypeAndDishes.map((dish) => dish.dishId)
+        (dishType) => dishType.invitationDishTypeAndDishes.map((dish) => dish.dishId),
       ),
       optionItemDict,
     },
@@ -131,27 +113,19 @@ const InvitationPage = ({
 }: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const {
-    setOptionDict,
-    setDishDict,
-    setCart,
-    setRestaurant,
-    setOptionItemDict,
-  } = useStore((state) => ({
-    setOptionDict: state.optionDict.setOptionDictForInvitationPage,
-    setDishDict: state.dishDict.setDishDictForInvitationPage,
-    setCart: state.cart.setCart,
-    setRestaurant: state.restaurant.setRestaurantForInvitationPage,
-    setOptionItemDict: state.optionItemDict.setOptionItemDictForInvitationPage,
-  }));
+  const { setOptionDict, setDishDict, setCart, setRestaurant, setOptionItemDict } = useStore(
+    (state) => ({
+      setOptionDict: state.optionDict.setOptionDictForInvitationPage,
+      setDishDict: state.dishDict.setDishDictForInvitationPage,
+      setCart: state.cart.setCart,
+      setRestaurant: state.restaurant.setRestaurantForInvitationPage,
+      setOptionItemDict: state.optionItemDict.setOptionItemDictForInvitationPage,
+    }),
+  );
 
-  const restaurant = invitation?.invitationRestaurant as
-    | RestaurantInInvitation
-    | undefined
-    | null;
+  const restaurant = invitation?.invitationRestaurant as RestaurantInInvitation | undefined | null;
   const restaurantId = restaurant?.id || -1;
-  const invitationId = (router.query.id ||
-    router.pathname.split("/").pop()) as string;
+  const invitationId = (router.query.id || router.pathname.split("/").pop()) as string;
 
   const cartQuery = trpc.order.getMemberCurrentOrder.useQuery(
     {
@@ -161,7 +135,7 @@ const InvitationPage = ({
     {
       enabled: !isEmpty(restaurant),
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   useEffect(() => {
@@ -218,16 +192,10 @@ const InvitationPage = ({
             alignItems={["center", "center", "flex-start"]}
           >
             <RestaurantMenuSection dishTypes={restaurant.invitationDishTypes} />
-            <RestaurantMenu
-              dishTypes={restaurant.invitationDishTypes}
-              dishList={dishList || {}}
-            />
+            <RestaurantMenu dishTypes={restaurant.invitationDishTypes} dishList={dishList || {}} />
           </Stack>
         </VStack>
-        <FloatingCart
-          invitationId={invitationId}
-          previousCart={cartQuery.data}
-        />
+        <FloatingCart invitationId={invitationId} previousCart={cartQuery.data} />
       </main>
     </>
   );

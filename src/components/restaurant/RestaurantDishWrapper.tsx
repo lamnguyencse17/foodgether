@@ -21,10 +21,7 @@ const RestaurantDishWrapper: FunctionComponent<RestaurantDishWrapperProps> = ({
   return (
     <Box width="100%" marginY="2">
       <Skeleton isLoaded={!!dish} height="40" fadeDuration={4}>
-        <RestaurantMenuItem
-          dish={dish as DishWithPriceAndPhoto}
-          restaurantId={restaurantId}
-        />
+        <RestaurantMenuItem dish={dish as DishWithPriceAndPhoto} restaurantId={restaurantId} />
       </Skeleton>
     </Box>
   );

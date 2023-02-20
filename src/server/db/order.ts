@@ -112,7 +112,7 @@ export const getExistingOrder = async (
   prisma: PrismaClient,
   invitationId: string,
   restaurantId: number,
-  userId: string
+  userId: string,
 ) => {
   return prisma.order.findUnique({
     where: {

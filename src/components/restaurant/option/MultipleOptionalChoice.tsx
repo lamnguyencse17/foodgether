@@ -3,9 +3,7 @@ import { OptionItem } from "@prisma/client";
 import { cluster, uid } from "radash";
 import { FunctionComponent, useState } from "react";
 
-const MultipleOptionalChoice: FunctionComponent<{ items: OptionItem[] }> = ({
-  items,
-}) => {
+const MultipleOptionalChoice: FunctionComponent<{ items: OptionItem[] }> = ({ items }) => {
   const [value, setValue] = useState<number[]>([]);
   const hItems = cluster(items, Math.ceil(items.length / 2));
   return (

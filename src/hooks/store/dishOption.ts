@@ -24,7 +24,7 @@ const dishOptionStore: StateCreator<
         state.currentDishOption.data[value.optionId] = value;
       }),
       false,
-      "setDishOption"
+      "setDishOption",
     ),
   resetDishOption: () =>
     set(
@@ -32,7 +32,7 @@ const dishOptionStore: StateCreator<
         state.currentDishOption.data = {};
       }),
       false,
-      "resetDishOption"
+      "resetDishOption",
     ),
 });
 

@@ -1,7 +1,7 @@
-import {InvitationOption, InvitationOptionItem, Option, OptionItem,} from "@prisma/client";
+import { InvitationOption, InvitationOptionItem, Option, OptionItem } from "@prisma/client";
 import produce from "immer";
-import {StateCreator} from "zustand";
-import {UseStoreType} from ".";
+import { StateCreator } from "zustand";
+import { UseStoreType } from ".";
 
 export type OptionDictOptionData = {
   [optionId: string]: Option & {
@@ -49,7 +49,7 @@ export type OptionDictStoreType = {
   setOptionDict: (value: OptionDictStoreType["data"]) => void;
   setOptionDictForInvitationPage: (
     restaurantId: number,
-    value: InvitationOptionDictDishData
+    value: InvitationOptionDictDishData,
   ) => void;
 };
 
@@ -66,7 +66,7 @@ const optionDictStore: StateCreator<
         state.optionDict.data = value;
       }),
       false,
-      "setOptionDict"
+      "setOptionDict",
     ),
   dataV2: {
     invitationPage: undefined,
@@ -81,7 +81,7 @@ const optionDictStore: StateCreator<
         };
       }),
       false,
-      "setOptionDictForInvitationPage"
+      "setOptionDictForInvitationPage",
     ),
 });
 

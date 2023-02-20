@@ -28,20 +28,15 @@ export const CurrentOptionModalContext = createContext<{
   setCurrentOptionModal: (currentOptionModal: number | null) => void;
 }>({ currentOptionModal: null, setCurrentOptionModal: () => undefined });
 
-const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
-  dishTypes,
-  dishList,
-}) => {
+const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dishList }) => {
   const { dishDict, optionDict } = useStore(
     (state) => ({
       dishDict: state.dishDict.dataV2.invitationPage,
       optionDict: state.optionDict.dataV2.invitationPage,
     }),
-    shallow
+    shallow,
   );
-  const [currentOptionModal, setCurrentOptionModal] = useState<null | number>(
-    null
-  );
+  const [currentOptionModal, setCurrentOptionModal] = useState<null | number>(null);
   const { onOpen, onClose, isOpen } = useDisclosure();
   const modalDish = useMemo(() => {
     if (!currentOptionModal) {

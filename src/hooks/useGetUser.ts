@@ -6,11 +6,7 @@ import useStore from "./store";
 
 const useHandleAuthenticateUser = () => {
   const { data: sessionData, status } = useSession();
-  const {
-    data: user,
-    setUser,
-    resetUser,
-  } = useStore((state) => ({ ...state.user }), shallow);
+  const { data: user, setUser, resetUser } = useStore((state) => ({ ...state.user }), shallow);
 
   const sessionUser = sessionData?.user;
 

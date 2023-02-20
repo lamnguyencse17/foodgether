@@ -59,23 +59,15 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
       cart: state.cart,
       setToast: state.toast.setToast,
     }),
-    shallow
+    shallow,
   );
 
   const isEditing = !!cartItemId;
 
   const onOrder = async () => {
-    const dishPrice = get(
-      dishDict,
-      `dishes.${dish.id}.price.value`,
-      0
-    ) as number;
+    const dishPrice = get(dishDict, `dishes.${dish.id}.price.value`, 0) as number;
 
-    const dishOption = get(
-      optionDict,
-      `options.${dish.id}`,
-      {}
-    ) as OptionDictOptionData;
+    const dishOption = get(optionDict, `options.${dish.id}`, {}) as OptionDictOptionData;
     let haveAllMandatoryOption = true;
     listify(dishOption, (_, value) => ({ ...value })).forEach((menuOption) => {
       if (!menuOption.isMandatory || !haveAllMandatoryOption) {
@@ -89,8 +81,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
           unifiedSelectedOptionItems.length >= minQuantity &&
           unifiedSelectedOptionItems.length <= maxQuantity &&
           unifiedSelectedOptionItems.every(
-            ({ optionItemId }) =>
-              !!get(menuOption.items, optionItemId.toString())
+            ({ optionItemId }) => !!get(menuOption.items, optionItemId.toString()),
           )
         )
       ) {
@@ -137,12 +128,8 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {isEmpty(options) && !isFetching && (
-            <Text>{t("restaurant_page.empty_option")}</Text>
-          )}
-          {isEmpty(options) && isFetching && (
-            <SkeletonText noOfLines={5} skeletonHeight={4} />
-          )}
+          {isEmpty(options) && !isFetching && <Text>{t("restaurant_page.empty_option")}</Text>}
+          {isEmpty(options) && isFetching && <SkeletonText noOfLines={5} skeletonHeight={4} />}
           {!isEmpty(options) &&
             !isFetching &&
             (options || []).map((option) => {
