@@ -1,13 +1,4 @@
-import {
-  Table,
-  TableContainer,
-  Tbody,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-} from "@chakra-ui/react";
+import { Table, TableContainer, Tbody, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react";
 import { get } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +16,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
     (state) => ({
       optionDict: state.optionDict.dataV2.invitationPage,
     }),
-    shallow
+    shallow,
   );
   const options = optionDict?.options || {};
 
@@ -46,7 +37,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                 {get(
                   options,
                   `${cartItem.dishId}.${option.optionId}.name`,
-                  t("inivitation_page.unknown_option")
+                  t("inivitation_page.unknown_option"),
                 )}
               </Th>
               <Th>
@@ -55,7 +46,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                     {get(
                       options,
                       `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${option.value.optionItemId}.name`,
-                      t("inivitation_page.unknown_item")
+                      t("inivitation_page.unknown_item"),
                     )}
                   </Text>
                 ) : (
@@ -65,7 +56,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                         {get(
                           options,
                           `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${item.optionItemId}.name`,
-                          t("inivitation_page.unknown_item")
+                          t("inivitation_page.unknown_item"),
                         )}{" "}
                       </Text>
                     ))}

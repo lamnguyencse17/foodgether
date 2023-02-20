@@ -1,11 +1,4 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  Skeleton,
-  StackDivider,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Card, CardBody, Skeleton, StackDivider, VStack } from "@chakra-ui/react";
 import { isEmpty } from "radash";
 import { FunctionComponent, useContext } from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -18,10 +11,7 @@ type RestaurantMenuProps = {
   restaurantId: number;
 };
 
-const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
-  dishTypes,
-  restaurantId,
-}) => {
+const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, restaurantId }) => {
   const virtuosoRef = useContext(VirtuosoRefContext);
   return (
     <Box flex={[null, null, 1]} maxW="full" width="100%">

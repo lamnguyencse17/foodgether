@@ -20,9 +20,7 @@ type RestaurantMenuSectionProps = {
   dishTypes: AggregatedDishTypes[];
 };
 
-const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
-  dishTypes,
-}) => {
+const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({ dishTypes }) => {
   const router = useRouter();
   const idHash = parseInt(router.asPath.split("#").pop() as string);
   const virtuosoRef = useContext(VirtuosoRefContext);
@@ -57,11 +55,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({
                     }
                   }}
                   //TODO: Hydration error can happen when url have hash
-                  textColor={
-                    !isNaN(idHash) && idHash === dishType.id
-                      ? "blue.400"
-                      : undefined
-                  }
+                  textColor={!isNaN(idHash) && idHash === dishType.id ? "blue.400" : undefined}
                 >
                   {dishType.name}
                 </Button>

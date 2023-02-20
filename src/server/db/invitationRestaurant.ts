@@ -31,11 +31,7 @@ type CreateInvitationRestaurantTxInputs = {
 export const createInvitationRestaurantTx = (
   tx: Prisma.TransactionClient,
   invitationId: string,
-  {
-    restaurant,
-    invitationDishes,
-    invitationOptions,
-  }: CreateInvitationRestaurantTxInputs
+  { restaurant, invitationDishes, invitationOptions }: CreateInvitationRestaurantTxInputs,
 ) => {
   return tx.invitationRestaurant.create({
     data: {

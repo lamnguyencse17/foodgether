@@ -11,12 +11,9 @@ export type UserStoreType = {
   resetUser: () => void;
 };
 
-const userStore: StateCreator<
-  UseStoreType,
-  [["zustand/devtools", never]],
-  [],
-  UserStoreType
-> = (set) => ({
+const userStore: StateCreator<UseStoreType, [["zustand/devtools", never]], [], UserStoreType> = (
+  set,
+) => ({
   data: undefined,
   setUser: (sessionUser: SessionUser) =>
     set(
@@ -24,7 +21,7 @@ const userStore: StateCreator<
         state.user.data = sessionUser;
       }),
       false,
-      "setUser"
+      "setUser",
     ),
   resetUser: () =>
     set(
@@ -32,7 +29,7 @@ const userStore: StateCreator<
         state.user.data = undefined;
       }),
       false,
-      "resetUser"
+      "resetUser",
     ),
 });
 

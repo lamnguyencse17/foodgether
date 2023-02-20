@@ -7,7 +7,8 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "prettify": "prettier \"src/**/*\" --write"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",

@@ -21,9 +21,7 @@ type RestaurantMenuItemProps = {
   dish?: InvitationDishWithPriceAndPhoto;
 };
 
-const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
-  dish,
-}) => {
+const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({ dish }) => {
   const { t } = useTranslation();
   const { setCurrentOptionModal } = useContext(CurrentOptionModalContext);
   const photo = get(dish, "photos[0]", {}) as Photo | undefined;
@@ -74,13 +72,9 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
             </Box>
             <VStack alignItems="flex-start" justifyContent="flex-start">
               {isEmpty(dish.discountPrice) ? (
-                <Text>
-                  {t("common.price_number", { val: dish.price?.value })}
-                </Text>
+                <Text>{t("common.price_number", { val: dish.price?.value })}</Text>
               ) : (
-                <Text as="s">
-                  {t("common.price_number", { val: dish.price?.value })}
-                </Text>
+                <Text as="s">{t("common.price_number", { val: dish.price?.value })}</Text>
               )}
               {!isEmpty(dish.discountPrice) && (
                 <Text textColor="blue.400" fontWeight="bold">
@@ -88,12 +82,7 @@ const RestaurantMenuItem: FunctionComponent<RestaurantMenuItemProps> = ({
                 </Text>
               )}
             </VStack>
-            <IconButton
-              aria-label={dish.name}
-              icon={<AddIcon />}
-              size="sm"
-              onClick={showOption}
-            />
+            <IconButton aria-label={dish.name} icon={<AddIcon />} size="sm" onClick={showOption} />
           </Stack>
         </CardBody>
       </Card>

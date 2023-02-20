@@ -13,10 +13,7 @@ type InnerAppProps = {
   pageProps: Record<string, any>;
 };
 
-const InnerApp: FunctionComponent<InnerAppProps> = ({
-  Component,
-  pageProps,
-}) => {
+const InnerApp: FunctionComponent<InnerAppProps> = ({ Component, pageProps }) => {
   useI18nLocale();
   useHandleAuthenticateUser();
   useDisplayToast();

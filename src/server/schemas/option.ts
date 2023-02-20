@@ -5,9 +5,7 @@ export const getOptionFromDishIdSchema = z.object({
   dishId: z.number(),
 });
 
-export type GetOptionFromDishIdParams = z.infer<
-  typeof getOptionFromDishIdSchema
->;
+export type GetOptionFromDishIdParams = z.infer<typeof getOptionFromDishIdSchema>;
 
 export const getInvitationOptionFromDishIdSchema = z.object({
   restaurantId: z.number(),
@@ -20,6 +18,4 @@ export type GetInvitationOptionFromDishIdParams = z.infer<
 
 export const getOptionForAllDishSchema = z.object({ restaurantId: z.number() });
 
-export type GetOptionForAllDishParams = z.infer<
-  typeof getOptionForAllDishSchema
->;
+export type GetOptionForAllDishParams = z.infer<typeof getOptionForAllDishSchema>;

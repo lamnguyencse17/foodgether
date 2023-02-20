@@ -49,12 +49,8 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {isEmpty(options) && !isFetching && (
-            <Text>{t("restaurant_page.empty_option")}</Text>
-          )}
-          {isEmpty(options) && isFetching && (
-            <SkeletonText noOfLines={5} skeletonHeight={4} />
-          )}
+          {isEmpty(options) && !isFetching && <Text>{t("restaurant_page.empty_option")}</Text>}
+          {isEmpty(options) && isFetching && <SkeletonText noOfLines={5} skeletonHeight={4} />}
           {!isEmpty(options) &&
             !isFetching &&
             (options || []).map((option) => {
@@ -77,10 +73,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
                       key={option.id}
                     />
                   ) : (
-                    <MultipleOptionalChoice
-                      items={option.items}
-                      key={option.id}
-                    />
+                    <MultipleOptionalChoice items={option.items} key={option.id} />
                   )}
                 </Box>
               );

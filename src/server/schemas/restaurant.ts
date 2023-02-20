@@ -12,14 +12,8 @@ export const fetchRestaurantFromIdSchema = z.object({
   id: z.preprocess(Number, z.number()),
 });
 
-export type DoesRestaurantExistFromUrlParams = z.infer<
-  typeof doesRestaurantExistFromUrlSchema
->;
+export type DoesRestaurantExistFromUrlParams = z.infer<typeof doesRestaurantExistFromUrlSchema>;
 
-export type FetchRestaurantFromUrlParams = z.infer<
-  typeof fetchRestaurantFromUrlSchema
->;
+export type FetchRestaurantFromUrlParams = z.infer<typeof fetchRestaurantFromUrlSchema>;
 
-export type FetchRestaurantFromIdParams = z.infer<
-  typeof fetchRestaurantFromIdSchema
->;
+export type FetchRestaurantFromIdParams = z.infer<typeof fetchRestaurantFromIdSchema>;

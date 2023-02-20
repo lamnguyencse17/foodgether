@@ -4,10 +4,7 @@ import { get, isEmpty } from "radash";
 import { ChangeEventHandler, FunctionComponent } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
-import {
-  dishOptionValueSchema,
-  OptionMandatoryValue,
-} from "../../../server/schemas/order";
+import { dishOptionValueSchema, OptionMandatoryValue } from "../../../server/schemas/order";
 
 type SingleMandatoryOptionProps = {
   items: number[];
@@ -29,22 +26,19 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
       ] as OptionMandatoryValue | undefined,
       setDishOption: state.currentDishOption.setDishOption,
       optionDict: state.optionDict.data,
-      optionItemDict:
-        state.optionItemDict.data.invitationPage?.optionItems || {},
+      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
-    shallow
+    shallow,
   );
   const dict = optionDict?.options || {};
   const optionItems = items.map((id) => optionItemDict[id]!);
 
-  const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (
-    e
-  ) => {
+  const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (e) => {
     if (isEmpty(e.target.value)) return;
     const itemPrice = get(
       dict,
       `${dishId}.${optionId}.items.${e.target.value}.price.value`,
-      0
+      0,
     ) as number;
     const dishOption = {
       optionId,

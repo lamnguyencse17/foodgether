@@ -30,7 +30,7 @@ const useStore = create<UseStoreType>()(
     dishDict: dishDictStore(...methods),
     restaurant: restaurantStore(...methods),
     optionItemDict: optionItemDictStore(...methods),
-  }))
+  })),
 );
 
 export default useStore;

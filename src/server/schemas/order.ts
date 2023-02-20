@@ -16,7 +16,7 @@ export const optionMandatoryValueSchema = sharedOptionValue.and(
   z.object({
     mandatory: z.literal(true),
     value: sharedOptionItem,
-  })
+  }),
 );
 
 export type OptionMandatoryValue = z.infer<typeof optionMandatoryValueSchema>;
@@ -25,15 +25,12 @@ export const optionChoiceValueSchema = sharedOptionValue.and(
   z.object({
     mandatory: z.literal(false),
     value: z.array(sharedOptionItem),
-  })
+  }),
 );
 
 export type OptionChoiceValue = z.infer<typeof optionChoiceValueSchema>;
 
-export const dishOptionValueSchema = z.union([
-  optionMandatoryValueSchema,
-  optionChoiceValueSchema,
-]);
+export const dishOptionValueSchema = z.union([optionMandatoryValueSchema, optionChoiceValueSchema]);
 
 export type DishOptionValue = z.infer<typeof dishOptionValueSchema>;
 

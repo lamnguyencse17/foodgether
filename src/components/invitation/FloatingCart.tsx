@@ -31,10 +31,7 @@ type FloatingCartProps = {
   previousCart?: CartItemType[];
 };
 
-const FloatingCart: FunctionComponent<FloatingCartProps> = ({
-  invitationId,
-  previousCart,
-}) => {
+const FloatingCart: FunctionComponent<FloatingCartProps> = ({ invitationId, previousCart }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -45,7 +42,7 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
       cart: state.cart,
       restaurant: state.restaurant.data,
     }),
-    shallow
+    shallow,
   );
 
   const onSuccess = () => {
@@ -82,12 +79,7 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
   }
   return (
     <>
-      <Box
-        position="sticky"
-        display="flex"
-        justifyContent="flex-end"
-        bottom={3}
-      >
+      <Box position="sticky" display="flex" justifyContent="flex-end" bottom={3}>
         <IconButton
           icon={<BiCart size="2em" />}
           aria-label={t("invitation_page.cart")}
@@ -107,19 +99,10 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              variant="ghost"
-              mr={3}
-              onClick={onClose}
-              isLoading={isSubmitting}
-            >
+            <Button variant="ghost" mr={3} onClick={onClose} isLoading={isSubmitting}>
               {t("common.close")}
             </Button>
-            <Button
-              colorScheme="blue"
-              onClick={handleOrder}
-              isLoading={isSubmitting}
-            >
+            <Button colorScheme="blue" onClick={handleOrder} isLoading={isSubmitting}>
               {t("invitation_page.order")}
             </Button>
           </ModalFooter>

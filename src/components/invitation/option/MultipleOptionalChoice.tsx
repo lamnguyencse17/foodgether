@@ -30,18 +30,15 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         ]?.value || [],
       ].flat(),
       setDishOption: state.currentDishOption.setDishOption,
-      optionItemDict:
-        state.optionItemDict.data.invitationPage?.optionItems || {},
+      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
-    shallow
+    shallow,
   );
 
   const isIncluded = useMemo(
     () =>
-      currentOptionItems.some(
-        (optionItem) => optionItem.optionItemId === item.invitationOptionId
-      ),
-    [currentOptionItems.length]
+      currentOptionItems.some((optionItem) => optionItem.optionItemId === item.invitationOptionId),
+    [currentOptionItems.length],
   );
 
   const handleChange = useCallback(
@@ -53,7 +50,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
           price: get(optionItemDict, `${item.id}.price.value`, 0) as number,
           optionItemId: item.invitationOptionId!,
         },
-        (optionItem) => optionItem.optionItemId
+        (optionItem) => optionItem.optionItemId,
       );
       const dishOption = {
         optionId,
@@ -66,7 +63,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
       dishOptionValueSchema.parse(dishOption);
       setDishOption(dishOption);
     },
-    [dishId, optionId, currentOptionItems]
+    [dishId, optionId, currentOptionItems],
   );
 
   const disabled = useMemo(() => {
@@ -94,9 +91,12 @@ type MultipleOptionalChoiceProps = {
   dishId: number;
 };
 
-const MultipleOptionalChoice: FunctionComponent<
-  MultipleOptionalChoiceProps
-> = ({ optionItemIdList, optionId, maxQuantity, dishId }) => {
+const MultipleOptionalChoice: FunctionComponent<MultipleOptionalChoiceProps> = ({
+  optionItemIdList,
+  optionId,
+  maxQuantity,
+  dishId,
+}) => {
   const { currentOption, optionDict, optionItemDict } = useStore(
     (state) => ({
       currentOption:
@@ -104,10 +104,9 @@ const MultipleOptionalChoice: FunctionComponent<
           optionId as unknown as keyof typeof state.currentDishOption.data
         ],
       optionDict: state.optionDict.dataV2.invitationPage?.options || {},
-      optionItemDict:
-        state.optionItemDict.data.invitationPage?.optionItems || {},
+      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
-    shallow
+    shallow,
   );
   const optionItems = useMemo(
     () =>
@@ -118,21 +117,18 @@ const MultipleOptionalChoice: FunctionComponent<
         }
         return acc;
       }, [] as InvitationOptionItem[]),
-    []
+    [],
   );
-  const currentOptionItems = useMemo(
-    () => [currentOption?.value || []].flat(),
-    [currentOption]
-  );
+  const currentOptionItems = useMemo(() => [currentOption?.value || []].flat(), [currentOption]);
   const hItems = useMemo(
     () => cluster(optionItems, Math.ceil(optionItems.length / 2)),
-    [optionItems.length]
+    [optionItems.length],
   );
   const idMap = useMemo(() => {
     return objectify(
       optionItemIdList,
       (item) => item,
-      () => nanoid(20)
+      () => nanoid(20),
     );
   }, [optionDict]);
 

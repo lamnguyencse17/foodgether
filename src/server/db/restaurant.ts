@@ -2,14 +2,11 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { omit } from "radash";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import { ShopeeRestaurant } from "../../types/shopee";
-import {getRequiredPhotos} from '../utils/getRequiredPhotos'
+import { getRequiredPhotos } from "../utils/getRequiredPhotos";
 export const upsertRestaurant = async (
   prisma: PrismaClient | Prisma.TransactionClient,
-  restaurant: ShopeeRestaurant
+  restaurant: ShopeeRestaurant,
 ) => {
-
-
-
   await prisma.restaurant.deleteMany({
     where: {
       id: restaurant.restaurant_id,
@@ -39,7 +36,7 @@ export const upsertRestaurant = async (
 
 export const getAggregatedRestaurant = async (
   prisma: PrismaClient | Prisma.TransactionClient,
-  restaurantId: number
+  restaurantId: number,
 ) => {
   const rawRestaurant = await prisma.restaurant.findUnique({
     where: {
@@ -70,10 +67,7 @@ export const getAggregatedRestaurant = async (
   };
 };
 
-export const getRestaurantForInvitationCreation = (
-  prisma: PrismaClient,
-  restaurantId: number
-) => {
+export const getRestaurantForInvitationCreation = (prisma: PrismaClient, restaurantId: number) => {
   return prisma.restaurant.findUnique({
     where: { id: restaurantId },
     include: {

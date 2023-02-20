@@ -15,7 +15,7 @@ export type OptionItemDictStoreType = {
   };
   setOptionItemDictForInvitationPage: (
     restaurantId: number,
-    value: { [optionItemId: string]: InvitationOptionItem }
+    value: { [optionItemId: string]: InvitationOptionItem },
   ) => void;
 };
 
@@ -38,7 +38,7 @@ const optionItemDictStore: StateCreator<
         };
       }),
       false,
-      "setOptionDictForInvitationPage"
+      "setOptionDictForInvitationPage",
     ),
 });
 

@@ -7,7 +7,7 @@ import { getRequiredPhotos } from "../utils/getRequiredPhotos";
 export const upsertDish = (
   prisma: Prisma.TransactionClient | PrismaClient,
   restaurantId: number,
-  dishList: ShopeeDish[]
+  dishList: ShopeeDish[],
 ) => {
   return prisma.dish.createMany({
     data: dishList.map((dish) => ({

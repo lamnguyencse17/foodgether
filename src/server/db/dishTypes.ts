@@ -4,7 +4,7 @@ import { ShopeeMenu } from "../../types/shopee";
 export const upsertDishTypes = (
   prisma: Prisma.TransactionClient | PrismaClient,
   restaurantId: number,
-  menu: ShopeeMenu[]
+  menu: ShopeeMenu[],
 ) => {
   return prisma.dishTypes.createMany({
     data: menu.map((dishType) => ({

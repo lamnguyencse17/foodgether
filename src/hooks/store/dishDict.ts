@@ -1,10 +1,7 @@
 import produce from "immer";
 import { StateCreator } from "zustand";
 import { UseStoreType } from ".";
-import {
-  DishWithPriceAndPhoto,
-  InvitationDishWithPriceAndPhoto,
-} from "../../types/dish";
+import { DishWithPriceAndPhoto, InvitationDishWithPriceAndPhoto } from "../../types/dish";
 
 export type DishDictStoreType = {
   data?: {
@@ -32,7 +29,7 @@ export type DishDictStoreType = {
     restaurantId: number,
     value: {
       [dishId: string]: InvitationDishWithPriceAndPhoto;
-    }
+    },
   ) => void;
 };
 
@@ -53,7 +50,7 @@ const dishDictStore: StateCreator<
         state.dishDict.data = value;
       }),
       false,
-      "setDishDict"
+      "setDishDict",
     ),
   setDishDictForInvitationPage: (restaurantId, value) =>
     set(
@@ -61,7 +58,7 @@ const dishDictStore: StateCreator<
         state.dishDict.dataV2.invitationPage = { restaurantId, dishes: value };
       }),
       false,
-      "setDishDictForInvitationPage"
+      "setDishDictForInvitationPage",
     ),
 });
 

@@ -77,16 +77,10 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
             src={isAvailable ? "/open.svg" : "/closed.svg"}
             width={30}
             height={30}
-            alt={
-              isAvailable
-                ? t("invitation_page.is_open")
-                : t("invitation_page.is_closed")
-            }
+            alt={isAvailable ? t("invitation_page.is_open") : t("invitation_page.is_closed")}
           />
           <Text textColor={isAvailable ? "green" : "red"}>
-            {isAvailable
-              ? t("invitation_page.is_open")
-              : t("invitation_page.is_closed")}
+            {isAvailable ? t("invitation_page.is_open") : t("invitation_page.is_closed")}
           </Text>
         </HStack>
         {priceRange ? (

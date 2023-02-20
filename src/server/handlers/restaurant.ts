@@ -27,19 +27,19 @@ import { publicProcedure } from "../trpc/trpc";
 export const updateRestaurantMenu = async (
   prisma: PrismaClient | Prisma.TransactionClient,
   restaurantId: number,
-  menu: ShopeeMenu[]
+  menu: ShopeeMenu[],
 ) => {
   const allDishes = menu.flatMap((dishType) => dishType.dishes);
   const dishList = unique(allDishes, (dish) => dish.id);
   const optionList = dishList.flatMap((dish) =>
-    dish.options.map((config) => ({ ...config, dishId: dish.id }))
+    dish.options.map((config) => ({ ...config, dishId: dish.id })),
   );
   const optionItems = optionList.flatMap((option) =>
     option.option_items.items.map((item) => ({
       ...item,
       dishId: option.dishId,
       optionId: option.id,
-    }))
+    })),
   );
 
   // await prisma.$transaction([
@@ -48,7 +48,7 @@ export const updateRestaurantMenu = async (
   await upsertOption(
     prisma,
     restaurantId,
-    unique(optionList, (option) => option.id)
+    unique(optionList, (option) => option.id),
   );
   await upsertDishOption(prisma, restaurantId, optionList);
   await upsertDishTypeAndDishes(prisma, restaurantId, menu);
@@ -85,14 +85,9 @@ export const fetchRestaurantFromUrl = publicProcedure
     const {
       reply: { deliveryId, restaurantId },
     } = camelcaseKeys(restaurantIdResponse, { deep: true });
-    const restaurantResponse = await fetchShopeeRestaurantFromDeliveryId(
-      deliveryId
-    );
+    const restaurantResponse = await fetchShopeeRestaurantFromDeliveryId(deliveryId);
     if (restaurantResponse.result !== "success") {
-      console.log(
-        errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
-        restaurantResponse
-      );
+      console.log(errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED, restaurantResponse);
       throw new TRPCError({
         message: errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -132,7 +127,7 @@ export const fetchRestaurantFromUrl = publicProcedure
       },
       {
         timeout: 9000,
-      }
+      },
     );
   });
 
@@ -144,10 +139,7 @@ export const fetchRestaurantFromId = publicProcedure
     }
     const restaurantResponse = await fetchShopeeRestaurantFromId(input.id);
     if (restaurantResponse.result !== "success") {
-      console.log(
-        errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
-        restaurantResponse
-      );
+      console.log(errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED, restaurantResponse);
       throw new TRPCError({
         message: errors.shopee.SHOPEE_RESTAURANT_FETCH_FAILED,
         code: "INTERNAL_SERVER_ERROR",
@@ -165,9 +157,7 @@ export const fetchRestaurantFromId = publicProcedure
           });
         }
 
-        const menu = await fetchShopeeMenu(
-          restaurantResponse.reply.delivery_detail.delivery_id
-        );
+        const menu = await fetchShopeeMenu(restaurantResponse.reply.delivery_detail.delivery_id);
         if (menu.result !== "success") {
           console.log(errors.shopee.SHOPEE_MENU_FETCH_FAILED, menu);
           throw new TRPCError({
@@ -189,6 +179,6 @@ export const fetchRestaurantFromId = publicProcedure
       },
       {
         timeout: 9000,
-      }
+      },
     );
   });
