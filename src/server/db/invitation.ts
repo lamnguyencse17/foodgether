@@ -73,7 +73,9 @@ export const getInvitationForMember = async (invitationId: string) => {
         include: {
           invitationOptions: {
             include: {
-              invitationOptionItems: true,
+              invitationOptionItems: {
+                distinct: "id",
+              },
             },
           },
           invitationDishTypes: {
