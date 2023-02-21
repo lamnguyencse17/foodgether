@@ -36,8 +36,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
   );
 
   const isIncluded = useMemo(
-    () =>
-      currentOptionItems.some((optionItem) => optionItem.optionItemId === item.invitationOptionId),
+    () => currentOptionItems.some((optionItem) => optionItem.optionItemId === item.id),
     [currentOptionItems.length],
   );
 
@@ -48,7 +47,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         {
           id: generatedId,
           price: get(optionItemDict, `${item.id}.price.value`, 0) as number,
-          optionItemId: item.invitationOptionId!,
+          optionItemId: item.id!,
         },
         (optionItem) => optionItem.optionItemId,
       );
