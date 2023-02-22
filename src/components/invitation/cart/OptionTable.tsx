@@ -8,13 +8,15 @@ import { CartItem } from "../../../server/schemas/order";
 
 type OptionTableProps = {
   cartItem: CartItem;
+  dishName: string;
 };
 
-const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
+const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem, dishName }) => {
   const { t } = useTranslation();
-  const { optionDict } = useStore(
+  const { optionDict, optionItemDict } = useStore(
     (state) => ({
       optionDict: state.optionDict.dataV2.invitationPage,
+      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems,
     }),
     shallow,
   );
@@ -31,6 +33,15 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
           </Tr>
         </Thead>
         <Tbody width={5}>
+          <Tr>
+            <Th>{dishName}</Th>
+            <Th />
+            <Th>
+              {t("common.price_number", {
+                val: cartItem.dishPrice,
+              })}
+            </Th>
+          </Tr>
           {cartItem.options.map((option) => (
             <Tr key={option.id}>
               <Th>
@@ -44,8 +55,8 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                 {option.mandatory ? (
                   <Text>
                     {get(
-                      options,
-                      `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${option.value.optionItemId}.name`,
+                      optionItemDict,
+                      `${option.value.optionItemId}.name`,
                       t("inivitation_page.unknown_item"),
                     )}
                   </Text>
@@ -54,10 +65,10 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                     {option.value.map((item) => (
                       <Text key={item.id}>
                         {get(
-                          options,
-                          `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${item.optionItemId}.name`,
+                          optionItemDict,
+                          `${item.optionItemId}.name`,
                           t("inivitation_page.unknown_item"),
-                        )}{" "}
+                        )}
                       </Text>
                     ))}
                   </VStack>

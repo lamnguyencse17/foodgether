@@ -1,5 +1,5 @@
 import { Heading, HStack, IconButton, StackDivider, useDisclosure, VStack } from "@chakra-ui/react";
-import { get, isEmpty } from "radash";
+import { get } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import { shallow } from "zustand/shallow";
@@ -60,7 +60,9 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
         alignItems="flex-start"
       >
         <HStack justifyContent="space-between" width="100%" alignItems="center">
-          <Heading>{get(dish, "name", t("inivitation_page.unknown_dish"))}</Heading>
+          <HStack>
+            <Heading>{get(dish, "name", t("inivitation_page.unknown_dish"))}</Heading>
+          </HStack>
           <HStack gap={1}>
             <IconButton
               icon={<DeleteIcon />}
@@ -74,7 +76,11 @@ const CartItem: FunctionComponent<CartItemProps> = ({ cartItem }) => {
             />
           </HStack>
         </HStack>
-        {isEmpty(cartItem.options) ? null : <OptionTable cartItem={cartItem} />}
+
+        <OptionTable
+          cartItem={cartItem}
+          dishName={get(dish, "name", t("inivitation_page.unknown_dish")) || ""}
+        />
       </VStack>
       <ItemOptionModal
         isOpen={isOpen}
