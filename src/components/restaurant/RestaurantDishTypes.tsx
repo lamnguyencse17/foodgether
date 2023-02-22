@@ -15,7 +15,7 @@ const RestaurantDishTypes: FunctionComponent<RestaurantDishTypesProps> = ({
   restaurantId,
 }) => {
   return (
-    <Box key={dishTypeId} width="full" marginY="5">
+    <Box key={dishTypeId} width="full" marginY="5" id={`#${dishTypeId}`}>
       <Heading size="xs" textTransform="uppercase" mb="3" id={dishTypeId.toString()}>
         {dishType.name}
       </Heading>

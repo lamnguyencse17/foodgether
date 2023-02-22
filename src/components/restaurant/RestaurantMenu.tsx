@@ -1,8 +1,7 @@
 import { Box, Card, CardBody, Skeleton, StackDivider, VStack } from "@chakra-ui/react";
 import { isEmpty } from "radash";
-import { FunctionComponent, useContext } from "react";
-import { Virtuoso } from "react-virtuoso";
-import { VirtuosoRefContext } from "../../pages/restaurant/[id]";
+import { FunctionComponent } from "react";
+
 import { AggregatedDishTypes } from "../../types/dishTypes";
 import RestaurantDishTypes from "./RestaurantDishTypes";
 
@@ -12,30 +11,22 @@ type RestaurantMenuProps = {
 };
 
 const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, restaurantId }) => {
-  const virtuosoRef = useContext(VirtuosoRefContext);
   return (
     <Box flex={[null, null, 1]} maxW="full" width="100%">
       {isEmpty(dishTypes) ? (
         <Skeleton height="20" />
       ) : (
-        <Card width="100%">
-          <CardBody width="100%">
-            <VStack divider={<StackDivider />} width="100%">
-              <Virtuoso
-                ref={virtuosoRef}
-                initialItemCount={2}
-                useWindowScroll
-                data={dishTypes}
-                computeItemKey={(_, item) => item.id}
-                style={{ width: "100%" }}
-                itemContent={(id, dishType) => (
-                  <RestaurantDishTypes
-                    dishType={dishType}
-                    dishTypeId={id}
-                    restaurantId={restaurantId}
-                  />
-                )}
-              />
+        <Card width="full">
+          <CardBody width="full">
+            <VStack divider={<StackDivider />}>
+              {dishTypes.map((dishType) => (
+                <RestaurantDishTypes
+                  dishType={dishType}
+                  dishTypeId={dishType.id}
+                  restaurantId={restaurantId}
+                  key={dishType.id}
+                />
+              ))}
             </VStack>
           </CardBody>
         </Card>

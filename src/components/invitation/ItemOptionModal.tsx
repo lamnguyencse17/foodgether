@@ -65,9 +65,9 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   const isEditing = !!cartItemId;
 
   const onOrder = async () => {
-    const dishPrice = get(dishDict, `dishes.${dish.id}.price.value`, 0) as number;
+    const dishPrice = get(dishDict, `${dish?.id}.price.value`, 0) as number;
 
-    const dishOption = get(optionDict, `options.${dish.id}`, {}) as OptionDictOptionData;
+    const dishOption = get(optionDict, `options.${dish?.id}`, {}) as OptionDictOptionData;
     let haveAllMandatoryOption = true;
     listify(dishOption, (_, value) => ({ ...value })).forEach((menuOption) => {
       if (!menuOption.isMandatory || !haveAllMandatoryOption) {
@@ -102,7 +102,7 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
 
     const newCartItem = {
       options: currentOptionList.filter((option) => !isEmpty(option.value)),
-      dishId: dish.id,
+      dishId: dish!.id,
       id: isEditing ? cartItemId : await nanoid(20),
       dishPrice,
       totalPrice: dishPrice + totalOptionPrice,
