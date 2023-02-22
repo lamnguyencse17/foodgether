@@ -8,8 +8,6 @@ import { getOptionDictOfInvitation } from "../db/invitation";
 export const createOrder = protectedProcedure
   .input(createOrderSchema)
   .mutation(async ({ ctx, input }) => {
-    console.log("ctv", ctx);
-    console.log("input", input);
     await auditOrder(input);
     return createDbOrder(input, ctx.session.user.id);
   });
