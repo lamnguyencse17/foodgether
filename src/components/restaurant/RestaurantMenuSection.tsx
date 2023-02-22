@@ -9,12 +9,11 @@ import {
   Stack,
   StackDivider,
 } from "@chakra-ui/react";
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent } from "react";
 import { AggregatedDishTypes } from "../../types/dishTypes";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import { isEmpty } from "radash";
-import { VirtuosoRefContext } from "../../pages/restaurant/[id]";
 
 type RestaurantMenuSectionProps = {
   dishTypes: AggregatedDishTypes[];
@@ -23,7 +22,7 @@ type RestaurantMenuSectionProps = {
 const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({ dishTypes }) => {
   const router = useRouter();
   const idHash = parseInt(router.asPath.split("#").pop() as string);
-  const virtuosoRef = useContext(VirtuosoRefContext);
+
   const { t } = useTranslation();
   return (
     <Box maxW={["100%", "100%", "3xs"]} overflowX="auto">
@@ -47,12 +46,7 @@ const RestaurantMenuSection: FunctionComponent<RestaurantMenuSectionProps> = ({ 
                   whiteSpace="normal"
                   textAlign="left"
                   onClick={() => {
-                    if (virtuosoRef && virtuosoRef.current) {
-                      virtuosoRef.current.scrollToIndex({
-                        index: dishType.id,
-                      });
-                      router.push(`#${dishType.id}`);
-                    }
+                    router.push(`#${dishType.id}`);
                   }}
                   //TODO: Hydration error can happen when url have hash
                   textColor={!isNaN(idHash) && idHash === dishType.id ? "blue.400" : undefined}

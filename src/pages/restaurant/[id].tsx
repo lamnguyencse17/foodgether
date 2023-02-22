@@ -13,12 +13,11 @@ import RestaurantMenu from "../../components/restaurant/RestaurantMenu";
 import { fetchShopeeMenu, fetchShopeeRestaurantFromId } from "../../server/service/shopee";
 import { getAggregatedRestaurant, upsertRestaurant } from "../../server/db/restaurant";
 import { updateRestaurantMenu } from "../../server/handlers/restaurant";
-import { createContext, RefObject, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import useSetOptionDict from "../../hooks/useSetOptionDict";
 import useSetDishDict from "../../hooks/useSetDishDict";
 import { formatISO, sub } from "date-fns";
 import useStore from "../../hooks/store";
-import { VirtuosoHandle } from "react-virtuoso";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -90,15 +89,13 @@ type RestaurantPageProps = {
   restaurant: AggregatedRestaurant;
 };
 
-export const VirtuosoRefContext = createContext<null | RefObject<VirtuosoHandle>>(null);
-
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const { setRestaurant } = useStore((state) => ({
     setRestaurant: state.restaurant.setRestaurant,
   }));
   const router = useRouter();
   const restaurantIdString = router.query.id || router.pathname.split("/").pop();
-  const virtuosoRef = useRef(null);
+
   const restaurantId = parseInt(restaurantIdString as unknown as string);
   const isValidRestaurantId = !isNaN(restaurantId as unknown as number);
 
@@ -170,10 +167,8 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
             paddingX={4}
             alignItems={["center", "center", "flex-start"]}
           >
-            <VirtuosoRefContext.Provider value={virtuosoRef}>
-              <RestaurantMenuSection dishTypes={dishTypes} />
-              <RestaurantMenu dishTypes={dishTypes} restaurantId={confirmedRestaurant.id} />
-            </VirtuosoRefContext.Provider>
+            <RestaurantMenuSection dishTypes={dishTypes} />
+            <RestaurantMenu dishTypes={dishTypes} restaurantId={confirmedRestaurant.id} />
           </Stack>
         </VStack>
       </main>
