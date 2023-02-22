@@ -31,8 +31,8 @@ export const CurrentOptionModalContext = createContext<{
 const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dishList }) => {
   const { dishDict, optionDict } = useStore(
     (state) => ({
-      dishDict: state.dishDict.dataV2.invitationPage,
-      optionDict: state.optionDict.dataV2.invitationPage,
+      dishDict: state.dishDict.dataV2.invitationPage?.dishes || {},
+      optionDict: state.optionDict.dataV2.invitationPage?.options || {},
     }),
     shallow,
   );
@@ -42,14 +42,14 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dis
     if (!currentOptionModal) {
       return undefined;
     }
-    return dishDict?.dishes[currentOptionModal];
+    return dishDict[currentOptionModal];
   }, [currentOptionModal]);
 
   const modalOption = useMemo(() => {
     if (!currentOptionModal) {
       return [];
     }
-    return listifyInvitationOptions(optionDict?.options[currentOptionModal]);
+    return listifyInvitationOptions(optionDict[currentOptionModal]);
   }, [currentOptionModal]);
 
   const setCurrentOptionModalContext = (dishId: number | null) => {
@@ -61,7 +61,6 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dis
     setCurrentOptionModal(null);
     onClose();
   };
-  console.log(isEmpty(dishTypes));
   return (
     <CurrentOptionModalContext.Provider
       value={{

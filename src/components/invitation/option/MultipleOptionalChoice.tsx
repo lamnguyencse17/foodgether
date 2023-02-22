@@ -58,7 +58,6 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         price: newOption.reduce((acc, v) => acc + v.price, 0),
         id: nanoid(20),
       };
-      console.log(dishOption);
       dishOptionValueSchema.parse(dishOption);
       setDishOption(dishOption);
     },
@@ -69,15 +68,8 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
     return currentOptionItems.length === maxQuantity && !isIncluded;
   }, [currentOptionItems.length]);
 
-  console.log(item.invitationOptionId, isIncluded);
-
   return (
-    <Checkbox
-      // key={item.id}
-      disabled={disabled}
-      onChange={handleChange}
-      isChecked={isIncluded}
-    >
+    <Checkbox disabled={disabled} onChange={handleChange} isChecked={isIncluded}>
       {item.name}
     </Checkbox>
   );
@@ -96,7 +88,7 @@ const MultipleOptionalChoice: FunctionComponent<MultipleOptionalChoiceProps> = (
   maxQuantity,
   dishId,
 }) => {
-  const { currentOption, optionDict, optionItemDict } = useStore(
+  const { optionDict, optionItemDict } = useStore(
     (state) => ({
       currentOption:
         state.currentDishOption.data[
@@ -118,7 +110,6 @@ const MultipleOptionalChoice: FunctionComponent<MultipleOptionalChoiceProps> = (
       }, [] as InvitationOptionItem[]),
     [],
   );
-  const currentOptionItems = useMemo(() => [currentOption?.value || []].flat(), [currentOption]);
   const hItems = useMemo(
     () => cluster(optionItems, Math.ceil(optionItems.length / 2)),
     [optionItems.length],
@@ -130,9 +121,6 @@ const MultipleOptionalChoice: FunctionComponent<MultipleOptionalChoiceProps> = (
       () => nanoid(20),
     );
   }, [optionDict]);
-
-  const displayValues = currentOptionItems.map((v) => v.optionItemId);
-  console.log(displayValues);
 
   return (
     <HStack justifyContent="start" alignItems="start" width="100%">
@@ -153,5 +141,6 @@ const MultipleOptionalChoice: FunctionComponent<MultipleOptionalChoiceProps> = (
     </HStack>
   );
 };
-
+MultipleOptionalChoice.whyDidYouRender = true;
+MultipleChoice.whyDidYouRender = true;
 export default MultipleOptionalChoice;

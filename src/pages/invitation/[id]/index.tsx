@@ -17,6 +17,7 @@ import { InvitationDishWithPriceAndPhoto } from "../../../types/dish";
 import { RestaurantInInvitation } from "../../../types/restaurant";
 import { GetStaticPropsResult } from "next";
 import { OptionItemDictOptionData } from "../../../hooks/store/optionItemDict";
+import { shallow } from "zustand/shallow";
 
 export async function getStaticPaths() {
   const invitationIds = await getAllRecentInvitationIds();
@@ -121,6 +122,7 @@ const InvitationPage = ({
       setRestaurant: state.restaurant.setRestaurantForInvitationPage,
       setOptionItemDict: state.optionItemDict.setOptionItemDictForInvitationPage,
     }),
+    shallow,
   );
 
   const restaurant = invitation?.invitationRestaurant as RestaurantInInvitation | undefined | null;

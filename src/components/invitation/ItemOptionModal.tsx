@@ -31,7 +31,7 @@ type ItemOptionModalProps = {
   options?: (InvitationOption & {
     invitationOptionItems: number[];
   })[];
-  dish: InvitationDishWithPriceAndPhoto;
+  dish?: InvitationDishWithPriceAndPhoto;
   isFetching?: boolean;
   cartItemId?: string;
 };
@@ -120,65 +120,69 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onCloseModal}>
       <ModalOverlay />
-      <ModalContent maxW="600px">
-        <ModalHeader>
-          <Heading size="md">
-            {dish.name} - {t("invitation_page.option")}
-          </Heading>
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          {isEmpty(options) && !isFetching && <Text>{t("restaurant_page.empty_option")}</Text>}
-          {isEmpty(options) && isFetching && <SkeletonText noOfLines={5} skeletonHeight={4} />}
-          {!isEmpty(options) &&
-            !isFetching &&
-            (options || []).map((option) => {
-              const optionConfig = option.isMandatory
-                ? t("invitation_page.mandatory_choice", {
-                    amount: option.maxQuantity,
-                  })
-                : t("invitation_page.optional_choice", {
-                    amount: option.maxQuantity,
-                  });
-              return (
-                <Box key={option.id} paddingY={3} width="100%">
-                  <Heading size="sm" marginBottom={3}>
-                    {option.name} {optionConfig}
-                    {option.isMandatory && "*"}
-                  </Heading>
-                  {option.isMandatory && option.maxQuantity === 1 ? (
-                    <SingleMandatoryOption
-                      items={option.invitationOptionItems}
-                      name={option.name}
-                      key={option.id}
-                      optionId={option.id}
-                      dishId={dish.id}
-                    />
-                  ) : (
-                    <MultipleOptionalChoice
-                      optionItemIdList={option.invitationOptionItems}
-                      key={option.id}
-                      optionId={option.id}
-                      maxQuantity={option.maxQuantity}
-                      dishId={dish.id}
-                    />
-                  )}
-                </Box>
-              );
-            })}
-        </ModalBody>
+      {dish && (
+        <ModalContent maxW="600px">
+          <ModalHeader>
+            <Heading size="md">
+              {dish.name} - {t("invitation_page.option")}
+            </Heading>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {isEmpty(options) && !isFetching && <Text>{t("restaurant_page.empty_option")}</Text>}
+            {isEmpty(options) && isFetching && <SkeletonText noOfLines={5} skeletonHeight={4} />}
+            {!isEmpty(options) &&
+              !isFetching &&
+              (options || []).map((option) => {
+                const optionConfig = option.isMandatory
+                  ? t("invitation_page.mandatory_choice", {
+                      amount: option.maxQuantity,
+                    })
+                  : t("invitation_page.optional_choice", {
+                      amount: option.maxQuantity,
+                    });
+                return (
+                  <Box key={option.id} paddingY={3} width="100%">
+                    <Heading size="sm" marginBottom={3}>
+                      {option.name} {optionConfig}
+                      {option.isMandatory && "*"}
+                    </Heading>
+                    {option.isMandatory && option.maxQuantity === 1 ? (
+                      <SingleMandatoryOption
+                        items={option.invitationOptionItems}
+                        name={option.name}
+                        key={option.id}
+                        optionId={option.id}
+                        dishId={dish.id}
+                      />
+                    ) : (
+                      <MultipleOptionalChoice
+                        optionItemIdList={option.invitationOptionItems}
+                        key={option.id}
+                        optionId={option.id}
+                        maxQuantity={option.maxQuantity}
+                        dishId={dish.id}
+                      />
+                    )}
+                  </Box>
+                );
+              })}
+          </ModalBody>
 
-        <ModalFooter>
-          <Button colorScheme="gray" mr={3} onClick={onCloseModal}>
-            {t("common.close")}
-          </Button>
-          <Button colorScheme="blue" onClick={onOrder}>
-            {t("invitation_page.order")}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
+          <ModalFooter>
+            <Button colorScheme="gray" mr={3} onClick={onCloseModal}>
+              {t("common.close")}
+            </Button>
+            <Button colorScheme="blue" onClick={onOrder}>
+              {t("invitation_page.order")}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      )}
     </Modal>
   );
 };
+
+ItemOptionModal.whyDidYouRender = true;
 
 export default ItemOptionModal;
