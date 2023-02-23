@@ -39,9 +39,9 @@ export const upsertOptionItem = (
 };
 
 export const getOptionItemPrice = (
-  filterList: { id: number; restaurantId: number; dishId: number }[],
+  filterList: { id: number; invitationRestaurantId: number; dishId: number }[],
 ) => {
-  return prisma.optionItem.findMany({
+  return prisma.invitationOptionItem.findMany({
     where: {
       OR: filterList,
     },

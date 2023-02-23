@@ -35,7 +35,7 @@ export const upsertDish = (
 };
 
 export const getDishPrice = (dishIds: number[], restaurantId: number) => {
-  return prisma.dish.findMany({
+  return prisma.invitationDish.findMany({
     where: {
       AND: [
         {
@@ -44,7 +44,7 @@ export const getDishPrice = (dishIds: number[], restaurantId: number) => {
           },
         },
         {
-          restaurantId: restaurantId,
+          invitationRestaurantId: restaurantId,
         },
       ],
     },
