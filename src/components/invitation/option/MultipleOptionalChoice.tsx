@@ -141,6 +141,5 @@ const MultipleOptionalChoice: FunctionComponent<MultipleOptionalChoiceProps> = (
     </HStack>
   );
 };
-MultipleOptionalChoice.whyDidYouRender = true;
-MultipleChoice.whyDidYouRender = true;
+
 export default MultipleOptionalChoice;

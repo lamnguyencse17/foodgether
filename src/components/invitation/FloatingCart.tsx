@@ -40,7 +40,7 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({ invitationId, prev
   } = useStore(
     (state) => ({
       cart: state.cart,
-      restaurant: state.restaurant.data,
+      restaurant: state.restaurant.dataV2.invitationPage,
     }),
     shallow,
   );

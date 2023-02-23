@@ -183,6 +183,4 @@ const ItemOptionModal: FunctionComponent<ItemOptionModalProps> = ({
   );
 };
 
-ItemOptionModal.whyDidYouRender = true;
-
 export default ItemOptionModal;
