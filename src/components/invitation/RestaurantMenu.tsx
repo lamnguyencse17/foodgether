@@ -88,15 +88,13 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dis
           </Card>
         )}
       </Box>
-      {modalDish && (
-        <ItemOptionModal
-          isOpen={isOpen}
-          onClose={handleCloseModal}
-          dish={modalDish}
-          options={modalOption}
-          isFetching={false}
-        />
-      )}
+      <ItemOptionModal
+        isOpen={isOpen}
+        onClose={handleCloseModal}
+        dish={modalDish}
+        options={modalOption}
+        isFetching={false}
+      />
     </CurrentOptionModalContext.Provider>
   );
 };

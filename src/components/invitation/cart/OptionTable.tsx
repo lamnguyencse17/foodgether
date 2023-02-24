@@ -86,7 +86,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem, dishName }
                     {option.value.map((item) => (
                       <Text key={item.id}>
                         {t("common.price_number", {
-                          val: item.price,
+                          val: get(optionItemDict, `${item.optionItemId}.price.value`),
                         })}
                       </Text>
                     ))}

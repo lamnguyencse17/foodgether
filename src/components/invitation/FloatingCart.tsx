@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import deepEqual from "deep-equal";
 import { isEmpty } from "radash";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { BiCart } from "react-icons/bi";
 import { shallow } from "zustand/shallow";
@@ -45,9 +45,9 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({ invitationId, prev
     shallow,
   );
 
-  const onSuccess = () => {
+  const onSuccess = useCallback(() => {
     onClose();
-  };
+  }, []);
 
   const createOrder = trpc.order.createOrder.useMutation({ onSuccess });
   const editOrder = trpc.order.editOrder.useMutation({ onSuccess });
