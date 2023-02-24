@@ -11,9 +11,7 @@ export const useDisplayToast = () => {
 
   useEffect(() => {
     const filteredToastSlice = shake(toastSlice);
-    const toastKeys = Object.keys(filteredToastSlice).filter(
-      (key) => key !== "setToast"
-    );
+    const toastKeys = Object.keys(filteredToastSlice).filter((key) => key !== "setToast");
     toastKeys.forEach((key) => {
       const toastParams = toastSlice[key as ToastKeyParam];
       if (toast.isActive(`${key}-${toastParams?.title}`)) return;

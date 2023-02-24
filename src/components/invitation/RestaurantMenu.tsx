@@ -4,59 +4,98 @@ import {
   CardBody,
   Skeleton,
   StackDivider,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { InvitationDishTypes } from "@prisma/client";
 import { isEmpty } from "radash";
-import { FunctionComponent, useContext } from "react";
-import { Virtuoso } from "react-virtuoso";
-import { VirtuosoRefContext } from "../../pages/invitation/[id]";
+import { createContext, FunctionComponent, useMemo, useState } from "react";
+import { shallow } from "zustand/shallow";
+import useStore from "../../hooks/store";
+import { listifyInvitationOptions } from "../../utils/transform";
+import ItemOptionModal from "./ItemOptionModal";
 import RestaurantDishTypes from "./RestaurantDishTypes";
 
 type RestaurantMenuProps = {
   dishTypes: InvitationDishTypes[];
-  restaurantId: number;
   dishList: {
     [dishTypeId: string]: number[];
   };
 };
 
-const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({
-  dishTypes,
-  restaurantId,
-  dishList,
-}) => {
-  const virtuosoRef = useContext(VirtuosoRefContext);
+export const CurrentOptionModalContext = createContext<{
+  currentOptionModal: number | null;
+  setCurrentOptionModal: (currentOptionModal: number | null) => void;
+}>({ currentOptionModal: null, setCurrentOptionModal: () => undefined });
+
+const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dishList }) => {
+  const { dishDict, optionDict } = useStore(
+    (state) => ({
+      dishDict: state.dishDict.dataV2.invitationPage?.dishes || {},
+      optionDict: state.optionDict.dataV2.invitationPage?.options || {},
+    }),
+    shallow,
+  );
+  const [currentOptionModal, setCurrentOptionModal] = useState<null | number>(null);
+  const { onOpen, onClose, isOpen } = useDisclosure();
+  const modalDish = useMemo(() => {
+    if (!currentOptionModal) {
+      return undefined;
+    }
+    return dishDict[currentOptionModal];
+  }, [currentOptionModal]);
+
+  const modalOption = useMemo(() => {
+    if (!currentOptionModal) {
+      return [];
+    }
+    return listifyInvitationOptions(optionDict[currentOptionModal]);
+  }, [currentOptionModal]);
+
+  const setCurrentOptionModalContext = (dishId: number | null) => {
+    setCurrentOptionModal(dishId);
+    onOpen();
+  };
+
+  const handleCloseModal = () => {
+    setCurrentOptionModal(null);
+    onClose();
+  };
   return (
-    <Box flex={[null, null, 1]} maxW="full" width="100%">
-      {isEmpty(dishTypes) ? (
-        <Skeleton height="20" />
-      ) : (
-        <Card width="full">
-          <CardBody width="full">
-            <VStack divider={<StackDivider />}>
-              <Virtuoso
-                ref={virtuosoRef}
-                initialItemCount={2}
-                useWindowScroll
-                data={dishTypes}
-                style={{ width: "100%" }}
-                itemContent={(_, dishType) => {
-                  return (
-                    <RestaurantDishTypes
-                      dishType={dishType}
-                      dishTypeId={dishType.id}
-                      restaurantId={restaurantId}
-                      dishList={dishList}
-                    />
-                  );
-                }}
-              />
-            </VStack>
-          </CardBody>
-        </Card>
-      )}
-    </Box>
+    <CurrentOptionModalContext.Provider
+      value={{
+        currentOptionModal,
+        setCurrentOptionModal: setCurrentOptionModalContext,
+      }}
+    >
+      <Box flex={[null, null, 1]} maxW="full" width="100%">
+        {isEmpty(dishTypes) ? (
+          <Skeleton height="20" />
+        ) : (
+          <Card width="full">
+            <CardBody width="full">
+              <VStack divider={<StackDivider />}>
+                {dishTypes.map((dishType) => (
+                  <RestaurantDishTypes
+                    dishType={dishType}
+                    dishTypeId={dishType.id}
+                    dishList={dishList}
+                    key={dishType.id}
+                  />
+                ))}
+              </VStack>
+            </CardBody>
+          </Card>
+        )}
+      </Box>
+      <ItemOptionModal
+        isOpen={isOpen}
+        onClose={handleCloseModal}
+        dish={modalDish}
+        options={modalOption}
+        isFetching={false}
+      />
+    </CurrentOptionModalContext.Provider>
   );
 };
 

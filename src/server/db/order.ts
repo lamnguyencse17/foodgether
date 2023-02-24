@@ -66,7 +66,6 @@ export const createOrder = (order: CreateOrderParams, userId: string) => {
                       optionItemId: option.value.optionItemId,
                       dishId: item.dishId,
                       restaurantId: order.restaurantId,
-                      price: option.value.price,
                       id: option.value.id,
                       invitationOptionItem: {
                         connect: {
@@ -88,7 +87,6 @@ export const createOrder = (order: CreateOrderParams, userId: string) => {
                           },
                         },
                       },
-                      price: optionItem.price,
                       id: optionItem.id,
                     })),
               },
@@ -112,7 +110,7 @@ export const getExistingOrder = async (
   prisma: PrismaClient,
   invitationId: string,
   restaurantId: number,
-  userId: string
+  userId: string,
 ) => {
   return prisma.order.findUnique({
     where: {

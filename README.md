@@ -29,6 +29,8 @@ A simple way to order lunch together:
 ## Author
 **Nguyen Quang Lam** - [lamnguyencse17](https://github.com/lamnguyencse17)
 
+**Tran Manh Hung** - [TranHungKT](https://github.com/TranHungKT)
+
 **Doan Ngoc Thinh** - [nngthinh](https://github.com/nngthinh)
 
 

@@ -61,13 +61,10 @@ export const getOptionForAllDishFromRestaurantId = publicProcedure
           const option = optionItemDict[dishOption.optionId];
           return {
             ...option,
-            items: objectify(
-              optionItemDict[dishOption.optionId]?.items || [],
-              (item) => item.id
-            ),
+            items: objectify(optionItemDict[dishOption.optionId]?.items || [], (item) => item.id),
           };
-        }
-      )
+        },
+      ),
     );
     return optionDict;
   });

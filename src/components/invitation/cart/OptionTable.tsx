@@ -1,13 +1,4 @@
-import {
-  Table,
-  TableContainer,
-  Tbody,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-} from "@chakra-ui/react";
+import { Table, TableContainer, Tbody, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react";
 import { get } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,15 +8,17 @@ import { CartItem } from "../../../server/schemas/order";
 
 type OptionTableProps = {
   cartItem: CartItem;
+  dishName: string;
 };
 
-const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
+const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem, dishName }) => {
   const { t } = useTranslation();
-  const { optionDict } = useStore(
+  const { optionDict, optionItemDict } = useStore(
     (state) => ({
       optionDict: state.optionDict.dataV2.invitationPage,
+      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems,
     }),
-    shallow
+    shallow,
   );
   const options = optionDict?.options || {};
 
@@ -40,22 +33,31 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
           </Tr>
         </Thead>
         <Tbody width={5}>
+          <Tr>
+            <Th>{dishName}</Th>
+            <Th />
+            <Th>
+              {t("common.price_number", {
+                val: cartItem.dishPrice,
+              })}
+            </Th>
+          </Tr>
           {cartItem.options.map((option) => (
             <Tr key={option.id}>
               <Th>
                 {get(
                   options,
                   `${cartItem.dishId}.${option.optionId}.name`,
-                  t("inivitation_page.unknown_option")
+                  t("inivitation_page.unknown_option"),
                 )}
               </Th>
               <Th>
                 {option.mandatory ? (
                   <Text>
                     {get(
-                      options,
-                      `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${option.value.optionItemId}.name`,
-                      t("inivitation_page.unknown_item")
+                      optionItemDict,
+                      `${option.value.optionItemId}.name`,
+                      t("inivitation_page.unknown_item"),
                     )}
                   </Text>
                 ) : (
@@ -63,10 +65,10 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                     {option.value.map((item) => (
                       <Text key={item.id}>
                         {get(
-                          options,
-                          `${cartItem.dishId}.${option.optionId}.invitationOptionItems.${item.optionItemId}.name`,
-                          t("inivitation_page.unknown_item")
-                        )}{" "}
+                          optionItemDict,
+                          `${item.optionItemId}.name`,
+                          t("inivitation_page.unknown_item"),
+                        )}
                       </Text>
                     ))}
                   </VStack>
@@ -84,7 +86,7 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem }) => {
                     {option.value.map((item) => (
                       <Text key={item.id}>
                         {t("common.price_number", {
-                          val: item.price,
+                          val: get(optionItemDict, `${item.optionItemId}.price.value`),
                         })}
                       </Text>
                     ))}

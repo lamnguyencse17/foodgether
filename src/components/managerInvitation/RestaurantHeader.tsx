@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Heading,
-  HStack,
-  Skeleton,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, Skeleton, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { Photo } from "../../types/shared";

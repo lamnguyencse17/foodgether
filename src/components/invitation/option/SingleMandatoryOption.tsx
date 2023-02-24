@@ -1,17 +1,13 @@
 import { Select } from "@chakra-ui/react";
-import { InvitationOptionItem } from "@prisma/client";
 import { nanoid } from "nanoid/async";
 import { get, isEmpty } from "radash";
 import { ChangeEventHandler, FunctionComponent } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
-import {
-  dishOptionValueSchema,
-  OptionMandatoryValue,
-} from "../../../server/schemas/order";
+import { dishOptionValueSchema, OptionMandatoryValue } from "../../../server/schemas/order";
 
 type SingleMandatoryOptionProps = {
-  items: InvitationOptionItem[];
+  items: number[];
   optionId: number;
   name: string;
   dishId: number;
@@ -23,28 +19,26 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
   optionId,
   dishId,
 }) => {
-  const {
-    currentDishOption: { setDishOption, data: currentDishOption },
-    optionDict: { data: optionDict },
-  } = useStore(
+  const { currentOption, setDishOption, optionDict, optionItemDict } = useStore(
     (state) => ({
-      currentDishOption: state.currentDishOption,
-      optionDict: state.optionDict,
+      currentOption: state.currentDishOption.data[
+        optionId as unknown as keyof typeof state.currentDishOption.data
+      ] as OptionMandatoryValue | undefined,
+      setDishOption: state.currentDishOption.setDishOption,
+      optionDict: state.optionDict.data,
+      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
-    shallow
+    shallow,
   );
   const dict = optionDict?.options || {};
-  const currentOption = currentDishOption.find(
-    (option) => option.optionId === optionId
-  ) as OptionMandatoryValue;
-  const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (
-    e
-  ) => {
+  const optionItems = items.map((id) => optionItemDict[id]!);
+
+  const handleChangeOption: ChangeEventHandler<HTMLSelectElement> = async (e) => {
     if (isEmpty(e.target.value)) return;
     const itemPrice = get(
       dict,
       `${dishId}.${optionId}.items.${e.target.value}.price.value`,
-      0
+      0,
     ) as number;
     const dishOption = {
       optionId,
@@ -67,7 +61,7 @@ const SingleMandatoryOption: FunctionComponent<SingleMandatoryOptionProps> = ({
       value={currentOption?.value?.optionItemId}
       required
     >
-      {items.map((item) => (
+      {optionItems.map((item) => (
         <option key={item.id} value={item.id}>
           {item.name}
         </option>

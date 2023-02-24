@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  Input,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, FormControl, FormErrorMessage, Input, Text } from "@chakra-ui/react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
@@ -35,8 +28,9 @@ const Home: NextPage = () => {
     resolver: zodResolver(doesRestaurantExistFromUrlSchema),
   });
 
-  const doesRestaurantExistQuery =
-    trpc.restaurant.doesRestaurantExistFromUrl.useQuery(getValues(), {
+  const doesRestaurantExistQuery = trpc.restaurant.doesRestaurantExistFromUrl.useQuery(
+    getValues(),
+    {
       enabled: findRestaurant,
       onSettled: () => {
         setFindRestaurant(false);
@@ -46,13 +40,11 @@ const Home: NextPage = () => {
           router.push(`/restaurant/${payload.id}`);
         }
       },
-    });
+    },
+  );
 
   trpc.restaurant.fetchRestaurantFromUrl.useQuery(getValues(), {
-    enabled:
-      findRestaurant &&
-      doesRestaurantExistQuery.isFetched &&
-      !doesRestaurantExistQuery.data,
+    enabled: findRestaurant && doesRestaurantExistQuery.isFetched && !doesRestaurantExistQuery.data,
     onSuccess: (payload) => {
       router.push(`/restaurant/${payload.id}`);
     },
@@ -94,18 +86,14 @@ const Home: NextPage = () => {
                 isInvalid={!!errors["url"]?.message}
                 disabled={doesRestaurantExistQuery.isFetching}
               />
-              <FormErrorMessage>
-                {errors.url && errors.url.message}
-              </FormErrorMessage>
+              <FormErrorMessage>{errors.url && errors.url.message}</FormErrorMessage>
               <Button isLoading={isSubmitting} type="submit" width={16}>
                 {t("index_page.start_button")}
               </Button>
             </Box>
           </FormControl>
         </form>
-        {doesRestaurantAvailable && (
-          <Text>{t("index_page.waiting_for_scraper")}</Text>
-        )}
+        {doesRestaurantAvailable && <Text>{t("index_page.waiting_for_scraper")}</Text>}
       </main>
     </>
   );

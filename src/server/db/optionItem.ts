@@ -1,11 +1,12 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { isEmpty } from "radash";
 import { ShopeeItem } from "../../types/shopee";
 import { prisma } from "./client";
 
 export const upsertOptionItem = (
+  prisma: Prisma.TransactionClient | PrismaClient,
   restaurantId: number,
-  optionItemList: (ShopeeItem & { optionId: number; dishId: number })[]
+  optionItemList: (ShopeeItem & { optionId: number; dishId: number })[],
 ) => {
   const createData = optionItemList.map((optionItem) => ({
     id: optionItem.id,
@@ -38,9 +39,9 @@ export const upsertOptionItem = (
 };
 
 export const getOptionItemPrice = (
-  filterList: { id: number; restaurantId: number; dishId: number }[]
+  filterList: { id: number; invitationRestaurantId: number; dishId: number }[],
 ) => {
-  return prisma.optionItem.findMany({
+  return prisma.invitationOptionItem.findMany({
     where: {
       OR: filterList,
     },

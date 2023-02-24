@@ -1,9 +1,14 @@
 import { isEmpty } from "radash";
 import { ShopeeDish } from "../../types/shopee";
 import { prisma } from "./client";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { getRequiredPhotos } from "../utils/getRequiredPhotos";
 
-export const upsertDish = (restaurantId: number, dishList: ShopeeDish[]) => {
+export const upsertDish = (
+  prisma: Prisma.TransactionClient | PrismaClient,
+  restaurantId: number,
+  dishList: ShopeeDish[],
+) => {
   return prisma.dish.createMany({
     data: dishList.map((dish) => ({
       id: dish.id,
@@ -16,11 +21,7 @@ export const upsertDish = (restaurantId: number, dishList: ShopeeDish[]) => {
         value: dish.price.value,
         unit: dish.price.unit,
       },
-      photos: dish.photos.map((photo) => ({
-        height: photo.height,
-        width: photo.width,
-        value: photo.value,
-      })),
+      photos: getRequiredPhotos(dish.photos),
       discountPrice: isEmpty(dish.discount_price)
         ? Prisma.JsonNull
         : {
@@ -34,7 +35,7 @@ export const upsertDish = (restaurantId: number, dishList: ShopeeDish[]) => {
 };
 
 export const getDishPrice = (dishIds: number[], restaurantId: number) => {
-  return prisma.dish.findMany({
+  return prisma.invitationDish.findMany({
     where: {
       AND: [
         {
@@ -43,7 +44,7 @@ export const getDishPrice = (dishIds: number[], restaurantId: number) => {
           },
         },
         {
-          restaurantId: restaurantId,
+          invitationRestaurantId: restaurantId,
         },
       ],
     },

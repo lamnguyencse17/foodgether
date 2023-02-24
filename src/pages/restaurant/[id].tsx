@@ -10,21 +10,14 @@ import { trpc } from "../../utils/trpc";
 import { AggregatedDishTypes } from "../../types/dishTypes";
 import RestaurantMenuSection from "../../components/restaurant/RestaurantMenuSection";
 import RestaurantMenu from "../../components/restaurant/RestaurantMenu";
-import {
-  fetchShopeeMenu,
-  fetchShopeeRestaurantFromId,
-} from "../../server/service/shopee";
-import {
-  getAggregatedRestaurant,
-  upsertRestaurant,
-} from "../../server/db/restaurant";
+import { fetchShopeeMenu, fetchShopeeRestaurantFromId } from "../../server/service/shopee";
+import { getAggregatedRestaurant, upsertRestaurant } from "../../server/db/restaurant";
 import { updateRestaurantMenu } from "../../server/handlers/restaurant";
-import { createContext, RefObject, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import useSetOptionDict from "../../hooks/useSetOptionDict";
 import useSetDishDict from "../../hooks/useSetDishDict";
 import { formatISO, sub } from "date-fns";
 import useStore from "../../hooks/store";
-import { VirtuosoHandle } from "react-virtuoso";
 
 export async function getStaticPaths() {
   const idObjectList =
@@ -49,9 +42,7 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
   };
 };
 
-export const getStaticProps = async ({
-  params: { id },
-}: GetRestaurantServerParams) => {
+export const getStaticProps = async ({ params: { id } }: GetRestaurantServerParams) => {
   if (isNaN(parseInt(id)) || !id) {
     return {
       props: {
@@ -63,24 +54,17 @@ export const getStaticProps = async ({
     const restaurant = await getAggregatedRestaurant(prisma, parseInt(id));
 
     if (!restaurant) {
-      const restaurantResponse = await fetchShopeeRestaurantFromId(
-        parseInt(id)
-      );
+      const restaurantResponse = await fetchShopeeRestaurantFromId(parseInt(id));
       await upsertRestaurant(prisma, restaurantResponse.reply.delivery_detail);
-      const menu = await fetchShopeeMenu(
-        restaurantResponse.reply.delivery_detail.delivery_id
-      );
+      const menu = await fetchShopeeMenu(restaurantResponse.reply.delivery_detail.delivery_id);
       const completedRestaurant = await updateRestaurantMenu(
         prisma,
         parseInt(id),
-        menu.reply.menu_infos
+        menu.reply.menu_infos,
       );
       return {
         props: {
-          restaurant: await getAggregatedRestaurant(
-            prisma,
-            completedRestaurant
-          ),
+          restaurant: await getAggregatedRestaurant(prisma, completedRestaurant),
         },
       };
     }
@@ -105,17 +89,13 @@ type RestaurantPageProps = {
   restaurant: AggregatedRestaurant;
 };
 
-export const VirtuosoRefContext =
-  createContext<null | RefObject<VirtuosoHandle>>(null);
-
 const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const { setRestaurant } = useStore((state) => ({
     setRestaurant: state.restaurant.setRestaurant,
   }));
   const router = useRouter();
-  const restaurantIdString =
-    router.query.id || router.pathname.split("/").pop();
-  const virtuosoRef = useRef(null);
+  const restaurantIdString = router.query.id || router.pathname.split("/").pop();
+
   const restaurantId = parseInt(restaurantIdString as unknown as string);
   const isValidRestaurantId = !isNaN(restaurantId as unknown as number);
 
@@ -129,22 +109,22 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
       enabled: shouldFetchRestaurant,
       refetchOnWindowFocus: false,
       retryOnMount: false,
-    }
+    },
   );
 
   const confirmedRestaurant = useMemo(() => {
-    return (
-      getRestaurantQuery.data
-        ? getRestaurantQuery.data
-        : restaurant
-        ? restaurant
-        : {}
-    ) as NonNullable<AggregatedRestaurant>;
+    if (getRestaurantQuery.data) {
+      return getRestaurantQuery.data as NonNullable<AggregatedRestaurant>;
+    }
+    if (restaurant) {
+      return restaurant as NonNullable<AggregatedRestaurant>;
+    }
+    return {} as NonNullable<AggregatedRestaurant>;
   }, [getRestaurantQuery.data, restaurant]);
 
   useSetOptionDict(
     getRestaurantQuery.isInitialLoading && getRestaurantQuery.isFetching,
-    confirmedRestaurant
+    confirmedRestaurant,
   );
   useSetDishDict(confirmedRestaurant);
 
@@ -159,11 +139,7 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
   const restaurantPhotos = get(confirmedRestaurant, "photos", []) as Photo[];
   const restaurantHeaderImage = restaurantPhotos[restaurantPhotos.length - 1];
 
-  const dishTypes = get(
-    confirmedRestaurant,
-    "dishTypes",
-    []
-  ) as AggregatedDishTypes[];
+  const dishTypes = get(confirmedRestaurant, "dishTypes", []) as AggregatedDishTypes[];
 
   return (
     <>
@@ -191,13 +167,8 @@ const RestaurantPage = ({ restaurant }: RestaurantPageProps) => {
             paddingX={4}
             alignItems={["center", "center", "flex-start"]}
           >
-            <VirtuosoRefContext.Provider value={virtuosoRef}>
-              <RestaurantMenuSection dishTypes={dishTypes} />
-              <RestaurantMenu
-                dishTypes={dishTypes}
-                restaurantId={confirmedRestaurant.id}
-              />
-            </VirtuosoRefContext.Provider>
+            <RestaurantMenuSection dishTypes={dishTypes} />
+            <RestaurantMenu dishTypes={dishTypes} restaurantId={confirmedRestaurant.id} />
           </Stack>
         </VStack>
       </main>

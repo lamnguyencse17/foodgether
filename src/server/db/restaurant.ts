@@ -2,43 +2,41 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { omit } from "radash";
 import { DishWithPriceAndPhoto } from "../../types/dish";
 import { ShopeeRestaurant } from "../../types/shopee";
-
+import { getRequiredPhotos } from "../utils/getRequiredPhotos";
 export const upsertRestaurant = async (
-  prisma: PrismaClient,
-  restaurant: ShopeeRestaurant
+  prisma: PrismaClient | Prisma.TransactionClient,
+  restaurant: ShopeeRestaurant,
 ) => {
-  return prisma.$transaction([
-    prisma.restaurant.deleteMany({
-      where: {
-        id: restaurant.restaurant_id,
+  await prisma.restaurant.deleteMany({
+    where: {
+      id: restaurant.restaurant_id,
+    },
+  });
+  return prisma.restaurant.create({
+    data: {
+      id: restaurant.restaurant_id,
+      name: restaurant.name,
+      url: restaurant.url,
+      deliveryId: restaurant.delivery_id,
+      address: restaurant.address,
+      position: {
+        latitude: restaurant.position.latitude,
+        longitude: restaurant.position.longitude,
       },
-    }),
-    prisma.restaurant.create({
-      data: {
-        id: restaurant.restaurant_id,
-        name: restaurant.name,
-        url: restaurant.url,
-        deliveryId: restaurant.delivery_id,
-        address: restaurant.address,
-        position: {
-          latitude: restaurant.position.latitude,
-          longitude: restaurant.position.longitude,
-        },
-        priceRange: {
-          minPrice: restaurant.price_range.min_price,
-          maxPrice: restaurant.price_range.max_price,
-        },
-        isQualityMerchant: restaurant.is_quality_merchant,
-        photos: restaurant.photos as unknown as Prisma.JsonArray,
-        isAvailable: restaurant.asap_is_available,
+      priceRange: {
+        minPrice: restaurant.price_range.min_price,
+        maxPrice: restaurant.price_range.max_price,
       },
-    }),
-  ]);
+      isQualityMerchant: restaurant.is_quality_merchant,
+      photos: getRequiredPhotos(restaurant.photos) as unknown as Prisma.JsonArray,
+      isAvailable: restaurant.asap_is_available,
+    },
+  });
 };
 
 export const getAggregatedRestaurant = async (
-  prisma: PrismaClient,
-  restaurantId: number
+  prisma: PrismaClient | Prisma.TransactionClient,
+  restaurantId: number,
 ) => {
   const rawRestaurant = await prisma.restaurant.findUnique({
     where: {
@@ -69,10 +67,7 @@ export const getAggregatedRestaurant = async (
   };
 };
 
-export const getRestaurantForInvitationCreation = (
-  prisma: PrismaClient,
-  restaurantId: number
-) => {
+export const getRestaurantForInvitationCreation = (prisma: PrismaClient, restaurantId: number) => {
   return prisma.restaurant.findUnique({
     where: { id: restaurantId },
     include: {

@@ -1,15 +1,7 @@
-import {
-  CartItem,
-  createOrderSchema,
-  getMemberCurrentOrderSchema,
-} from "../schemas/order";
+import { CartItem, createOrderSchema, getMemberCurrentOrderSchema } from "../schemas/order";
 import { auditOrder } from "../service/audit";
 import { protectedProcedure } from "../trpc/trpc";
-import {
-  createOrder as createDbOrder,
-  getExistingOrder,
-  updateOrder,
-} from "../db/order";
+import { createOrder as createDbOrder, getExistingOrder, updateOrder } from "../db/order";
 import { get } from "radash";
 import { getOptionDictOfInvitation } from "../db/invitation";
 
@@ -31,12 +23,7 @@ export const getMemberCurrentOrder = protectedProcedure
   .input(getMemberCurrentOrderSchema)
   .query(async ({ ctx, input }) => {
     const [order, invitation] = await Promise.all([
-      getExistingOrder(
-        ctx.prisma,
-        input.invitationId,
-        input.restaurantId,
-        ctx.session.user.id
-      ),
+      getExistingOrder(ctx.prisma, input.invitationId, input.restaurantId, ctx.session.user.id),
       getOptionDictOfInvitation(ctx.prisma, input.invitationId),
     ]);
     if (!order || !invitation) {
@@ -52,7 +39,7 @@ export const getMemberCurrentOrder = protectedProcedure
           const mandatory = get(
             invitation.optionDict,
             `${orderDish.invitationDishId}.${option.invitationOptionId}.isMandatory`,
-            false
+            false,
           );
           return mandatory
             ? {
@@ -65,8 +52,7 @@ export const getMemberCurrentOrder = protectedProcedure
                   // TODO: Fix missing price in this
                   // price: option.orderDishOptionItems[0]!.,
                   price: 0,
-                  optionItemId:
-                    option.orderDishOptionItems[0]!.invitationOptionItemId,
+                  optionItemId: option.orderDishOptionItems[0]!.invitationOptionItemId,
                 },
               }
             : {
@@ -84,7 +70,7 @@ export const getMemberCurrentOrder = protectedProcedure
                 })),
               };
         }),
-      }))
+      })),
     );
     return parsedCartData;
   });

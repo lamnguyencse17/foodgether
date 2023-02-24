@@ -28,15 +28,15 @@ export const auditOrder = async (order: CreateOrderParams) => {
             {
               id: option.value.optionItemId,
               dishId: item.dishId,
-              restaurantId: order.restaurantId,
+              invitationRestaurantId: order.restaurantId,
             },
           ]
         : option.value.map((optionItem) => ({
             id: optionItem.optionItemId,
             dishId: item.dishId,
-            restaurantId: order.restaurantId,
-          }))
-    )
+            invitationRestaurantId: order.restaurantId,
+          })),
+    ),
   );
   const [optionItemPrice, dishPrice] = await Promise.all([
     getOptionItemPrice(optionFilter),
@@ -45,20 +45,17 @@ export const auditOrder = async (order: CreateOrderParams) => {
   const keyedOptionItemPrice = objectify(
     optionItemPrice,
     (item) => item.id,
-    (item) => ({ id: item.id, price: (item.price as Price).value })
+    (item) => ({ id: item.id, price: (item.price as Price).value }),
   );
   const keyedDishPrice = objectify(
     dishPrice,
     (item) => item.id,
-    (item) => ({ id: item.id, price: (item.price as Price).value })
+    (item) => ({ id: item.id, price: (item.price as Price).value }),
   );
   order.items.forEach(auditItem(keyedDishPrice, keyedOptionItemPrice));
 };
 
-const auditItem = (
-  keyedDishPrice: PriceDict,
-  keyedOptionItemPrice: PriceDict
-) => {
+const auditItem = (keyedDishPrice: PriceDict, keyedOptionItemPrice: PriceDict) => {
   return (item: CartItem) => {
     const options = item.options;
     const totalOptionPrice = auditOption(options, keyedOptionItemPrice);
@@ -73,8 +70,7 @@ const auditItem = (
 };
 
 const auditDish = (item: CartItem, keyedDishPrice: PriceDict) => {
-  const doesDishPriceMatch =
-    get(keyedDishPrice, `${item.dishId}.price`) === item.dishPrice;
+  const doesDishPriceMatch = get(keyedDishPrice, `${item.dishId}.price`) === item.dishPrice;
   if (!doesDishPriceMatch) {
     throw new TRPCError({
       message: errors.order.AUDIT_FAILED_AT_DISH,
@@ -83,10 +79,7 @@ const auditDish = (item: CartItem, keyedDishPrice: PriceDict) => {
   }
 };
 
-const auditOption = (
-  options: CartItem["options"],
-  keyedOptionItemPrice: PriceDict
-) => {
+const auditOption = (options: CartItem["options"], keyedOptionItemPrice: PriceDict) => {
   let totalOptionPrice = 0;
   options.forEach((option) => {
     totalOptionPrice += option.mandatory
@@ -96,13 +89,15 @@ const auditOption = (
   return totalOptionPrice;
 };
 
-const auditMandatoryChoice = (
-  option: OptionMandatoryValue,
-  keyedOptionItemPrice: PriceDict
-) => {
+const auditMandatoryChoice = (option: OptionMandatoryValue, keyedOptionItemPrice: PriceDict) => {
+  console.log(
+    option.value.optionItemId,
+    option.price,
+    get(keyedOptionItemPrice, `${option.value.optionItemId}.price`),
+  );
+  console.log(keyedOptionItemPrice);
   const doesPriceMatch =
-    option.price ===
-    get(keyedOptionItemPrice, `${option.value.optionItemId}.price`);
+    option.price === get(keyedOptionItemPrice, `${option.value.optionItemId}.price`);
   if (doesPriceMatch) {
     return option.price;
   }
@@ -114,13 +109,18 @@ const auditMandatoryChoice = (
 
 const auditOptionalChoice = (
   optionItems: OptionChoiceValue["value"],
-  keyedOptionItemPrice: PriceDict
+  keyedOptionItemPrice: PriceDict,
 ) => {
   let totalOptionPrice = 0;
   optionItems.forEach((optionItem) => {
     const doesPriceMatch =
-      optionItem.price ===
-      get(keyedOptionItemPrice, `${optionItem.optionItemId}.price`);
+      optionItem.price === get(keyedOptionItemPrice, `${optionItem.optionItemId}.price`);
+    console.log(
+      optionItem.optionItemId,
+      optionItem.price,
+      get(keyedOptionItemPrice, `${optionItem.optionItemId}.price`),
+    );
+    console.log(keyedOptionItemPrice);
     if (doesPriceMatch) {
       totalOptionPrice += optionItem.price;
       return;

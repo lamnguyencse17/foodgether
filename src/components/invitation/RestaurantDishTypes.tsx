@@ -9,25 +9,18 @@ type RestaurantDishTypesProps = {
   dishList: {
     [dishTypeId: string]: number[];
   };
-  restaurantId: number;
 };
 
 const RestaurantDishTypes: FunctionComponent<RestaurantDishTypesProps> = ({
   dishTypeId,
   dishType,
-  restaurantId,
   dishList,
 }) => {
   const dishInDishTypes = dishList[dishTypeId];
   if (!dishInDishTypes) return null;
   return (
-    <Box key={dishTypeId} width="full" marginY="5">
-      <Heading
-        size="xs"
-        textTransform="uppercase"
-        mb="3"
-        id={dishTypeId.toString()}
-      >
+    <Box key={dishTypeId} width="full" marginY="5" id={`#${dishTypeId}`}>
+      <Heading size="xs" textTransform="uppercase" mb="3" id={dishTypeId.toString()}>
         {dishType.name}
       </Heading>
       <VStack
@@ -37,11 +30,7 @@ const RestaurantDishTypes: FunctionComponent<RestaurantDishTypesProps> = ({
         width="full"
       >
         {dishInDishTypes.map((dishId) => (
-          <RestaurantDishWrapper
-            dishId={dishId}
-            restaurantId={restaurantId}
-            key={dishId}
-          />
+          <RestaurantDishWrapper dishId={dishId} key={dishId} />
         ))}
       </VStack>
     </Box>

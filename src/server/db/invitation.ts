@@ -2,7 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { prisma } from "./client";
 import { formatISO, sub } from "date-fns";
 
-export const createInvitationTx = (prisma: PrismaClient, userId: string) => {
+export const createInvitationTx = (prisma: Prisma.TransactionClient, userId: string) => {
   return prisma.invitation.create({
     data: {
       createdBy: { connect: { id: userId } },
@@ -73,7 +73,9 @@ export const getInvitationForMember = async (invitationId: string) => {
         include: {
           invitationOptions: {
             include: {
-              invitationOptionItems: true,
+              invitationOptionItems: {
+                distinct: "id",
+              },
             },
           },
           invitationDishTypes: {
@@ -98,10 +100,7 @@ export const getInvitationForMember = async (invitationId: string) => {
   });
 };
 
-export const getOptionDictOfInvitation = async (
-  prisma: PrismaClient,
-  invitationId: string
-) => {
+export const getOptionDictOfInvitation = async (prisma: PrismaClient, invitationId: string) => {
   return prisma.invitation.findUnique({
     where: { id: invitationId },
     select: { optionDict: true },

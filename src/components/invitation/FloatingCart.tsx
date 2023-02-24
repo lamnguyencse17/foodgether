@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import deepEqual from "deep-equal";
 import { isEmpty } from "radash";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { BiCart } from "react-icons/bi";
 import { shallow } from "zustand/shallow";
@@ -31,10 +31,7 @@ type FloatingCartProps = {
   previousCart?: CartItemType[];
 };
 
-const FloatingCart: FunctionComponent<FloatingCartProps> = ({
-  invitationId,
-  previousCart,
-}) => {
+const FloatingCart: FunctionComponent<FloatingCartProps> = ({ invitationId, previousCart }) => {
   const { t } = useTranslation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -43,14 +40,14 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
   } = useStore(
     (state) => ({
       cart: state.cart,
-      restaurant: state.restaurant.data,
+      restaurant: state.restaurant.dataV2.invitationPage,
     }),
-    shallow
+    shallow,
   );
 
-  const onSuccess = () => {
+  const onSuccess = useCallback(() => {
     onClose();
-  };
+  }, []);
 
   const createOrder = trpc.order.createOrder.useMutation({ onSuccess });
   const editOrder = trpc.order.editOrder.useMutation({ onSuccess });
@@ -82,12 +79,7 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
   }
   return (
     <>
-      <Box
-        position="sticky"
-        display="flex"
-        justifyContent="flex-end"
-        bottom={3}
-      >
+      <Box position="sticky" display="flex" justifyContent="flex-end" bottom={3}>
         <IconButton
           icon={<BiCart size="2em" />}
           aria-label={t("invitation_page.cart")}
@@ -107,19 +99,10 @@ const FloatingCart: FunctionComponent<FloatingCartProps> = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              variant="ghost"
-              mr={3}
-              onClick={onClose}
-              isLoading={isSubmitting}
-            >
+            <Button variant="ghost" mr={3} onClick={onClose} isLoading={isSubmitting}>
               {t("common.close")}
             </Button>
-            <Button
-              colorScheme="blue"
-              onClick={handleOrder}
-              isLoading={isSubmitting}
-            >
+            <Button colorScheme="blue" onClick={handleOrder} isLoading={isSubmitting}>
               {t("invitation_page.order")}
             </Button>
           </ModalFooter>

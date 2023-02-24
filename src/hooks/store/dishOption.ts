@@ -1,11 +1,12 @@
 import produce from "immer";
-import { replaceOrAppend } from "radash";
 import { StateCreator } from "zustand";
 import { UseStoreType } from ".";
 import { DishOptionValue } from "../../server/schemas/order";
 
 export type DishOptionStoreType = {
-  data: DishOptionValue[];
+  data: {
+    [optionItemId: number]: DishOptionValue;
+  };
   setDishOption: (value: DishOptionValue) => void;
   resetDishOption: () => void;
 };
@@ -16,27 +17,22 @@ const dishOptionStore: StateCreator<
   [],
   DishOptionStoreType
 > = (set) => ({
-  data: [],
+  data: {},
   setDishOption: (value) =>
     set(
       produce((state) => {
-        const newOptions = replaceOrAppend(
-          state.currentDishOption.data || [],
-          value,
-          (filter) => filter.optionId === value.optionId
-        );
-        state.currentDishOption.data = newOptions;
+        state.currentDishOption.data[value.optionId] = value;
       }),
       false,
-      "setDishOption"
+      "setDishOption",
     ),
   resetDishOption: () =>
     set(
       produce<UseStoreType>((state) => {
-        state.currentDishOption.data = [];
+        state.currentDishOption.data = {};
       }),
       false,
-      "resetDishOption"
+      "resetDishOption",
     ),
 });
 

@@ -4,7 +4,7 @@ import { CreateInvitationRestaurantInput } from "./restaurant";
 export const createInvitationDishOption = (
   tx: Prisma.TransactionClient,
   invitationRestaurantId: number,
-  restaurant: CreateInvitationRestaurantInput
+  restaurant: CreateInvitationRestaurantInput,
 ) => {
   return tx.invitationDishOption.createMany({
     data: restaurant.dish.flatMap((dish) =>
@@ -13,7 +13,7 @@ export const createInvitationDishOption = (
         dishId: dishOption.dishId,
         optionId: dishOption.optionId,
         invitationRestaurantId,
-      }))
+      })),
     ),
   });
 };

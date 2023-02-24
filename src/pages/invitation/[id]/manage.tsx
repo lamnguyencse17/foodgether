@@ -14,10 +14,7 @@ import { get } from "radash";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import RestaurantHeader from "../../../components/managerInvitation/RestaurantHeader";
-import {
-  getAllRecentInvitationIds,
-  getInvitationForCreator,
-} from "../../../server/db/invitation";
+import { getAllRecentInvitationIds, getInvitationForCreator } from "../../../server/db/invitation";
 import { RestaurantWithPhotoAndPrice } from "../../../types/restaurant";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
 
@@ -36,9 +33,7 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
   };
 };
 
-export const getStaticProps = async ({
-  params: { id },
-}: GetRestaurantServerParams) => {
+export const getStaticProps = async ({ params: { id } }: GetRestaurantServerParams) => {
   const invitation = await getInvitationForCreator(id);
   return {
     props: {
@@ -51,15 +46,11 @@ type ManageInvitationPageProps = {
   invitation: Awaited<ReturnType<typeof getInvitationForCreator>>;
 };
 
-const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
-  invitation,
-}) => {
+const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ invitation }) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const invitationId = (router.query.id ||
-    router.pathname.split("/").pop()) as string;
-  const restaurant = ((invitation || {}).invitationRestaurant ||
-    {}) as RestaurantWithPhotoAndPrice;
+  const invitationId = (router.query.id || router.pathname.split("/").pop()) as string;
+  const restaurant = ((invitation || {}).invitationRestaurant || {}) as RestaurantWithPhotoAndPrice;
 
   const orders = (invitation || {}).orders || [];
 
