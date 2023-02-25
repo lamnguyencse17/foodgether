@@ -5,11 +5,13 @@
  */
 !process.env.SKIP_ENV_VALIDATION && (await import("./src/env/server.mjs"));
 
+import { withSentryConfig } from "@sentry/nextjs";
 import path from "path";
 
 import * as url from "url";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 /** @type {import("next").NextConfig} */
+
 const config = {
   reactStrictMode: true,
   swcMinify: true,
@@ -41,5 +43,13 @@ const config = {
 
     return config;
   },
+  sentry: {
+    hideSourceMaps: true,
+  },
 };
-export default config;
+
+const sentryWebpackPluginOptions = {
+  silent: true,
+};
+
+export default withSentryConfig(config, sentryWebpackPluginOptions);

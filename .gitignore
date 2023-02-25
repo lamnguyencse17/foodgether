@@ -46,3 +46,6 @@ scraper/dist/
 dump.rdb
 
 .idea/
+
+# Sentry
+.sentryclirc

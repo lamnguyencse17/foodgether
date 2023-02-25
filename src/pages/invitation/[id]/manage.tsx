@@ -76,7 +76,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ in
     const createdPusher = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
       cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
     });
-    setPusher(pusher);
+    setPusher(createdPusher);
     const channel = createdPusher.subscribe(invitationId);
     channel.bind(PUSHER_EVENTS.ORDER_UPDATE, (updatedOrder: InvitationOrder) => {
       setOrder((orders) =>

@@ -23,6 +23,11 @@ export const serverSchema = z.object({
   REVALIDATION_TOKEN: z.string(),
   REVALIDATE_URL: z.string().url(),
   REDIS_URL: z.string().url(),
+  SENTRY_DSN: z.string(),
+  PUSHER_KEY: z.string(),
+  PUSHER_SECRET: z.string(),
+  PUSHER_CLUSTER: z.string(),
+  PUSHER_APP_ID: z.string(),
 });
 
 /**
@@ -33,6 +38,7 @@ export const serverSchema = z.object({
 export const clientSchema = z.object({
   NEXT_PUBLIC_PUSHER_KEY: z.string(),
   NEXT_PUBLIC_PUSHER_CLUSTER: z.string(),
+  NEXT_PUBLIC_SENTRY_DSN: z.string(),
 });
 
 /**
@@ -44,4 +50,5 @@ export const clientSchema = z.object({
 export const clientEnv = {
   NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
   NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
+  NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
 };

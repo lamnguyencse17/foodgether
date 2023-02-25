@@ -23,10 +23,15 @@ type RestaurantMenuProps = {
   };
 };
 
-export const CurrentOptionModalContext = createContext<{
+type CurrentOptionModalContextType = {
   currentOptionModal: number | null;
   setCurrentOptionModal: (currentOptionModal: number | null) => void;
-}>({ currentOptionModal: null, setCurrentOptionModal: () => undefined });
+};
+
+export const CurrentOptionModalContext = createContext<CurrentOptionModalContextType>({
+  currentOptionModal: null,
+  setCurrentOptionModal: () => undefined,
+});
 
 const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dishList }) => {
   const { dishDict, optionDict } = useStore(
@@ -61,13 +66,17 @@ const RestaurantMenu: FunctionComponent<RestaurantMenuProps> = ({ dishTypes, dis
     setCurrentOptionModal(null);
     onClose();
   };
+
+  const currentOptionModalData = useMemo(
+    () => ({
+      currentOptionModal,
+      setCurrentOptionModal: setCurrentOptionModalContext,
+    }),
+    [currentOptionModal],
+  );
+
   return (
-    <CurrentOptionModalContext.Provider
-      value={{
-        currentOptionModal,
-        setCurrentOptionModal: setCurrentOptionModalContext,
-      }}
-    >
+    <CurrentOptionModalContext.Provider value={currentOptionModalData}>
       <Box flex={[null, null, 1]} maxW="full" width="100%">
         {isEmpty(dishTypes) ? (
           <Skeleton height="20" />
