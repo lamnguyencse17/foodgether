@@ -19,3 +19,7 @@ export const errors = {
     ERROR_WHILE_GETTING_INVITATION: "I_01",
   },
 };
+
+export const PUSHER_EVENTS = {
+  ORDER_UPDATE: "ORDER_UPDATE",
+};

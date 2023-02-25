@@ -10,10 +10,13 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import Pusher from "pusher-js";
 import { get } from "radash";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import RestaurantHeader from "../../../components/managerInvitation/RestaurantHeader";
+import { env } from "../../../env/client.mjs";
+import { PUSHER_EVENTS } from "../../../server/common/constants";
 import { getAllRecentInvitationIds, getInvitationForCreator } from "../../../server/db/invitation";
 import { RestaurantWithPhotoAndPrice } from "../../../types/restaurant";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
@@ -33,6 +36,9 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
   };
 };
 
+type InvitationManagerData = Awaited<ReturnType<typeof getInvitationForCreator>>;
+type InvitationOrder = NonNullable<InvitationManagerData>["orders"][0];
+
 export const getStaticProps = async ({ params: { id } }: GetRestaurantServerParams) => {
   const invitation = await getInvitationForCreator(id);
   return {
@@ -43,7 +49,7 @@ export const getStaticProps = async ({ params: { id } }: GetRestaurantServerPara
   };
 };
 type ManageInvitationPageProps = {
-  invitation: Awaited<ReturnType<typeof getInvitationForCreator>>;
+  invitation: InvitationManagerData;
 };
 
 const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ invitation }) => {
@@ -52,7 +58,8 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ in
   const invitationId = (router.query.id || router.pathname.split("/").pop()) as string;
   const restaurant = ((invitation || {}).invitationRestaurant || {}) as RestaurantWithPhotoAndPrice;
 
-  const orders = (invitation || {}).orders || [];
+  const [orders, setOrder] = useState((invitation || {}).orders || []);
+  const [pusher, setPusher] = useState<Pusher | null>();
 
   const { name, address, priceRange, isAvailable, url } = restaurant;
 
@@ -62,6 +69,32 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ in
   const description = t("invitation_manage_page.invitation_description", {
     name,
   }) as string;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    console.log(`Subscribe to channel ${invitationId}`);
+    const createdPusher = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
+      cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
+    });
+    setPusher(pusher);
+    const channel = createdPusher.subscribe(invitationId);
+    channel.bind(PUSHER_EVENTS.ORDER_UPDATE, (updatedOrder: InvitationOrder) => {
+      setOrder((orders) =>
+        orders.map((order) => {
+          if (order.id === updatedOrder.id) {
+            return updatedOrder;
+          }
+          return order;
+        }),
+      );
+    });
+    return () => {
+      if (pusher) {
+        pusher.disconnect();
+        setPusher(null);
+      }
+    };
+  }, []);
 
   return (
     <>
