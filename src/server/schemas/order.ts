@@ -2,13 +2,11 @@ import { z } from "zod";
 
 const sharedOptionItem = z.object({
   id: z.string(),
-  price: z.number(),
   optionItemId: z.number(),
 });
 
 const sharedOptionValue = z.object({
   optionId: z.number(),
-  price: z.number(),
   id: z.string(),
 });
 
@@ -37,8 +35,6 @@ export type DishOptionValue = z.infer<typeof dishOptionValueSchema>;
 export const cartItemSchema = z.object({
   dishId: z.number(),
   options: z.array(dishOptionValueSchema),
-  totalPrice: z.number(),
-  dishPrice: z.number(),
   id: z.string(),
 });
 

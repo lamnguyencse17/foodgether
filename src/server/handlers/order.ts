@@ -1,22 +1,33 @@
 import { CartItem, createOrderSchema, getMemberCurrentOrderSchema } from "../schemas/order";
-import { auditOrder } from "../service/audit";
 import { protectedProcedure } from "../trpc/trpc";
 import { createOrder as createDbOrder, getExistingOrder, updateOrder } from "../db/order";
 import { get } from "radash";
 import { getOptionDictOfInvitation } from "../db/invitation";
+import { getPusher } from "../service/pusher";
+import { PUSHER_EVENTS } from "../common/constants";
 
 export const createOrder = protectedProcedure
   .input(createOrderSchema)
   .mutation(async ({ ctx, input }) => {
-    await auditOrder(input);
-    return createDbOrder(input, ctx.session.user.id);
+    const newOrder = await createDbOrder(input, ctx.session.user.id);
+    if (!newOrder) {
+      return null;
+    }
+    const pusher = getPusher();
+    await pusher.trigger(newOrder.invitationId, PUSHER_EVENTS.ORDER_UPDATE, newOrder);
+    return newOrder;
   });
 
 export const editOrder = protectedProcedure
   .input(createOrderSchema)
   .mutation(async ({ ctx, input }) => {
-    await auditOrder(input);
-    return updateOrder(input, ctx.session.user.id);
+    const [_, newOrder] = await updateOrder(input, ctx.session.user.id);
+    if (!newOrder) {
+      return null;
+    }
+    const pusher = getPusher();
+    await pusher.trigger(newOrder.invitationId, PUSHER_EVENTS.ORDER_UPDATE, newOrder);
+    return newOrder;
   });
 
 export const getMemberCurrentOrder = protectedProcedure
@@ -33,8 +44,6 @@ export const getMemberCurrentOrder = protectedProcedure
       order.orderDishes.map(async (orderDish) => ({
         id: orderDish.id,
         dishId: orderDish.invitationDishId,
-        dishPrice: orderDish.dishPrice,
-        totalPrice: orderDish.totalPrice,
         options: orderDish.orderDishOptions.map((option) => {
           const mandatory = get(
             invitation.optionDict,
@@ -45,12 +54,9 @@ export const getMemberCurrentOrder = protectedProcedure
             ? {
                 id: option.id,
                 optionId: option.invitationOptionId,
-                price: option.price,
                 mandatory: true,
                 value: {
                   id: option.orderDishOptionItems[0]!.id,
-                  // TODO: Fix missing price in this
-                  // price: option.orderDishOptionItems[0]!.,
                   price: 0,
                   optionItemId: option.orderDishOptionItems[0]!.invitationOptionItemId,
                 },
@@ -58,12 +64,9 @@ export const getMemberCurrentOrder = protectedProcedure
             : {
                 id: option.id,
                 optionId: option.invitationOptionId,
-                price: option.price,
                 mandatory: false,
                 value: option.orderDishOptionItems.map((item) => ({
                   id: item.id,
-                  // TODO: Fix missing price in this
-                  // price: item.price,
                   price: 0,
 
                   optionItemId: item.invitationOptionItemId,

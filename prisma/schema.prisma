@@ -235,9 +235,6 @@ model OrderDish {
   invitationDish   InvitationDish @relation(fields: [invitationDishId, invitationRestaurantId], references: [id, invitationRestaurantId], onDelete: Cascade)
   invitationDishId Int
 
-  dishPrice  Int
-  totalPrice Int
-
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   orderDishOptions OrderDishOption[]
@@ -254,7 +251,6 @@ model OrderDishOption {
 
   invitationRestaurant   InvitationRestaurant @relation(fields: [invitationRestaurantId], references: [id], onDelete: Cascade)
   invitationRestaurantId Int
-  price                  Int
 
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt

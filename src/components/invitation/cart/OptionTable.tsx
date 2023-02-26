@@ -1,10 +1,11 @@
-import { Table, TableContainer, Tbody, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react";
+import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
 import { get } from "radash";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
 import { CartItem } from "../../../server/schemas/order";
+import OptionRow from "./OptionRow";
 
 type OptionTableProps = {
   cartItem: CartItem;
@@ -13,14 +14,30 @@ type OptionTableProps = {
 
 const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem, dishName }) => {
   const { t } = useTranslation();
-  const { optionDict, optionItemDict } = useStore(
+  const { optionItemDict, dishDict } = useStore(
     (state) => ({
       optionDict: state.optionDict.dataV2.invitationPage,
-      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems,
+      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems || {},
+      dishDict: state.dishDict.dataV2.invitationPage?.dishes || {},
     }),
     shallow,
   );
-  const options = optionDict?.options || {};
+
+  const totalPrice = useMemo(() => {
+    const totalOptionPrice = cartItem.options.reduce((acc, option) => {
+      if (option.mandatory) {
+        return acc + get(optionItemDict, `${option.value.optionItemId}.price.value`, 0)!;
+      }
+      return (
+        acc +
+        option.value.reduce(
+          (acc, item) => acc + get(optionItemDict, `${item.optionItemId}.price.value`, 0)!,
+          0,
+        )
+      );
+    }, 0);
+    return totalOptionPrice + get(dishDict, `${cartItem.dishId}.price.value`, 0)!;
+  }, [cartItem]);
 
   return (
     <TableContainer whiteSpace="normal">
@@ -38,69 +55,19 @@ const OptionTable: FunctionComponent<OptionTableProps> = ({ cartItem, dishName }
             <Th />
             <Th>
               {t("common.price_number", {
-                val: cartItem.dishPrice,
+                val: get(dishDict, `${cartItem.dishId}.price.value`, 0),
               })}
             </Th>
           </Tr>
           {cartItem.options.map((option) => (
-            <Tr key={option.id}>
-              <Th>
-                {get(
-                  options,
-                  `${cartItem.dishId}.${option.optionId}.name`,
-                  t("inivitation_page.unknown_option"),
-                )}
-              </Th>
-              <Th>
-                {option.mandatory ? (
-                  <Text>
-                    {get(
-                      optionItemDict,
-                      `${option.value.optionItemId}.name`,
-                      t("inivitation_page.unknown_item"),
-                    )}
-                  </Text>
-                ) : (
-                  <VStack alignItems="flex-start">
-                    {option.value.map((item) => (
-                      <Text key={item.id}>
-                        {get(
-                          optionItemDict,
-                          `${item.optionItemId}.name`,
-                          t("inivitation_page.unknown_item"),
-                        )}
-                      </Text>
-                    ))}
-                  </VStack>
-                )}
-              </Th>
-              <Th>
-                {option.mandatory ? (
-                  <Text>
-                    {t("common.price_number", {
-                      val: option.price,
-                    })}
-                  </Text>
-                ) : (
-                  <VStack alignItems="flex-start">
-                    {option.value.map((item) => (
-                      <Text key={item.id}>
-                        {t("common.price_number", {
-                          val: get(optionItemDict, `${item.optionItemId}.price.value`),
-                        })}
-                      </Text>
-                    ))}
-                  </VStack>
-                )}
-              </Th>
-            </Tr>
+            <OptionRow dishId={cartItem.dishId} option={option} key={option.id} />
           ))}
           <Tr>
             <Th>{t("invitation_page.total_price")}</Th>
             <Th />
             <Th>
               {t("common.price_number", {
-                val: cartItem.totalPrice,
+                val: totalPrice,
               })}
             </Th>
           </Tr>

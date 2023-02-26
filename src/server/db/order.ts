@@ -3,16 +3,18 @@ import { CreateOrderParams } from "../schemas/order";
 import { prisma } from "./client";
 
 export const updateOrder = async (order: CreateOrderParams, userId: string) => {
-  await prisma.order.delete({
-    where: {
-      orderedById_invitationRestaurantId_invitationId: {
-        orderedById: userId,
-        invitationRestaurantId: order.restaurantId,
-        invitationId: order.invitationId,
+  return prisma.$transaction([
+    prisma.order.delete({
+      where: {
+        orderedById_invitationRestaurantId_invitationId: {
+          orderedById: userId,
+          invitationRestaurantId: order.restaurantId,
+          invitationId: order.invitationId,
+        },
       },
-    },
-  });
-  return createOrder(order, userId);
+    }),
+    createOrder(order, userId),
+  ]);
 };
 
 export const createOrder = (order: CreateOrderParams, userId: string) => {
@@ -90,16 +92,31 @@ export const createOrder = (order: CreateOrderParams, userId: string) => {
                       id: optionItem.id,
                     })),
               },
-              price: option.price,
             })),
           },
-          dishPrice: item.dishPrice,
-          totalPrice: item.totalPrice,
         })),
       },
       invitationRestaurant: {
         connect: {
           id: order.restaurantId,
+        },
+      },
+    },
+    include: {
+      orderedBy: {
+        select: {
+          name: true,
+          email: true,
+          id: true,
+        },
+      },
+      orderDishes: {
+        include: {
+          orderDishOptions: {
+            include: {
+              orderDishOptionItems: true,
+            },
+          },
         },
       },
     },

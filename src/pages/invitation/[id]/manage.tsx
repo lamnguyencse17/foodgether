@@ -81,7 +81,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ in
     channel.bind(PUSHER_EVENTS.ORDER_UPDATE, (updatedOrder: InvitationOrder) => {
       setOrder((orders) =>
         orders.map((order) => {
-          if (order.id === updatedOrder.id) {
+          if (order.orderedById === updatedOrder.orderedById) {
             return updatedOrder;
           }
           return order;

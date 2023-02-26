@@ -1,7 +1,7 @@
 import { Checkbox, HStack, VStack } from "@chakra-ui/react";
 import { InvitationOptionItem } from "@prisma/client";
 import { nanoid } from "nanoid";
-import { cluster, get, objectify, toggle, uid } from "radash";
+import { cluster, objectify, toggle, uid } from "radash";
 import { ChangeEvent, FunctionComponent, useCallback, useMemo } from "react";
 import { shallow } from "zustand/shallow";
 import useStore from "../../../hooks/store";
@@ -22,7 +22,7 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
   optionId,
   maxQuantity,
 }) => {
-  const { currentOptionItems, setDishOption, optionItemDict } = useStore(
+  const { currentOptionItems, setDishOption } = useStore(
     (state) => ({
       currentOptionItems: [
         state.currentDishOption.data[
@@ -30,7 +30,6 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         ]?.value || [],
       ].flat(),
       setDishOption: state.currentDishOption.setDishOption,
-      optionItemDict: state.optionItemDict.data.invitationPage?.optionItems || {},
     }),
     shallow,
   );
@@ -46,7 +45,6 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         currentOptionItems,
         {
           id: generatedId,
-          price: get(optionItemDict, `${item.id}.price.value`, 0) as number,
           optionItemId: item.id!,
         },
         (optionItem) => optionItem.optionItemId,
@@ -55,7 +53,6 @@ const MultipleChoice: FunctionComponent<MultipleChoiceProps> = ({
         optionId,
         mandatory: false as const,
         value: newOption,
-        price: newOption.reduce((acc, v) => acc + v.price, 0),
         id: nanoid(20),
       };
       dishOptionValueSchema.parse(dishOption);
