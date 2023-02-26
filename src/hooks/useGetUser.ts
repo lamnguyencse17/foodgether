@@ -1,8 +1,9 @@
 import { shallow } from "zustand/shallow";
 import { useSession } from "next-auth/react";
-import { isEmpty } from "radash";
+import { isEmpty, shake } from "radash";
 import { useEffect } from "react";
 import useStore from "./store";
+import * as Sentry from "@sentry/nextjs";
 
 const useHandleAuthenticateUser = () => {
   const { data: sessionData, status } = useSession();
@@ -12,7 +13,9 @@ const useHandleAuthenticateUser = () => {
 
   useEffect(() => {
     if (status !== "authenticated" || !isEmpty(user)) return;
+    if (!sessionUser) return;
     setUser(sessionUser);
+    Sentry.setUser(shake(sessionUser, (property) => !property));
   }, [sessionUser, status, user, setUser]);
 
   useEffect(() => {
