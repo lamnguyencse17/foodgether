@@ -1,11 +1,12 @@
 import { InvitationOrder } from "../../pages/invitation/[id]/manage";
-import { Accordion, AccordionItem, AccordionPanel, VStack } from "@chakra-ui/react";
+import { Accordion, AccordionItem, VStack } from "@chakra-ui/react";
 import { AccorditionHeader } from "../../components/managerInvitation/AccorditionHeader";
 
 interface ManageInvitaionContainerProps {
   orders: InvitationOrder[];
 }
 import { PricePerOrder } from "../../components/managerInvitation/PricePerOrder";
+import { InvationOrderInfoContainer } from "./InvationOrderInfoContainer";
 export const ManageInvitaionContainer = (props: ManageInvitaionContainerProps) => {
   const { orders } = props;
 
@@ -26,11 +27,8 @@ export const ManageInvitaionContainer = (props: ManageInvitaionContainerProps) =
                 TotalPrice={<PricePerOrder orderDishes={order.orderDishes} />}
               />
             )}
-            <AccordionPanel pb={4}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-              exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            </AccordionPanel>
+
+            <InvationOrderInfoContainer orderDishes={order.orderDishes} />
           </AccordionItem>
         ))}
       </Accordion>

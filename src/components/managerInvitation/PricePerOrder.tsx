@@ -30,7 +30,7 @@ export const PricePerOrder = (props: PricePerOrderProps) => {
 
   const getTotalPrice = () => {
     orderDishes.forEach((orderDish) => {
-      totalPrice = getInvitationDishPrice(orderDish.invitationDish);
+      totalPrice += getInvitationDishPrice(orderDish.invitationDish);
 
       orderDish.orderDishOptions.forEach((orderDishOption) => {
         totalPrice += getOrderDishOptionPrice(orderDishOption.orderDishOptionItems);
