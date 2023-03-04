@@ -20,3 +20,9 @@ export type Price = {
   unit: string;
   value: number;
 };
+
+export type OrderBy = {
+  email: string | null;
+  id: string;
+  name: string | null;
+};

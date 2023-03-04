@@ -52,9 +52,14 @@ export const getInvitationForCreator = async (id: string) => {
             include: {
               orderDishOptions: {
                 include: {
-                  orderDishOptionItems: true,
+                  orderDishOptionItems: {
+                    include: {
+                      invitationOptionItem: true,
+                    },
+                  },
                 },
               },
+              invitationDish: true,
             },
           },
         },
