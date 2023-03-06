@@ -7,6 +7,7 @@ interface ManageInvitaionContainerProps {
 }
 import { PricePerOrder } from "../../components/managerInvitation/PricePerOrder";
 import { InvationOrderInfoContainer } from "./InvationOrderInfoContainer";
+
 export const ManageInvitaionContainer = (props: ManageInvitaionContainerProps) => {
   const { orders } = props;
 
@@ -28,7 +29,10 @@ export const ManageInvitaionContainer = (props: ManageInvitaionContainerProps) =
               />
             )}
 
-            <InvationOrderInfoContainer orderDishes={order.orderDishes} />
+            <InvationOrderInfoContainer
+              orderDishes={order.orderDishes}
+              invitationId={order.invitationId}
+            />
           </AccordionItem>
         ))}
       </Accordion>

@@ -2,8 +2,8 @@ import { Box, Divider, VStack } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Pusher from "pusher-js";
-import { get } from "radash";
-import { FunctionComponent, useEffect, useState } from "react";
+import { get, flat, objectify } from "radash";
+import { createContext, FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import RestaurantHeader from "../../../components/managerInvitation/RestaurantHeader";
 import { env } from "../../../env/client.mjs";
@@ -12,6 +12,11 @@ import { getAllRecentInvitationIds, getInvitationForCreator } from "../../../ser
 import { RestaurantWithPhotoAndPrice } from "../../../types/restaurant";
 import { Photo, SharedPropsFromServer } from "../../../types/shared";
 import { ManageInvitaionContainer } from "../../../containers/manageInvitationContainer/ManageInvitaionContainer";
+
+export const ManageContext = createContext<{
+  selectedDishes: { [key: string]: SelectedDishes } | null;
+  invitationOptions?: { [key: string]: InvitationOptions } | null;
+}>({ selectedDishes: null, invitationOptions: null });
 
 export async function getStaticPaths() {
   const invitationIds = await getAllRecentInvitationIds();
@@ -30,11 +35,30 @@ type GetRestaurantServerParams = SharedPropsFromServer & {
 
 type InvitationManagerData = Awaited<ReturnType<typeof getInvitationForCreator>>;
 export type InvitationOrder = NonNullable<InvitationManagerData>["orders"][0];
+export type SelectedDishes = NonNullable<
+  NonNullable<InvitationManagerData>["invitationRestaurant"]
+>["invitationDishes"][0];
+export type InvitationOptions = NonNullable<
+  NonNullable<InvitationManagerData>["invitationRestaurant"]
+>["invitationOptions"];
 
 export const getStaticProps = async ({ params: { id } }: GetRestaurantServerParams) => {
   const invitation = await getInvitationForCreator(id);
+  const orderDishIds =
+    invitation?.orders &&
+    flat(
+      invitation.orders.map((order) =>
+        order.orderDishes.map((orderDish) => orderDish.invitationDishId),
+      ),
+    );
+
+  const invitationDishes = invitation?.invitationRestaurant?.invitationDishes;
+
+  const selectedDishes = invitationDishes?.filter((dish) => orderDishIds?.includes(dish.id));
+
   return {
     props: {
+      selectedDishes: objectify(selectedDishes || [], (dish) => dish.id),
       invitation,
     },
     revalidate: 60,
@@ -42,11 +66,16 @@ export const getStaticProps = async ({ params: { id } }: GetRestaurantServerPara
 };
 type ManageInvitationPageProps = {
   invitation: InvitationManagerData;
+  selectedDishes: { [key: string]: SelectedDishes };
 };
 
-const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ invitation }) => {
+const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({
+  invitation,
+  selectedDishes,
+}) => {
   const { t } = useTranslation();
   const router = useRouter();
+
   const invitationId = (router.query.id || router.pathname.split("/").pop()) as string;
   const restaurant = ((invitation || {}).invitationRestaurant || {}) as RestaurantWithPhotoAndPrice;
 
@@ -61,7 +90,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ in
   const description = t("invitation_manage_page.invitation_description", {
     name,
   }) as string;
-  console.log(invitation);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     console.log(`Subscribe to channel ${invitationId}`);
@@ -89,7 +118,15 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ in
   }, []);
 
   return (
-    <>
+    <ManageContext.Provider
+      value={{
+        selectedDishes,
+        invitationOptions: objectify(
+          invitation?.invitationRestaurant?.invitationOptions || [],
+          (option) => option.id,
+        ),
+      }}
+    >
       <Head>
         <title>{description}</title>
         <meta name="description" content={description} />
@@ -112,7 +149,7 @@ const ManageInvitationPage: FunctionComponent<ManageInvitationPageProps> = ({ in
           <ManageInvitaionContainer orders={orders} />
         </VStack>
       </main>
-    </>
+    </ManageContext.Provider>
   );
 };
 

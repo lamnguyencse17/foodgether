@@ -1,13 +1,13 @@
 import { AccordionPanel, Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
-import { isEmpty } from "radash";
 import { useTranslation } from "react-i18next";
 import { PricePerOrder } from "../../components/managerInvitation/PricePerOrder";
 import { DishColumn } from "../../components/managerInvitation/TableOrder/DishColumn";
 
 import { InvitationOrder } from "../../pages/invitation/[id]/manage";
 import { Price } from "../../types/shared";
-
+import { EditCartContainer } from "./EditCartContainer";
 interface InvationOrderInfoContainerProps {
+  invitationId: string;
   orderDishes: InvitationOrder["orderDishes"];
 }
 
@@ -15,18 +15,13 @@ export const InvationOrderInfoContainer = (props: InvationOrderInfoContainerProp
   const { orderDishes } = props;
   const { t } = useTranslation();
 
-  const getDishPrice = (invitationDish: InvitationOrder["orderDishes"][0]["invitationDish"]) => {
-    if (isEmpty(invitationDish.discountPrice)) {
-      return (invitationDish.price as Price).value;
-    }
-    return (invitationDish.discountPrice as Price).value;
-  };
-
   const getOrderOptionPrice = (
     option: InvitationOrder["orderDishes"][0]["orderDishOptions"][0]["orderDishOptionItems"][0]["invitationOptionItem"],
   ) => {
     return (option.price as Price).value;
   };
+
+  const handleEdit = () => {};
 
   return (
     <AccordionPanel pb={4}>
@@ -37,12 +32,17 @@ export const InvationOrderInfoContainer = (props: InvationOrderInfoContainerProp
               <Th>{t("invitation_page.cart_option")}</Th>
               <Th>{t("invitation_page.cart_items")}</Th>
               <Th>{t("invitation_page.price")}</Th>
+              <Th />
             </Tr>
           </Thead>
           <Tbody width={5}>
-            {orderDishes.map((orderDish) => (
+            {orderDishes.map((orderDish, index) => (
               <>
-                <DishColumn invitationDish={orderDish.invitationDish} />
+                <DishColumn invitationDish={orderDish.invitationDish} index={index + 1}>
+                  <Th>
+                    <EditCartContainer invitationDishId={orderDish.invitationDishId} />
+                  </Th>
+                </DishColumn>
 
                 {orderDish.orderDishOptions.map((orderDishOption) =>
                   orderDishOption.orderDishOptionItems.map((item) => (
@@ -66,6 +66,7 @@ export const InvationOrderInfoContainer = (props: InvationOrderInfoContainerProp
             <Th>
               <PricePerOrder orderDishes={orderDishes} />
             </Th>
+            <Th />
           </Tr>
         </Table>
       </TableContainer>

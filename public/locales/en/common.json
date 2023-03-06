@@ -47,7 +47,8 @@
       "invitation_description": "Invitation to order at {{name}}",
       "confirm_group_buy": "Confirm group buy",
       "cancel_group_buy": "Cancel group buy",
-      "order_by": "Order by"
+      "order_by": "Order by",
+      "empty_option": "No option available for this dish"
     },
     "navbar": {
       "login": "Login",

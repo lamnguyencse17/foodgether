@@ -38,7 +38,22 @@ export const getInvitationForCreator = async (id: string) => {
       id,
     },
     include: {
-      invitationRestaurant: true,
+      invitationRestaurant: {
+        include: {
+          invitationOptions: {
+            include: {
+              invitationOptionItems: {
+                distinct: "id",
+              },
+            },
+          },
+          invitationDishes: {
+            include: {
+              invitationDishOptions: true,
+            },
+          },
+        },
+      },
       orders: {
         include: {
           orderedBy: {
