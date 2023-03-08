@@ -40,7 +40,7 @@ export type SelectedDishes = NonNullable<
 >["invitationDishes"][0];
 export type InvitationOptions = NonNullable<
   NonNullable<InvitationManagerData>["invitationRestaurant"]
->["invitationOptions"];
+>["invitationOptions"][0];
 
 export const getStaticProps = async ({ params: { id } }: GetRestaurantServerParams) => {
   const invitation = await getInvitationForCreator(id);

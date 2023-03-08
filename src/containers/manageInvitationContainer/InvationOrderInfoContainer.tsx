@@ -40,7 +40,10 @@ export const InvationOrderInfoContainer = (props: InvationOrderInfoContainerProp
               <>
                 <DishColumn invitationDish={orderDish.invitationDish} index={index + 1}>
                   <Th>
-                    <EditCartContainer invitationDishId={orderDish.invitationDishId} />
+                    <EditCartContainer
+                      invitationDishId={orderDish.invitationDishId}
+                      orderDishOptions={orderDish.orderDishOptions}
+                    />
                   </Th>
                 </DishColumn>
 

@@ -11,27 +11,36 @@ import {
   ModalCloseButton,
   ModalBody,
   Text,
-  Checkbox,
   VStack,
+  Checkbox,
+  HStack,
 } from "@chakra-ui/react";
-import { get } from "radash";
-import { useCallback, useContext } from "react";
+import { cluster } from "radash";
+import { useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ManageContext } from "../../pages/invitation/[id]/manage";
+import { OptionConfig } from "../../components/shared/OptionConfig";
+import { SingleMandatorySelect } from "../../components/shared/SingleMandatorySelect";
+import { InvitationOrder, ManageContext } from "../../pages/invitation/[id]/manage";
 import { trpc } from "../../utils/trpc";
 
 interface EditCartContainerProps {
   invitationDishId: number;
+  orderDishOptions: InvitationOrder["orderDishes"][0]["orderDishOptions"];
 }
 
 export const EditCartContainer = (props: EditCartContainerProps) => {
-  const { invitationDishId } = props;
+  const { invitationDishId, orderDishOptions } = props;
   const { onOpen, isOpen, onClose } = useDisclosure();
   const { t } = useTranslation();
+
+  const { selectedDishes, invitationOptions } = useContext(ManageContext);
 
   const onSuccess = useCallback(() => {
     onClose();
   }, [onClose]);
+
+  const [selectedOptionItems, setSelectedOptionItems] = useState([]);
+
   const editOrder = trpc.order.editOrder.useMutation({ onSuccess });
 
   const handleOrder = () => {};
@@ -41,19 +50,69 @@ export const EditCartContainer = (props: EditCartContainerProps) => {
       return <Text>{t("invitation_manage_page.empty_option")}</Text>;
     }
 
-    const sele = selectedDishes[invitationDishId.toString()];
-    console.log({ sele });
-    return selectedDishes[invitationDishId.toString()]?.invitationDishOptions.map((dishOption) => (
-      <VStack key={dishOption.id} display="flex" alignItems="flex-start">
-        <Checkbox key={dishOption.id}>
-          {get(invitationOptions[dishOption.optionId], "name", "mome")}
-        </Checkbox>
-      </VStack>
-    ));
-  };
+    return selectedDishes[invitationDishId.toString()]?.invitationDishOptions.map((dishOption) => {
+      const invitationOption = invitationOptions[dishOption.optionId];
 
-  const { selectedDishes, invitationOptions } = useContext(ManageContext);
-  console.log("coollll", invitationOptions);
+      if (!invitationOption) {
+        return <></>;
+      }
+      const { isMandatory, maxQuantity, name } = invitationOption;
+
+      if (invitationOption.isMandatory && invitationOption.maxQuantity === 1) {
+        const options = invitationOption.invitationOptionItems.map((option) => ({
+          id: option.id,
+          name: option.name,
+        }));
+
+        return (
+          <>
+            <OptionConfig isMandatory={isMandatory} maxQuantity={maxQuantity} name={name} />
+            <SingleMandatorySelect
+              key={dishOption.id}
+              options={options}
+              value={1}
+              onChangeOption={() => {}}
+            />
+          </>
+        );
+      }
+
+      const isChecked = (id: number, invitationOptionId: number) => {
+        const order = orderDishOptions.find(
+          (orderDish) => orderDish.invitationOptionId === invitationOptionId,
+        );
+
+        return order?.orderDishOptionItems.some(
+          (orderDishOption) => orderDishOption.invitationOptionItem.id === id,
+        );
+      };
+
+      const hItems = cluster(
+        invitationOption.invitationOptionItems,
+        Math.ceil(invitationOption.invitationOptionItems.length / 2),
+      );
+
+      return (
+        <>
+          <OptionConfig isMandatory={isMandatory} maxQuantity={maxQuantity} name={name} />
+          <HStack justifyContent="start" alignItems="start" width="100%">
+            {hItems.map((items, index) => (
+              <VStack key={index} justifyContent="start" alignItems="start">
+                {items.map((item) => (
+                  <Checkbox
+                    key={item.id}
+                    isChecked={isChecked(item.id || 0, item.invitationOptionId || 0)}
+                  >
+                    {item.name}
+                  </Checkbox>
+                ))}
+              </VStack>
+            ))}
+          </HStack>
+        </>
+      );
+    });
+  };
 
   return (
     <div>
@@ -64,11 +123,6 @@ export const EditCartContainer = (props: EditCartContainerProps) => {
         <ModalContent maxW="600px">
           <ModalHeader>{t("invitation_page.your_current_cart")}</ModalHeader>
           <ModalCloseButton isDisabled={editOrder.isLoading} />
-          {/* <ModalBody>
-            {cart.map((cartItem) => (
-              <CartItem cartItem={cartItem} key={cartItem.id} />
-            ))}
-          </ModalBody> */}
 
           <ModalBody>{renderModalBody()}</ModalBody>
 
