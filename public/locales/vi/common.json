@@ -46,7 +46,9 @@
       "is_open": "Mở cửa",
       "invitation_description": "Lời mời đặt mua tại {{name}}",
       "confirm_group_buy": "Xác nhận đơn mua chung",
-      "cancel_group_buy": "Huỷ đơn mua chung"
+      "cancel_group_buy": "Huỷ đơn mua chung",
+      "order_by": "Đặt bởi",
+      "empty_option": "Món ăn này không thể được tuỳ chỉnh"
     },
     "navbar": {
       "login": "Đăng nhập",
