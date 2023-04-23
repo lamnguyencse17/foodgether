@@ -38,7 +38,8 @@
       "unknown_option_item": "Unknown item",
       "total_price": "Total price",
       "edit_this_dish": "Edit this dish",
-      "delete_this_dish": "Delete this dish"
+      "delete_this_dish": "Delete this dish",
+      "go_to_manage_page": "Go to manage page"
     },
     "invitation_manage_page": {
       "cover_photo": "{{name}} cover photo",

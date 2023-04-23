@@ -1,10 +1,11 @@
-import { Box, Heading, HStack, Skeleton, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, Skeleton, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 import { Photo } from "../../types/shared";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/router";
 
 type RestaurantHeaderProps = {
   photo?: Photo;
@@ -18,6 +19,7 @@ type RestaurantHeaderProps = {
   url: string;
   restaurantId: number;
   invitationId: string;
+  isInvitationCreator: boolean;
 };
 
 const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
@@ -27,8 +29,11 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   isAvailable = false,
   priceRange,
   url = "",
+  isInvitationCreator = false,
+  invitationId,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   return (
     <Box
@@ -94,6 +99,17 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
         ) : (
           <Skeleton height="6" width="64" />
         )}
+        {isInvitationCreator ? (
+          <Button
+            variant="ghost"
+            colorScheme="blue"
+            onClick={() => {
+              router.push(`/invitation/${invitationId}/manage`);
+            }}
+          >
+            {t("invitation_page.go_to_manage_page")}
+          </Button>
+        ) : null}
       </VStack>
     </Box>
   );

@@ -114,16 +114,18 @@ const InvitationPage = ({
 }: InvitationPageProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { setOptionDict, setDishDict, setCart, setRestaurant, setOptionItemDict } = useStore(
-    (state) => ({
-      setOptionDict: state.optionDict.setOptionDictForInvitationPage,
-      setDishDict: state.dishDict.setDishDictForInvitationPage,
-      setCart: state.cart.setCart,
-      setRestaurant: state.restaurant.setRestaurantForInvitationPage,
-      setOptionItemDict: state.optionItemDict.setOptionItemDictForInvitationPage,
-    }),
-    shallow,
-  );
+  const { setOptionDict, setDishDict, setCart, setRestaurant, setOptionItemDict, userId } =
+    useStore(
+      (state) => ({
+        setOptionDict: state.optionDict.setOptionDictForInvitationPage,
+        setDishDict: state.dishDict.setDishDictForInvitationPage,
+        setCart: state.cart.setCart,
+        setRestaurant: state.restaurant.setRestaurantForInvitationPage,
+        setOptionItemDict: state.optionItemDict.setOptionItemDictForInvitationPage,
+        userId: state.user.data?.id,
+      }),
+      shallow,
+    );
 
   const restaurant = invitation?.invitationRestaurant as RestaurantInInvitation | undefined | null;
   const restaurantId = restaurant?.id || -1;
@@ -166,6 +168,7 @@ const InvitationPage = ({
     return null;
   }
   const { name, address, priceRange, isAvailable, url } = restaurant;
+  const isInvitationCreator = invitation?.createdById === userId;
   return (
     <>
       <Head>
@@ -183,6 +186,7 @@ const InvitationPage = ({
             url={url}
             restaurantId={restaurantId}
             invitationId={invitationId}
+            isInvitationCreator={isInvitationCreator}
           />
           <Box width="full" mt={1} paddingX={4}>
             <Divider orientation="horizontal" />
