@@ -49,7 +49,8 @@
       "confirm_group_buy": "Confirm group buy",
       "cancel_group_buy": "Cancel group buy",
       "order_by": "Order by",
-      "empty_option": "No option available for this dish"
+      "empty_option": "No option available for this dish",
+      "go_to_invitation_page": "Go to invitation page"
     },
     "navbar": {
       "login": "Login",

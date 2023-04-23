@@ -5,6 +5,7 @@ import { Photo } from "../../types/shared";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/router";
 
 type RestaurantHeaderProps = {
   photo?: Photo;
@@ -27,8 +28,10 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
   isAvailable = false,
   priceRange,
   url = "",
+  invitationId,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   return (
     <Box
@@ -101,10 +104,19 @@ const RestaurantHeader: FunctionComponent<RestaurantHeaderProps> = ({
           <Skeleton height="6" width="64" />
         )}
         <HStack>
+          <Button
+            variant="ghost"
+            colorScheme="gray"
+            onClick={() => {
+              router.push(`/invitation/${invitationId}`);
+            }}
+          >
+            {t("invitation_manage_page.go_to_invitation_page")}
+          </Button>
           <Button variant="ghost" colorScheme="blue">
             {t("invitation_manage_page.confirm_group_buy")}
           </Button>
-          <Button variant="link" colorScheme="red">
+          <Button variant="ghost" colorScheme="red">
             {t("invitation_manage_page.cancel_group_buy")}
           </Button>
         </HStack>

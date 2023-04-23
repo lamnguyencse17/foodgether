@@ -49,7 +49,8 @@
       "confirm_group_buy": "Xác nhận đơn mua chung",
       "cancel_group_buy": "Huỷ đơn mua chung",
       "order_by": "Đặt bởi",
-      "empty_option": "Món ăn này không thể được tuỳ chỉnh"
+      "empty_option": "Món ăn này không thể được tuỳ chỉnh",
+      "go_to_invitation_page": "Đến trang lời mời"
     },
     "navbar": {
       "login": "Đăng nhập",
