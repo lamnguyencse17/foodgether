@@ -43,7 +43,7 @@ export const getInvitationForCreator = async (id: string) => {
           invitationOptions: {
             include: {
               invitationOptionItems: {
-                distinct: "id",
+                distinct: ["id"],
               },
             },
           },
@@ -94,7 +94,7 @@ export const getInvitationForMember = async (invitationId: string) => {
           invitationOptions: {
             include: {
               invitationOptionItems: {
-                distinct: "id",
+                distinct: ["id"],
               },
             },
           },
